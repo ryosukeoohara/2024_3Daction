@@ -199,6 +199,8 @@ HRESULT CPlayer::Init(void)
 		m_pMotion->Init();
 	}
 
+	m_fGrapRot = 1.0f;
+
 	ReadText(PLAYER01_TEXT);
 	
 	return S_OK;
@@ -434,37 +436,37 @@ void CPlayer::Move(void)
 			// 向き
 			m_fDest = (CameraRot.y + (D3DX_PI * -0.5f));
 		}
+
+		m_fDiff = m_fDest - m_Info.rot.y;
+
+		//角度の値を修正する
+		if (m_fDiff >= D3DX_PI)
+		{
+			m_fDiff -= D3DX_PI * 2;
+		}
+		else if (m_fDiff <= -D3DX_PI)
+		{
+			m_fDiff += D3DX_PI * 2;
+		}
+
+		//移動方向(角度)の補正------------------------------------------------
+		m_Info.rot.y += m_fDiff * 0.15f;
+
+		//角度の値を修正する--------------------------------------------------
+		if (m_Info.rot.y > D3DX_PI)
+		{
+			m_Info.rot.y = -D3DX_PI;
+		}
+		else if (m_Info.rot.y < -D3DX_PI)
+		{
+			m_Info.rot.y = D3DX_PI;
+		}
 	}
 	else
 	{
 		GrapRotition();
 	}
 	
-	m_fDiff = m_fDest - m_Info.rot.y;
-
-	//角度の値を修正する
-	if (m_fDiff >= D3DX_PI)
-	{
-		m_fDiff -= D3DX_PI * 2;
-	}
-	else if (m_fDiff <= -D3DX_PI)
-	{
-		m_fDiff += D3DX_PI * 2;
-	}
-
-	//移動方向(角度)の補正------------------------------------------------
-	m_Info.rot.y += m_fDiff * (0.15f + m_fGrapRot);
-
-	//角度の値を修正する--------------------------------------------------
-	if (m_Info.rot.y > D3DX_PI)
-	{
-		m_Info.rot.y = -D3DX_PI;
-	}
-	else if (m_Info.rot.y < -D3DX_PI)
-	{
-		m_Info.rot.y = D3DX_PI;
-	}
-
 	//位置に移動量加算----------------------------------------------------
 	m_Info.pos.x += m_Info.move.x;
 	m_Info.pos.z += m_Info.move.z;
@@ -515,8 +517,9 @@ void CPlayer::Move(void)
 		CGame::GetEnemy()->SetCurrent(nullptr);
 		CGame::GetEnemy()->SetPosition(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y + 50.0f, m_Info.pos.z));
 		CGame::GetEnemy()->SetRotition(m_Info.rot);
-		CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * 5.0f, 1.0f, cosf(m_Info.rot.y) * 5.0f));
+		CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * (m_fGrapRot * 3.0f), 1.0f, cosf(m_Info.rot.y) * (m_fGrapRot * 3.0f)));
 		CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+		m_fGrapRot = 1.0f;
 	}
 
 	if (m_bAttack == true)
@@ -539,10 +542,6 @@ void CPlayer::Move(void)
 
 	if (m_bGrap == true)
 	{
-		/*CCharacter **pChar = CGame::GetEnemy()->GetCharcter();
-		*/
-		//pChar[0]->SetParent(m_ppCharacter[0]);
-
 		CGame::GetEnemy()->SetCurrent(&m_Info.mtxWorld);
 		CGame::GetEnemy()->SetPosition(D3DXVECTOR3(0.0f, 50.0f, 0.0f));
 		CGame::GetEnemy()->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, D3DX_PI));
@@ -568,6 +567,8 @@ void CPlayer::Move(void)
 
 		m_nCntColi = 0;
 	}
+
+	CManager::Getinstance()->GetDebugProc()->Print("回転量:%f", m_fGrapRot);
 }
 
 //================================================================
@@ -595,16 +596,16 @@ void CPlayer::GrapRotition(void)
 	m_fDestOld = m_fDest;
 
 	//上に移動----------------------------------------------
-	if (InputKeyboard->GetPress(DIK_W) == true || pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) > 0)
+	if (pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) > 0)
 	{//Wキーが押された
 
-		if (InputKeyboard->GetPress(DIK_D) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
+		if (pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
 		{//Dキーも押した 右上に移動
 
 			//向き
 			m_fDest = (CameraRot.y + (D3DX_PI * 0.25f));
 		}
-		else if (InputKeyboard->GetPress(DIK_A) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
+		else if (pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
 		{//Aキーも押した 左上に移動
 
 			//向き
@@ -619,16 +620,16 @@ void CPlayer::GrapRotition(void)
 
 	}
 	//下に移動----------------------------------------------
-	else if (InputKeyboard->GetPress(DIK_S) == true || pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) < 0)
+	else if (pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) < 0)
 	{//Sキーが押された
 
-		if (InputKeyboard->GetPress(DIK_D) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
+		if (pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
 		{//Dキーも押した 右下に移動
 
 			// 向き
 			m_fDest = (CameraRot.y + (D3DX_PI * 0.75f));
 		}
-		else if (InputKeyboard->GetPress(DIK_A) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
+		else if (pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
 		{//Aキーも押した 左下に移動
 
 			// 向き
@@ -638,30 +639,77 @@ void CPlayer::GrapRotition(void)
 		{//Sキーだけ押した 真下に移動
 
 			// 向き
-			m_fDest = (CameraRot.y + (D3DX_PI));
+			m_fDest = (CameraRot.y + (D3DX_PI * m_fGrapRot));
 		}
 
 	}
 	//右に移動----------------------------------------------
-	else if (InputKeyboard->GetPress(DIK_D) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
+	else if (InputKeyboard->GetPress(DIK_D) == true)
+	{//Dキーだけ押した
+
+		// 向き
+		m_fDest += (CameraRot.y + (D3DX_PI * 0.5f)) * 0.1f;
+	}
+	//左に移動----------------------------------------------
+	else if (InputKeyboard->GetPress(DIK_A) == true)
+	{//Aキーだけ押した
+
+		// 向き
+		m_fDest -= (CameraRot.y + (D3DX_PI * 0.5f)) * 0.1f;
+	}
+	//右に移動----------------------------------------------
+	else if (pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
 	{//Dキーだけ押した
 
 		// 向き
 		m_fDest = (CameraRot.y + (D3DX_PI * 0.5f));
 	}
 	//左に移動----------------------------------------------
-	else if (InputKeyboard->GetPress(DIK_A) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
+	else if (pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
 	{//Aキーだけ押した
 
 		// 向き
 		m_fDest = (CameraRot.y + (D3DX_PI * -0.5f));
 	}
 
-	float f = m_fDest - m_fDestOld;
-
-	if (f >= 0.78f)
+	if (m_fDest > 0.0f && m_fDestOld < 0.0f)
 	{
-		int n = 0;
+		if (m_fGrapRot <= 1.38f)
+		{
+			m_fGrapRot += 0.02f;
+		}
+	}
+	else if (m_fDest < 0.0f && m_fDestOld > 0.0f)
+	{
+		if (m_fGrapRot <= 1.38f)
+		{
+			m_fGrapRot += 0.02f;
+		}
+	}
+
+	m_fDiff = m_fDest - m_Info.rot.y;
+
+	//角度の値を修正する
+	if (m_fDiff >= D3DX_PI)
+	{
+		m_fDiff -= D3DX_PI * 2;
+	}
+	else if (m_fDiff <= -D3DX_PI)
+	{
+		m_fDiff += D3DX_PI * 2;
+	}
+
+	//移動方向(角度)の補正------------------------------------------------
+	m_Info.rot.y += m_fDiff * (0.15f * m_fGrapRot);
+
+	//角度の値を修正する--------------------------------------------------
+	if (m_Info.rot.y > D3DX_PI)
+	{
+		m_Info.rot.y = -D3DX_PI;
+	}
+	else if (m_Info.rot.y < -D3DX_PI)
+	{
+		m_Info.rot.y = D3DX_PI;
 	}
 }
 
