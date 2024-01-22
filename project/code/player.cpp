@@ -480,7 +480,7 @@ void CPlayer::Move(void)
 		m_bAttack = true;
 	}
 
-	if (pInputMouse->GetRButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
 	{
 		if (m_Info.state != STATE_GRAP)
 		{
