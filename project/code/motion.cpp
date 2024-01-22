@@ -78,22 +78,15 @@ void CMotion::Update(void)
 
 	int Next = (m_nKey + 1) % m_aInfo[m_nType].m_nNumKey;
 
-	if (m_nType != m_nTypeold && m_nKey + 1 < m_aInfo[m_nType].m_nNumKey)
-	{
-		int n = 0;
-	}
-
 	if (m_aInfo[m_nType].m_bFinish == false)
 	{
 		for (int nCount = 0; nCount < m_nNumModel; nCount++)
 		{
-			D3DXVECTOR3 pos = m_ppModel[nCount]->GetPosition();
-			D3DXVECTOR3 rot = m_ppModel[nCount]->GetRot();
 			D3DXVECTOR3 posOrigin = m_ppModel[nCount]->GetPositionOri();
 			D3DXVECTOR3 rotOrigin = m_ppModel[nCount]->GetRotOrigin();
 
-			fDiffpos = m_aInfo[m_nType].m_KeySet[Next].m_aKey[nCount].m_pos - m_aOldInfo.m_KeySet[m_nKey].m_aKey[nCount].m_pos;
-			fDiffrot = m_aInfo[m_nType].m_KeySet[Next].m_aKey[nCount].m_rot - m_aOldInfo.m_KeySet[m_nKey].m_aKey[nCount].m_rot;
+			fDiffpos = posOrigin + m_aInfo[m_nType].m_KeySet[Next].m_aKey[nCount].m_pos - m_aOldInfo[nCount].m_pos;
+			fDiffrot = rotOrigin + m_aInfo[m_nType].m_KeySet[Next].m_aKey[nCount].m_rot - m_aOldInfo[nCount].m_rot;
 
 			if (fDiffrot.x > D3DX_PI)
 			{
@@ -122,14 +115,11 @@ void CMotion::Update(void)
 				fDiffrot.z += D3DX_PI * 2.0f;
 			}
 
-			fDestpos = fDiffpos * ((float)m_nCounter / (float)m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame);
-			fDestrot = fDiffrot * ((float)m_nCounter / (float)m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame);
+			fDestpos = m_aOldInfo[nCount].m_pos + fDiffpos * ((float)m_nCounter / (float)m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame);
+			fDestrot = m_aOldInfo[nCount].m_rot + fDiffrot * ((float)m_nCounter / (float)m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame);
 
-			pos = posOrigin + m_aInfo[m_nType].m_KeySet[m_nKey].m_aKey[nCount].m_pos + fDestpos;
-			rot = rotOrigin + m_aInfo[m_nType].m_KeySet[m_nKey].m_aKey[nCount].m_rot + fDestrot;
-
-			m_ppModel[nCount]->SetPosition(pos);
-			m_ppModel[nCount]->SetRot(rot);
+			m_ppModel[nCount]->SetPosition(fDestpos);
+			m_ppModel[nCount]->SetRot(fDestrot);
 		}
 
 		m_nCounter++;
@@ -139,10 +129,11 @@ void CMotion::Update(void)
 			m_aInfo[m_nType].m_bFinish = true;
 		}
 
-		SetInfo(m_aInfo[m_nType]);
+		if (m_nCounter >= m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame)
+		{
+			SetInfo();
+		}
 	}
-
-	SetInfo(m_aInfo[m_nType]);
 }
 
 //===========================================================
@@ -150,7 +141,7 @@ void CMotion::Update(void)
 //===========================================================
 void CMotion::Set(int nType)
 {	
-	SetInfo(m_aInfo[m_nType]);
+	SetInfo();
 
 	m_nTypeold = m_nType;
 
@@ -181,9 +172,13 @@ bool CMotion::IsFinish(void)
 //===========================================================
 //èÓïÒê›íËèàóù
 //===========================================================
-void CMotion::SetInfo(INFO info)
+void CMotion::SetInfo(void)
 {
-	m_aOldInfo = info;
+	for (int nCount = 0; nCount < m_nNumModel; nCount++)
+	{
+		m_aOldInfo[nCount].m_pos = m_ppModel[nCount]->GetPosition();
+		m_aOldInfo[nCount].m_rot = m_ppModel[nCount]->GetRot();
+	}
 }
 
 //===========================================================

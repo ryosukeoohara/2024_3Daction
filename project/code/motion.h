@@ -87,16 +87,15 @@ public:
 	void Set(int nType);
 	int GetType(void);
 	bool IsFinish(void);
-	void SetInfo(INFO info);
+	void SetInfo(void);
 	void SetModel(CCharacter **ppModel, int nNumModel);
 	//CCharacter **GetModel(void) { return m_ppModel; }
 	void ReadText(const char *TextFilename);        //外部ファイル読み込み
 	int GetNumFrame(void) { return m_nNumFrame; }   //モーションの総フレーム
 
 private:
-	//Obj m_aObj[9];
 	INFO m_aInfo[MAX_INFO];
-	INFO m_aOldInfo;
+	KEY m_aOldInfo[MAX_INFO];
 	int  m_nNumAll;              //モーションの総数
 	int  m_nType;                //モーションの種類
 	int m_nTypeold;              //前回のモーションの種類

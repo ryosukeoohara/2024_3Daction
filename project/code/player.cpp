@@ -846,7 +846,7 @@ void CPlayer::ReadText(const char *fliename)
 	if (m_pMotion != NULL)
 	{
 		//ƒ‚ƒfƒ‹‚ÌÝ’è
-		m_pMotion->SetModel(&m_ppCharacter[0], m_nNumModel);
+		m_pMotion->SetModel(m_ppCharacter, m_nNumModel);
 
 		//‰Šú‰»ˆ—
 		m_pMotion->ReadText(fliename);
