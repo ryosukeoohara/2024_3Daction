@@ -37,7 +37,7 @@
 #define SPEED         (1.0f)                                      // 移動の速さ
 #define FRIST         (21)                                        // 攻撃判定発生開始
 #define FINISH        (31)                                        // 攻撃判定終了
-#define PLAYER01_TEXT ("data\\TEXT\\motion_set_player.txt")       // プレイヤーのテキストファイル
+#define PLAYER01_TEXT ("data\\TEXT\\motion_neet2.txt")       // プレイヤーのテキストファイル
 #define PLAYER02_TEXT ("data\\TEXT\\motion_set_player2.txt")      // プレイヤーのテキストファイル
 
 //================================================================
@@ -530,10 +530,10 @@ void CPlayer::Move(void)
 		{
 			if (CGame::GetCollision() != nullptr)
 			{
-				if (CGame::GetCollision()->Sword(m_ppCharacter[28]->GetMtxWorld(), m_ppCharacter[28]->GetMtxWorld(), 100.0f, CGame::GetEnemy()) == true)
+				/*if (CGame::GetCollision()->Sword(m_ppCharacter[28]->GetMtxWorld(), m_ppCharacter[28]->GetMtxWorld(), 100.0f, CGame::GetEnemy()) == true)
 				{
 					CManager::Getinstance()->GetDebugProc()->Print("あったり～");
-				}
+				}*/
 			}
 
 			CManager::Getinstance()->GetDebugProc()->Print("はははははは～");
