@@ -492,6 +492,8 @@ HRESULT CScene::Init(void)
 			m_Title = new CTitle;
 
 			m_Title->Init();
+
+			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_TITLE);
 		}
 
 		break;
@@ -503,6 +505,8 @@ HRESULT CScene::Init(void)
 			m_Tutorial = new CTutorial;
 
 			m_Tutorial->Init();
+
+			//CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_TUTORIAL);
 		}
 
 		break;
@@ -514,6 +518,8 @@ HRESULT CScene::Init(void)
 			m_Game = new CGame;
 
 			m_Game->Init();
+
+			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_GAME);
 		}
 
 		break;
@@ -525,6 +531,8 @@ HRESULT CScene::Init(void)
 			m_Result = new CResult;
 
 			m_Result->Init();
+
+			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RESULT);
 		}
 
 		break;

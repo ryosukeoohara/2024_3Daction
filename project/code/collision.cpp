@@ -233,6 +233,8 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 				CCharacter **pChar = CGame::GetPlayer()->GetChar();
 				pObjectX[nCount]->SetCurrent(pChar[9]->GetMtxWorld());
 				pObjectX[nCount]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				pObjectX[nCount]->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI * 0.5f, 0.0f));
+				CGame::GetPlayer()->SetGrapItem(pObjectX[nCount]);
 				return true;
 			}
 		}

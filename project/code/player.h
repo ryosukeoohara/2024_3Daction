@@ -17,14 +17,14 @@
 //*==========================================================
 class CMotion;
 class CCharacter;
+class CObjectX;
 
 //*==========================================================
 //プレイヤークラス
 //*==========================================================
 class CPlayer : public CObject
 {
-private:
-
+public:
 	// 状態
 	enum STATE
 	{
@@ -35,8 +35,12 @@ private:
 		STATE_AVOID,
 		STATE_LIFT,
 		STATE_GRAP,
+		STATE_THROW,
+		STATE_HEAT,
 		STATE_MAX
 	};
+
+private:
 
 	//モーション
 	enum MOTIONTYPE
@@ -48,6 +52,7 @@ private:
 		TYPE_ATTACK03,                   // 連撃3段目 
 		TYPE_AVOID,                      // 回避
 		TYPE_LIFT,                       // 持ち上げる
+		TYPE_THROW,                      // 投げる
 		TYPE_MAX
 	} ;
 
@@ -59,6 +64,14 @@ private:
 		TYPE02_ATTACK,
 		TYPE03_ATTACK,
 		TYPEMAX_ATTACK
+	};
+
+	enum DAMEGESTATE
+	{
+		DAMEGE_NONE = 0,
+		DAMEGE_SMALL,
+		DAMEGE_BIG,
+		DAMEGE_MAX
 	};
 
 	// 情報
@@ -94,11 +107,14 @@ public:
 	void SetPosition(D3DXVECTOR3 pos) { m_Info.move = pos; }         // 位置設定
 	void SetRotition(D3DXVECTOR3 rot) { m_Info.move = rot; }         // 向き設定
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }           // 移動量設定
+	void SetState(STATE state) { m_Info.state = state; }             // 状態
+	void SetGrapItem(CObjectX *obj) { m_Obj = obj; }
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置取得
 	D3DXVECTOR3 GetRotition(void) { return m_Info.rot; }       // 向き取得
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }          // 移動量取得
+	STATE GetState(void) { return m_Info.state; }              // 状態
 	D3DXMATRIX *GetMatrix(void) { return &m_Info.mtxWorld; }     // マトリックス
 	CCharacter **GetChar(void) { return m_ppCharacter; }
 	bool GetbAttack(void) { return m_bAttack; }                // 攻撃中かどうか
@@ -106,8 +122,9 @@ public:
 private:
 
 	void Control(void);                   // 制御
-	void Move(void);
-	void GrapRotition(void);
+	void Move(void);                      // 移動
+	void Action(void);                    // 攻撃
+	void GrapRotition(void);              // ジャイアントスイング
 	void ReadText(const char *fliename);  // テキストファイル読み込み
 
 	int m_nNumModel;                    //モデル(パーツ)の総数
@@ -123,6 +140,7 @@ private:
 	D3DXVECTOR3 m_posOrigin;             
 	CMotion *m_pMotion;                   // モーションへのポインタ
 	CCharacter **m_ppCharacter;           // キャラクターへのポインタ
+	CObjectX *m_Obj;
 	float m_fDest;
 	float m_fDestOld;
 	float m_fDiff;

@@ -266,13 +266,13 @@ void CObjectX::Draw(void)
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
-
-	D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
-
 	if (m_pCurrent != nullptr)
 	{
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
+
+		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
+
 		//位置を反映
 		D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
@@ -284,6 +284,11 @@ void CObjectX::Draw(void)
 	}
 	else
 	{
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
+
+		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
+
 		//位置を反映
 		D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 

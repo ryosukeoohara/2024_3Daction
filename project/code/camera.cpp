@@ -19,8 +19,13 @@
 #define CAMERA_MOVE       (2.0f)
 #define CAMERA_LOWMOVE    (0.1f)
 
+namespace
+{
+	const D3DXVECTOR3 HEAT_CAMERAROT = { 0.0f, -D3DX_PI * 0.75f, D3DX_PI * -0.38f };   // 目標の角度
+}
+
 //================================================================
-//コンストラクタ
+// コンストラクタ
 //================================================================
 CCamera::CCamera()
 {
@@ -30,12 +35,12 @@ CCamera::CCamera()
 	m_posU = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posRDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_type = TYPE_NONE;
+	m_mode = MODE_NONE;
 	m_nCounter = 0;
 }
 
 //================================================================
-//デストラクタ
+// デストラクタ
 //================================================================
 CCamera::~CCamera()
 {
@@ -43,7 +48,7 @@ CCamera::~CCamera()
 }
 
 //================================================================
-//カメラの初期化処理
+// 初期化処理
 //================================================================
 void CCamera::Init(void)
 {
@@ -58,7 +63,7 @@ void CCamera::Init(void)
 }
 
 //================================================================
-//カメラの終了処理
+// 終了処理
 //================================================================
 void CCamera::Uninit(void)
 {
@@ -66,73 +71,15 @@ void CCamera::Uninit(void)
 }
 
 //================================================================
-//カメラ更新処理
+// 更新処理
 //================================================================
 void CCamera::Update(void)
 {
-	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
-
-	//シーンの情報を寿徳
-	CScene *pScene = CManager::Getinstance()->GetScene();
-
-	if (pScene->GetMode() == CScene::MODE_TITLE || pScene->GetMode() == CScene::MODE_RESULT)
-	{
-		Title();
-	}
-
-	if (pScene->GetMode() == CScene::MODE_GAME)
-	{
-		CPlayer *pPlayer = CGame::GetPlayer();
-
-		D3DXVECTOR3 pos = pPlayer->GetPosition();
-
-		CameraV();
-
-		//目標の注視点を設定
-		m_posRDest.x = pos.x;
-		m_posRDest.z = pos.z;
-
-		//カメラの移動量
-		m_move.x = m_posRDest.x - m_posR.x;
-		m_move.z = m_posRDest.z - m_posR.z;
-
-		//位置に移動量を保存
-		m_posR.x += m_move.x;
-		m_posR.z += m_move.z;
-	}
-
-	if (pScene->GetMode() == CScene::MODE_GAME && m_type == TYPE_EDIT)
-	{
-		//D3DXVECTOR3 pos = pPlayer->Getpos();
-
-		Edit();
-
-		////目標の注視点を設定
-		//m_posRDest.x = pos.x;
-		//m_posRDest.z = pos.z;
-
-		////カメラの移動量
-		//m_move.x = m_posRDest.x - m_posR.x;
-		//m_move.z = m_posRDest.z - m_posR.z;
-
-		////位置に移動量を保存
-		//m_posR.x += m_move.x;
-		//m_posR.z += m_move.z;
-	}
-
-	//向きを設定
-	SetRot(m_rot);
-	
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-
-	pDebugProc->Print("\n---カメラの情報---");
-	pDebugProc->Print("\nカメラの位置視点：X軸<%f>,Y軸<%f>,Z軸<%f>", m_posV.x, m_posV.y, m_posV.z);
-	pDebugProc->Print("\nカメラの位置注視点：X軸<%f>,Y軸<%f>,Z軸<%f>", m_posR.x, m_posR.y, m_posR.z);
-	pDebugProc->Print("\nカメラの向き ：X軸<%f>,Y軸<%f>,Z軸<%f>", m_rot.x , m_rot.y , m_rot.z);
+	Mode();
 } 
 
 //================================================================
-//カメラの設定処理
+// 設定処理
 //================================================================
 void CCamera::SetCamera(void)
 {
@@ -164,7 +111,102 @@ void CCamera::SetCamera(void)
 }
 
 //================================================================
-//視点の移動
+// 向き設定
+//================================================================
+void CCamera::SetRot(D3DXVECTOR3 Rot)
+{
+	m_rot = Rot;
+
+	if (m_rot.y > D3DX_PI)
+	{
+		m_rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.y < -D3DX_PI)
+	{
+		m_rot.y += D3DX_PI * 2.0f;
+	}
+}
+
+//================================================================
+// モード
+//================================================================
+void CCamera::Mode(void)
+{
+	//シーンの情報を寿徳
+	CScene *pScene = CManager::Getinstance()->GetScene();
+
+	switch (m_mode)
+	{
+	case CCamera::MODE_NONE:
+		break;
+	case CCamera::MODE_TITLE:
+
+		Title();
+		break;
+	case CCamera::MODE_GAME:
+
+		CameraV();
+		break;
+	case CCamera::MODE_RESULT:
+
+		Title();
+		break;
+	case CCamera::MODE_HEAT:
+
+		Heat();
+		break;
+	case CCamera::MODE_MAX:
+		break;
+	default:
+		break;
+	}
+
+	//向きを設定
+	SetRot(m_rot);
+
+	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+
+	pDebugProc->Print("\n---カメラの情報---");
+	pDebugProc->Print("\nカメラの位置視点：X軸<%f>,Y軸<%f>,Z軸<%f>", m_posV.x, m_posV.y, m_posV.z);
+	pDebugProc->Print("\nカメラの位置注視点：X軸<%f>,Y軸<%f>,Z軸<%f>", m_posR.x, m_posR.y, m_posR.z);
+	pDebugProc->Print("\nカメラの向き ：X軸<%f>,Y軸<%f>,Z軸<%f>", m_rot.x, m_rot.y, m_rot.z);
+}
+
+//================================================================
+// 激アツアクション
+//================================================================
+void CCamera::Heat(void)
+{
+	//// カメラを目標の向きまで回転させる
+	//D3DXVECTOR3 rotDest = m_Oldrot - m_rot;
+	//SetRotation(m_rot + rotDest * 0.1f);
+
+	//m_rot = HEAT_CAMERAROT;
+
+	m_posV.x = m_posR.x - sinf(m_rot.y) * -CAMERA_DISTNCE;
+	m_posV.z = m_posR.z - cosf(m_rot.y) * -CAMERA_DISTNCE;
+
+	D3DXVECTOR3 pos = CGame::GetPlayer()->GetPosition();
+
+	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
+	m_posR = D3DXVECTOR3(pos.x, 50.0f, pos.z + 10.0f);
+	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+
+	//目標の注視点を設定
+	m_posRDest.x = pos.x;
+	m_posRDest.z = pos.z;
+
+	//カメラの移動量
+	m_move.x = m_posRDest.x - m_posR.x;
+	m_move.z = m_posRDest.z - m_posR.z;
+
+	//位置に移動量を保存
+	m_posR.x += m_move.x;
+	m_posR.z += m_move.z;
+}
+
+//================================================================
+// 視点の移動
 //================================================================
 void CCamera::CameraV(void)
 {
@@ -210,10 +252,22 @@ void CCamera::CameraV(void)
 	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
 	m_posR = D3DXVECTOR3(pos.x, 50.0f, pos.z + 10.0f);
 	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+
+	//目標の注視点を設定
+	m_posRDest.x = pos.x;
+	m_posRDest.z = pos.z;
+
+	//カメラの移動量
+	m_move.x = m_posRDest.x - m_posR.x;
+	m_move.z = m_posRDest.z - m_posR.z;
+
+	//位置に移動量を保存
+	m_posR.x += m_move.x;
+	m_posR.z += m_move.z;
 }
 
 //================================================================
-//視点の移動
+// 視点の移動
 //================================================================
 void CCamera::CameraR(void)
 {
@@ -230,7 +284,7 @@ void CCamera::CameraR(void)
 }
 
 //================================================================
-//視点の移動
+// 視点の移動
 //================================================================
 void CCamera::Title(void)
 {
@@ -240,7 +294,7 @@ void CCamera::Title(void)
 }
 
 //================================================================
-//ボスが登場するときのカメラ
+// ボスが登場するときのカメラ
 //================================================================
 void CCamera::Edit(void)
 {
@@ -307,7 +361,7 @@ void CCamera::Edit(void)
 }
 
 //================================================================
-//遠距離武器を使っているときのカメラ
+// 遠距離武器を使っているときのカメラ
 //================================================================
 void CCamera::Scope(void)
 {

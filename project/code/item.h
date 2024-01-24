@@ -9,6 +9,9 @@
 
 class CObjectX;
 
+// マクロ定義
+#define MAX_ITEM (2)
+
 //アイテムクラス
 class CItem
 {
@@ -44,7 +47,6 @@ public:
 
 	// 設定系
 	
-
 	// 取得系
 	CObjectX **GetObjectX(void) { return m_appObjectX; }
 	int GetNum(void) { return m_nNumItem; }
@@ -52,7 +54,7 @@ public:
 private:
 	void TextLoad(void);
 	CObjectX **m_appObjectX;
-	char **m_apModelName;
+	static const char *m_apTexName[MAX_ITEM];
 
 	int m_nNumModel;
 	int m_nNumItem;

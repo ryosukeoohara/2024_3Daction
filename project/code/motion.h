@@ -91,7 +91,7 @@ public:
 	void SetModel(CCharacter **ppModel, int nNumModel);
 	//CCharacter **GetModel(void) { return m_ppModel; }
 	void ReadText(const char *TextFilename);        //外部ファイル読み込み
-	int GetNumFrame(void) { return m_nNumFrame; }   //モーションの総フレーム
+	int GetNumFrame(void) { return m_nCurrentFrame;	}   //モーションの総フレーム
 
 private:
 
@@ -108,6 +108,7 @@ private:
 	int  m_nCounter;             //フレーム数に達したか
 	int  m_nCntkeySet;
 	int m_nNumFrame;             //モーションのフレーム数
+	int m_nCurrentFrame;
 	bool m_bFinish;              //終了したかどうか
 	
 	CCharacter **m_ppModel;  //モデルへのダブルポインタ

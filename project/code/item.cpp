@@ -10,6 +10,12 @@
 #include "objectX.h"
 #include "debugproc.h"
 
+const char *CItem::m_apTexName[MAX_ITEM] =
+{
+	"data\\MODEL\\01_enemy_body.x",
+	"data\\MODEL\\bike.x",     // 自転車
+};
+
 // マクロ定義
 #define TEXT_NAME  ("data\\TEXT\\item.txt")  // マップに配置するアイテム
 
@@ -19,7 +25,6 @@
 CItem::CItem()
 {
 	m_appObjectX = nullptr;
-	m_apModelName = nullptr;
 	m_nNumModel = 0;
 	m_nNumItem = 0;
 }
@@ -91,15 +96,6 @@ void CItem::TextLoad(void)
 			{
 				fscanf(pFile, "%s", &aString[0]);
 
-				if (strcmp("NUM_MODEL", aString) == 0)
-				{
-					fscanf(pFile, "%s", &aString);      //=
-					fscanf(pFile, "%d", &m_nNumModel);  //モデルの総数
-
-					m_apModelName = new char*[m_nNumModel];
-
-				}  // NUM_MODELのかっこ
-
 				if (strcmp("NUM_ITEM", aString) == 0)
 				{
 					fscanf(pFile, "%s", &aString);      //=
@@ -113,10 +109,6 @@ void CItem::TextLoad(void)
 				{
 					fscanf(pFile, "%s", &aString);       //=
 					fscanf(pFile, "%s", &aFileName[0]);  //モデルの名前
-
-					m_apModelName[nCntFileName] = aFileName;
-
-					nCntFileName++;
 
 				}  // MODEL_LILENAMEのかっこ
 
@@ -149,9 +141,10 @@ void CItem::TextLoad(void)
 						}
 					}
 
-					m_appObjectX[nCntItem] = CObjectX::Create(m_apModelName[nType]);
+					m_appObjectX[nCntItem] = CObjectX::Create(m_apTexName[nType]);
 					m_appObjectX[nCntItem]->SetPosition(pos);
 					m_appObjectX[nCntItem]->SetRotition(rot);
+					nCntItem++;
 				}
 			}
 		}

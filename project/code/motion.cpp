@@ -26,6 +26,7 @@ CMotion::CMotion()
 	m_nCounter = 0;
 	m_nCntkeySet = 0;
 	m_nNumFrame = 0;
+	m_nCurrentFrame = 0;
 	m_bLoop = false;
 	m_bFinish = false;
 }
@@ -69,11 +70,6 @@ void CMotion::Update(void)
 		m_nKey = (m_nKey + 1) % m_aInfo[m_nType].m_nNumKey;
 
 		m_nCounter = 0;
-	}
-
-	for (int nCount = 0; nCount < m_aInfo[m_nType].m_nNumKey; nCount++)
-	{
-		m_nNumFrame += m_aInfo[m_nType].m_KeySet[nCount].m_nFrame;
 	}
 
 	int Next = (m_nKey + 1) % m_aInfo[m_nType].m_nNumKey;
@@ -152,10 +148,12 @@ void CMotion::Update(void)
 		}
 
 		m_nCounter++;
+		m_nCurrentFrame++;
 
 		if (m_aInfo[m_nType].m_nLoop == 0 && m_nKey + 1 >= m_aInfo[m_nType].m_nNumKey)
 		{
 			m_aInfo[m_nType].m_bFinish = true;
+			m_nCurrentFrame = 0;
 		}
 
 		if (m_nCounter >= m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame)
@@ -180,6 +178,7 @@ void CMotion::Set(int nType)
 
 	m_nCounter = 0;
 	m_nKey = 0;
+	m_nCurrentFrame = 0;
 }
 
 //===========================================================

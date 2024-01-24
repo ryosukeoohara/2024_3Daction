@@ -17,14 +17,21 @@ public:
 	CCamera();
 	~CCamera();
 
+	enum MODE
+	{
+		MODE_NONE = 0,
+		MODE_TITLE,      // タイトルのカメラ
+		MODE_GAME,       // ゲームのカメラ
+		MODE_RESULT,     // リザルトのカメラ
+		MODE_HEAT,       // 
+		MODE_MAX 
+	};
+
 	enum TYPE
 	{
 		TYPE_NONE = 0,
-		TYPE_TITLE,      //タイトルのカメラ
-		TYPE_GAME,       //ゲームのカメラ
-		TYPE_RESULT,     //リザルトのカメラ
-		TYPE_EDIT,       //エディットのカメラ
-		TYPE_MAX 
+		TYPE_HEAT,
+		TYPE_MAX
 	};
 
 	void Init(void);          //カメラの初期化処理    
@@ -39,13 +46,18 @@ public:
 
 	void Boss(void);
 
-	void SetRot(D3DXVECTOR3 Rot) { m_rot = Rot; }
+	// 設定系
+	void SetMode(MODE type) { m_mode = type; }
+	void SetRot(D3DXVECTOR3 Rot);
+
+	// 取得系
+	MODE GetMode(void) { return m_mode; }
 	D3DXVECTOR3 GetRot(void) { return m_rot; }
 
-	void SetType(TYPE type) { m_type = type; }
-	TYPE GetType(void) { return m_type; }
-
 private:
+	void Mode(void);
+	void Heat(void);
+
 	D3DXMATRIX m_mtxView;        //ビューマトリックス
 	D3DXMATRIX m_mtxProjection;  //プロジェクションマトリックス
 
@@ -59,7 +71,7 @@ private:
 	D3DXVECTOR3 m_rot;  //向き
 	D3DXVECTOR3 m_move; //移動
 
-	TYPE m_type;
+	MODE m_mode;
 
 	int m_nCounter;     //カメラが切り替わっている時間
 };
