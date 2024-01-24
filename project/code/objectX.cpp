@@ -44,7 +44,7 @@ CObjectX::CObjectX()
 //================================================================
 //コンストラクタ(オーバーロード)
 //================================================================
-CObjectX::CObjectX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *aModelFliename)
+CObjectX::CObjectX(const char *aModelFliename)
 {
 	//値をクリア
 	m_Info.vtxMax = D3DXVECTOR3(-900000.0f, -900000.0f, -900000.0f);
@@ -52,8 +52,6 @@ CObjectX::CObjectX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *aModelFliename)
 	m_Info.vtxMax = D3DXVECTOR3(-900000.0f, -900000.0f, -900000.0f);
 	m_Info.vtxMini = D3DXVECTOR3(900000.0f, 900000.0f, 900000.0f);
 
-	m_Info.pos = pos;
-	m_Info.rot = rot;
 	m_Info.Fliename = aModelFliename;
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 }
@@ -69,7 +67,7 @@ CObjectX::~CObjectX()
 //================================================================
 //生成処理
 //================================================================
-CObjectX *CObjectX::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *aModelFliename)
+CObjectX *CObjectX::Create(const char *aModelFliename)
 {
 	//オブジェクトXのポインタ
 	CObjectX *pObjectX = NULL;
@@ -82,7 +80,7 @@ CObjectX *CObjectX::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *aModelF
 		if (pObjectX == NULL)
 		{
 			//オブジェクト2Dの生成
-			pObjectX = new CObjectX(pos, rot, aModelFliename);
+			pObjectX = new CObjectX(aModelFliename);
 
 			//初期化処理
 			pObjectX->Init();
@@ -273,11 +271,25 @@ void CObjectX::Draw(void)
 
 	D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
 
-	//位置を反映
-	D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	if (m_pCurrent != nullptr)
+	{
+		//位置を反映
+		D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
-	D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
+		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
 
+		// マトリックスと親のマトリックスをかけ合わせる
+		D3DXMatrixMultiply(&m_Info.mtxWorld,
+			&m_Info.mtxWorld, m_pCurrent);
+	}
+	else
+	{
+		//位置を反映
+		D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+
+		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
+	}
+	
 	//現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
 

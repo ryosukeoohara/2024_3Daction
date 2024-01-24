@@ -1,4 +1,10 @@
 ﻿  player.cpp
-cl : コマンド ライン warning D9028: 簡易リビルド時のエラーです、通常のビルドに戻します
+  コードを生成中...
+  コンパイル中...
+  game.cpp
+  enemy.cpp
+  collision.cpp
+  camera.cpp
+  コードを生成中...
   Project0.vcxproj -> C:\Users\student\Documents\ゲーム制作\個人製作\Project0\2024_3Daction\project\Project0.exe
   Project0.vcxproj -> C:\Users\student\Documents\ゲーム制作\個人製作\Project0\2024_3Daction\project\Project0.pdb (Full PDB)

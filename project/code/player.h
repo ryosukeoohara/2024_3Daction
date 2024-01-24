@@ -32,6 +32,8 @@ private:
 		STATE_NEUTRAL,
 		STATE_MOVE,
 		STATE_ATTACK,
+		STATE_AVOID,
+		STATE_LIFT,
 		STATE_GRAP,
 		STATE_MAX
 	};
@@ -41,10 +43,23 @@ private:
 	{
 		TYPE_NEUTRAL = 0,                // ニュートラル
 		TYPE_MOVE,                       // 移動
-		TYPE_ATTACK,                     // 攻撃
-		TYPE_GRAP,                       // 投げ待機
+		TYPE_ATTACK01,                   // 連撃1段目
+		TYPE_ATTACK02,                   // 連撃2段目
+		TYPE_ATTACK03,                   // 連撃3段目 
+		TYPE_AVOID,                      // 回避
+		TYPE_LIFT,                       // 持ち上げる
 		TYPE_MAX
 	} ;
+
+	// 連撃
+	enum ATTACKTYPE
+	{
+		TYPE00_NONE = 0,
+		TYPE01_ATTACK,
+		TYPE02_ATTACK,
+		TYPE03_ATTACK,
+		TYPEMAX_ATTACK
+	};
 
 	// 情報
 	struct INFO
@@ -56,10 +71,11 @@ private:
 		D3DXCOLOR col;                    // 色
 		D3DXMATRIX mtxWorld;              // ワールドマトリックス
 		STATE state;                      // 状態
+		ATTACKTYPE Atc;
 	};
 
 	INFO m_Info;                          // 情報
-
+	
 public:
 	CPlayer();  //コンストラクタ
 	CPlayer(D3DXVECTOR3 pos);  //コンストラクタ(オーバーロード)
@@ -83,6 +99,8 @@ public:
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置取得
 	D3DXVECTOR3 GetRotition(void) { return m_Info.rot; }       // 向き取得
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }          // 移動量取得
+	D3DXMATRIX *GetMatrix(void) { return &m_Info.mtxWorld; }     // マトリックス
+	CCharacter **GetChar(void) { return m_ppCharacter; }
 	bool GetbAttack(void) { return m_bAttack; }                // 攻撃中かどうか
 
 private:
@@ -111,16 +129,18 @@ private:
 	float m_fGrapRot;
 	bool m_bDesh;                         // ダッシュ
 	bool m_bAttack;                       // 攻撃
+	bool m_bAvoid;                        // 回避
+	bool m_bLift;                         // 持ち上げる
 	bool m_bGrap;                         // 投げ
 
 	//チュートリアルで使う関数,変数
-	void ControlTutorial(void);          //チュートリアルのプレイヤーの制御
-	bool m_bPushW;                       //Wキーを押した
-	bool m_bPushA;                       //Aキーを押した
-	bool m_bPushS;                       //Sキーを押した
-	bool m_bPushD;                       //Dキーを押した
-	bool m_bAvoi;                        //回避した
-	bool m_bWhee;                        //ホイールを回転した
+	void ControlTutorial(void);          // チュートリアルのプレイヤーの制御
+	bool m_bPushW;                       // Wキーを押した
+	bool m_bPushA;                       // Aキーを押した
+	bool m_bPushS;                       // Sキーを押した
+	bool m_bPushD;                       // Dキーを押した
+	bool m_bAvoi;                        // 回避した
+	bool m_bWhee;                        // ホイールを回転した
 };
 
 #endif

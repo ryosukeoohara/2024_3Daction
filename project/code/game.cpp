@@ -24,6 +24,7 @@
 #include "enemy.h"
 #include "enemymanager.h"
 #include "collision.h"
+#include "item.h"
 
 //================================================================
 //　静的メンバ変数
@@ -33,6 +34,7 @@ CPlayer *CGame::m_pPlayer = nullptr;
 CEnemy *CGame::m_pEnemy = nullptr;
 CEnemyManager *CGame::m_pEnemyManager = nullptr;
 CCollision *CGame::m_Collision = nullptr;
+CItem *CGame::m_pItem = nullptr;
 
 //===========================================================
 //　コンストラクタ
@@ -111,6 +113,11 @@ HRESULT CGame::Init(void)
 	if (m_Collision == nullptr) 
 	{
 		m_Collision = CCollision::Create();
+	}
+
+	if (m_pItem == nullptr)
+	{
+		m_pItem = CItem::Create();
 	}
 
 	/*if (m_pEnemyManager == nullptr)

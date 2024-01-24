@@ -12,6 +12,7 @@
 // 前方宣言
 class CPause;
 class CEnemyManager;
+class CItem;
 
 //ゲームクラス
 class CGame : public CScene
@@ -36,6 +37,7 @@ public:
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 	static CEnemy *GetEnemy(void) { return m_pEnemy; }
 	static CCollision *GetCollision(void) { return m_Collision; }
+	static CItem *GetItem(void) { return m_pItem; }
 
 private:
 	static CPause *m_pPause;
@@ -43,6 +45,7 @@ private:
 	static CEnemy *m_pEnemy;
 	static CEnemyManager *m_pEnemyManager;
 	static CCollision *m_Collision;
+	static CItem *m_pItem;
 	bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか
 	static int m_nCounter;

@@ -41,7 +41,7 @@ public:
 	void SetRotOrigin(D3DXVECTOR3 rotOrigin) { m_rotOrigin = rotOrigin; }       //向き設定
 	D3DXVECTOR3 GetRotOrigin(void) { return m_rotOrigin; }          //向き取得   
 
-	D3DXMATRIX GetMtxWorld(void) { return m_mtxWorld; }     //マトリックス取得
+	D3DXMATRIX *GetMtxWorld(void) { return &m_mtxWorld; }     //マトリックス取得
 	CCharacter *GetParent(void) { return m_pParent; }       //親モデルのポインタ取得
 
 	D3DXVECTOR3 GetVtxMin(void) { return m_vtxMini; }  //モデルの最小値取得

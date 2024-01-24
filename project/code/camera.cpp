@@ -14,7 +14,7 @@
 #include "player.h"
 
 //É}ÉNÉçíËã`
-#define CAMERA_DISTNCE    (500.0f)
+#define CAMERA_DISTNCE    (300.0f)
 #define CAMERA_ROTY       (0.03f)
 #define CAMERA_MOVE       (2.0f)
 #define CAMERA_LOWMOVE    (0.1f)

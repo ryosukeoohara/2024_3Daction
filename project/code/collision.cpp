@@ -20,6 +20,8 @@
 #include "game.h"
 #include "enemy.h"
 #include "enemymanager.h"
+#include "item.h"
+#include "character.h"
 
 //=============================================================================
 //コンストラクタ
@@ -117,11 +119,6 @@ void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX)
 
 }
 
-bool CCollision::Block(D3DXVECTOR3 * pos, D3DXVECTOR3 * posOld, float fWidthX, float fWidthZ)
-{
-	return false;
-}
-
 //=============================================================================
 //剣の当たり判定
 //=============================================================================
@@ -206,4 +203,40 @@ bool CCollision::Sword(D3DXMATRIX matrix1, D3DXMATRIX matrix2, float flength, CE
 void CCollision::MapEnemy(D3DXVECTOR3 * pos, D3DXVECTOR3 * posOld, CObjectX ** pObjectX, CEnemy *penemy)
 {
 	
+}
+
+//=============================================================================
+//マップにある建物との当たり判定
+//=============================================================================
+bool CCollision::Item(D3DXVECTOR3 *pos)
+{
+	CItem *pItem = CGame::GetItem();
+	CObjectX **pObjectX = pItem->GetObjectX();
+
+	float PlayerfRadius = 50.0f;
+	float fRadius = 25.0f;
+
+	for (int nCount = 0; nCount < pItem->GetNum(); nCount++)
+	{
+		if (pObjectX[nCount] != nullptr)
+		{
+			pObjectX[nCount]->GetPosition();
+
+			float circleX = pObjectX[nCount]->GetPosition().x - pos->x;
+			float circleZ = pObjectX[nCount]->GetPosition().z - pos->z;
+			float c = 0.0f;
+
+			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+			if (c <= fRadius + PlayerfRadius)
+			{
+				CCharacter **pChar = CGame::GetPlayer()->GetChar();
+				pObjectX[nCount]->SetCurrent(pChar[9]->GetMtxWorld());
+				pObjectX[nCount]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

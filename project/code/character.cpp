@@ -265,7 +265,7 @@ void CCharacter::Draw(void)
 	if (m_pParent != NULL)
 	{//親モデルがある場合
 
-		mtxParent = m_pParent->GetMtxWorld();
+		mtxParent = *m_pParent->GetMtxWorld();
 	}
 	else
 	{//親モデルがない場合

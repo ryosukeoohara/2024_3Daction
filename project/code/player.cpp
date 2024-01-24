@@ -73,6 +73,8 @@ CPlayer::CPlayer()
 	m_fGrapRot = 0.0f;
 	m_bDesh = false;
 	m_bAttack = false;
+	m_bAvoid = false;
+	m_bLift = false;
 	m_bGrap = false;
 	
 	m_bPushW = false;
@@ -112,6 +114,8 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_fGrapRot = 0.0f;
 	m_bDesh = false;
 	m_bAttack = false;
+	m_bAvoid = false;
+	m_bLift = false;
 	m_bGrap = false;
 
 	m_bPushW = false;
@@ -477,7 +481,7 @@ void CPlayer::Move(void)
 	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
 
-	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_SPACE) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
 	{
 		m_bAttack = true;
 	}
@@ -494,12 +498,50 @@ void CPlayer::Move(void)
 		}
 	}
 
+	if (InputKeyboard->GetTrigger(DIK_F) == true)
+	{
+		if (CGame::GetCollision()->Item(&m_Info.pos) == true)
+		{
+			m_bLift = true;
+			m_Info.state = STATE_LIFT;
+			CManager::Getinstance()->GetDebugProc()->Print("当たってる～");
+		}
+	}
+
 	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
 	{
 		m_Info.state = STATE_ATTACK;
 
+		m_Info.Atc = TYPE01_ATTACK;
+
 		// モーションをセット(近接攻撃)
-		m_pMotion->Set(TYPE_ATTACK);
+		m_pMotion->Set(TYPE_ATTACK01);
+
+		m_bAttack = false;
+	}
+
+	if (m_Info.Atc == TYPE01_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
+	{
+		m_Info.Atc = TYPE02_ATTACK;
+
+		// モーションをセット(近接攻撃)
+		m_pMotion->Set(TYPE_ATTACK02);
+
+		m_bAttack = false;
+	}
+	if (m_Info.Atc == TYPE02_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
+	{
+		m_Info.Atc = TYPE03_ATTACK;
+
+		// モーションをセット(近接攻撃)
+		m_pMotion->Set(TYPE_ATTACK03);
+
+		m_bAttack = false;
+	}
+
+	if (m_Info.state == STATE_LIFT && m_bLift == true)
+	{
+
 	}
 
 	if (m_Info.state != STATE_GRAP && m_bGrap == true)
@@ -509,7 +551,14 @@ void CPlayer::Move(void)
 		m_Info.state = STATE_GRAP;
 
 		// モーションをセット(近接攻撃)
-		m_pMotion->Set(TYPE_GRAP);
+		//m_pMotion->Set(TYPE_GRAP);
+	}
+
+	if (InputKeyboard->GetTrigger(DIK_LSHIFT) == true)
+	{
+		m_bAvoid = true;
+		m_Info.state = STATE_AVOID;
+		m_pMotion->Set(TYPE_AVOID);
 	}
 
 	if (m_Info.state == STATE_GRAP && m_bGrap == false)
@@ -556,12 +605,15 @@ void CPlayer::Move(void)
 		m_pMotion->Set(TYPE_MOVE);
 	}
 
-	if (m_pMotion->IsFinish() == true || (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_Info.state != STATE_NEUTRAL))
+	if (m_pMotion->IsFinish() == true 
+	|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID))
 	{
 		//モーションをセット(待機)
 		m_pMotion->Set(TYPE_NEUTRAL);
 
 		m_Info.state = STATE_NEUTRAL;
+
+		m_Info.Atc = TYPE00_NONE;
 
 		m_bAttack = false;
 

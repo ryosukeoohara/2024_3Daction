@@ -294,12 +294,10 @@ void CInputMouse::Update(void)
 	//スクリーン座標をクライアント座標に変換する
 	ScreenToClient(FindWindowA(CLASS_NAME, nullptr), &pos);
 
-	int posX = 0, posY = 0;
-
 	//入力デバイスからデータを取得
 	if (SUCCEEDED(m_pDevice->GetDeviceState(sizeof(DIMOUSESTATE), &m_CurrentMouseState)))
 	{
-
+		
 	}
 	else
 	{

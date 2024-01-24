@@ -40,6 +40,7 @@ public:
 	bool Block(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, float fWidthZ);  //ブロックとの判定
 	bool Sword(D3DXMATRIX matrix1, D3DXMATRIX matrix2, float flength, CEnemy *pEnemy);
 	void MapEnemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX, CEnemy *enemy);  //マップにある建物との当たり判定
+	bool Item(D3DXVECTOR3 *pos);
 	
 private:
 

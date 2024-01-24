@@ -88,6 +88,7 @@ void CMotion::Update(void)
 			fDiffpos = posOrigin + m_aInfo[m_nType].m_KeySet[Next].m_aKey[nCount].m_pos - m_aOldInfo[nCount].m_pos;
 			fDiffrot = rotOrigin + m_aInfo[m_nType].m_KeySet[Next].m_aKey[nCount].m_rot - m_aOldInfo[nCount].m_rot;
 
+			// •â³
 			if (fDiffrot.x > D3DX_PI)
 			{
 				fDiffrot.x -= D3DX_PI * 2.0f;
@@ -117,6 +118,34 @@ void CMotion::Update(void)
 
 			fDestpos = m_aOldInfo[nCount].m_pos + fDiffpos * ((float)m_nCounter / (float)m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame);
 			fDestrot = m_aOldInfo[nCount].m_rot + fDiffrot * ((float)m_nCounter / (float)m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame);
+
+			// •â³
+			if (fDestrot.x > D3DX_PI)
+			{
+				fDestrot.x -= D3DX_PI * 2.0f;
+			}
+			else if (fDestrot.x < -D3DX_PI)
+			{
+				fDestrot.x += D3DX_PI * 2.0f;
+			}
+
+			if (fDestrot.y > D3DX_PI)
+			{
+				fDestrot.y -= D3DX_PI * 2.0f;
+			}
+			else if (fDestrot.y < -D3DX_PI)
+			{
+				fDestrot.y += D3DX_PI * 2.0f;
+			}
+
+			if (fDestrot.z > D3DX_PI)
+			{
+				fDestrot.z -= D3DX_PI * 2.0f;
+			}
+			else if (fDestrot.z < -D3DX_PI)
+			{
+				fDestrot.z += D3DX_PI * 2.0f;
+			}
 
 			m_ppModel[nCount]->SetPosition(fDestpos);
 			m_ppModel[nCount]->SetRot(fDestrot);
@@ -293,5 +322,17 @@ void CMotion::ReadText(const char *TextFilename)
 
 		//ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
 		fclose(pFile);
+	}
+}
+
+void CMotion::RotCorrect(float rot)
+{
+	if (rot > D3DX_PI)
+	{
+		rot -= D3DX_PI * 2.0f;
+	}
+	else if (rot < -D3DX_PI)
+	{
+		rot += D3DX_PI * 2.0f;
 	}
 }

@@ -94,6 +94,9 @@ public:
 	int GetNumFrame(void) { return m_nNumFrame; }   //モーションの総フレーム
 
 private:
+
+	void RotCorrect(float rot);
+
 	INFO m_aInfo[MAX_INFO];
 	KEY m_aOldInfo[MAX_INFO];
 	int  m_nNumAll;              //モーションの総数

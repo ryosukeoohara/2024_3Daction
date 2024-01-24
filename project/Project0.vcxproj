@@ -165,6 +165,7 @@
     <ClCompile Include="code\field.cpp" />
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\input.cpp" />
+    <ClCompile Include="code\item.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="code\field.h" />
     <ClInclude Include="code\game.h" />
     <ClInclude Include="code\input.h" />
+    <ClInclude Include="code\item.h" />
     <ClInclude Include="code\light.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />

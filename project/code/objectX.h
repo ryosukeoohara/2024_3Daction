@@ -34,7 +34,7 @@ private:
 
 public:
 	CObjectX();
-	CObjectX(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *aModelFliename);
+	CObjectX(const char *aModelFliename);
 	~CObjectX();
 
 	HRESULT Init(void);           //モデルの初期化処理    
@@ -44,7 +44,7 @@ public:
 						          
 	void ReadText(void);          //テキストファイル読み込み
 
-	static CObjectX *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *aModelFliename);  //生成
+	static CObjectX *Create(const char *aModelFliename);  //生成
 
 	void BindModel(INFO pObjX);
 
@@ -55,6 +55,7 @@ public:
 	void SetRotOrigin(D3DXVECTOR3 rotOrigin) { m_rotOrigin = rotOrigin; }       // 向き
 	void SetColor(D3DXCOLOR col) { m_Info.col = col; }                          // 色
 	void SetIdxModel(int nIdx) { m_Info.nIdxModel = nIdx; }                     // モデルのインデックス番号
+	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }              // 親のマトリックス
 
 	//　取得系
 	D3DXVECTOR3 GetPosition(void) { return  m_Info.pos; }        // 位置
@@ -62,7 +63,7 @@ public:
 	D3DXVECTOR3 GetRotition(void) { return  m_Info.rot; }        // 向き
 	D3DXVECTOR3 GetRotOrigin(void) { return m_rotOrigin; }       // 原点の向き
 	D3DXCOLOR GetColor(void) { return  m_Info.col; }             // 色
-	D3DXMATRIX GetMtxWorld(void) { return m_Info.mtxWorld; }     // マトリックス取得
+	D3DXMATRIX *GetMtxWorld(void) { return &m_Info.mtxWorld; }     // マトリックス取得
 	D3DXVECTOR3 GetVtxMin(void) { return m_Info.vtxMini; }       // モデルの最小値
 	D3DXVECTOR3 GetVtxMax(void) { return m_Info.vtxMax; }        // モデルの最大値
 	int GetIdxModel(void) { return m_Info.nIdxModel; }           // モデルのインデックス番号
@@ -75,7 +76,8 @@ private:
 	LPD3DXBUFFER m_pBuffMat;  //頂点バッファへのポインタ
 	DWORD m_dwNumMat;         //マテリアルの数
 	LPDIRECT3DTEXTURE9 *m_pTexture;     //テクスチャへのポインタ
-	
+	D3DXMATRIX *m_pCurrent;                     // 親のマトリックス
+
 	int *m_nIdxTexture;
 };
 
