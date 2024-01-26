@@ -582,16 +582,19 @@ void CPlayer::Action(void)
 
 	if (InputKeyboard->GetTrigger(DIK_F) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_LB, 0) == true)
 	{
-		if (m_bLift == true)
+		if (m_Info.state != STATE_THROW)
 		{
-			m_Info.state = STATE_THROW;
-			m_pMotion->Set(TYPE_THROW);
-		}
+			if (m_bLift == true)
+			{
+				m_Info.state = STATE_THROW;
+				m_pMotion->Set(TYPE_THROW);
+			}
 
-		if (m_Obj == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
-		{
-			m_bLift = true;
-			CManager::Getinstance()->GetDebugProc()->Print("“–‚½‚Á‚Ä‚é`");
+			if (m_Obj == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
+			{
+				m_bLift = true;
+				CManager::Getinstance()->GetDebugProc()->Print("“–‚½‚Á‚Ä‚é`");
+			}
 		}
 	}
 
@@ -649,16 +652,19 @@ void CPlayer::Action(void)
 
 	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
 	{
-		if (m_fStamina >= LOSTSTMINA)
+		if (m_Info.state != STATE_AVOID)
 		{
-			m_bAvoid = true;
-			m_fStamina -= LOSTSTMINA;
-			m_Info.state = STATE_AVOID;
-			m_pMotion->Set(TYPE_AVOID);
-
-			if (m_pStamina != nullptr)
+			if (m_fStamina >= LOSTSTMINA)
 			{
-				m_pStamina->GetBill()->SetTex(m_fStamina);
+				m_bAvoid = true;
+				m_fStamina -= LOSTSTMINA;
+				m_Info.state = STATE_AVOID;
+				m_pMotion->Set(TYPE_AVOID);
+
+				if (m_pStamina != nullptr)
+				{
+					m_pStamina->GetBill()->SetTex(m_fStamina);
+				}
 			}
 		}
 	}
