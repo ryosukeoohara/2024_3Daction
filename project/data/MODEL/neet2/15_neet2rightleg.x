@@ -313,7 +313,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Photoshop\\neet2.jpg";
+    "data\\TEXTURE\\neet2.jpg";
    }
   }
  }
