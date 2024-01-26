@@ -232,8 +232,8 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 			{
 				CCharacter **pChar = CGame::GetPlayer()->GetChar();
 				pObjectX[nCount]->SetCurrent(pChar[9]->GetMtxWorld());
-				pObjectX[nCount]->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				pObjectX[nCount]->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, D3DX_PI * 0.5f, 0.0f));
+				pObjectX[nCount]->SetPosition(D3DXVECTOR3(50.0f, 5.0f, -15.0f));
+				pObjectX[nCount]->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
 				CGame::GetPlayer()->SetGrapItem(pObjectX[nCount]);
 				return true;
 			}
@@ -241,4 +241,29 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 	}
 
 	return false;
+}
+
+//=============================================================================
+// ƒ}ƒbƒv‚É‚ ‚éŒš•¨‚Æ‚Ì“–‚½‚è”»’è
+//=============================================================================
+void CCollision::ItemAttack(CObjectX * pobj)
+{
+	float PlayerfRadius = 50.0f;
+	float fRadius = 75.0f;
+
+	if (pobj != nullptr)
+	{
+		float circleX = CGame::GetEnemy()->GetPosition().x - (CGame::GetPlayer()->GetPosition().x + pobj->GetPosition().x);
+		float circleZ = CGame::GetEnemy()->GetPosition().z - (CGame::GetPlayer()->GetPosition().z + pobj->GetPosition().z);
+		float c = 0.0f;
+
+		c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+		if (c <= fRadius + PlayerfRadius)
+		{
+			CGame::GetEnemy()->SetRotition(CGame::GetPlayer()->GetRotition());
+			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * 3.0f, 1.0f, cosf(CGame::GetPlayer()->GetRotition().y) * 3.0f));
+			CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+		}
+	}
 }

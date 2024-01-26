@@ -41,8 +41,10 @@ public:
 	bool Sword(D3DXMATRIX matrix1, D3DXMATRIX matrix2, float flength, CEnemy *pEnemy);
 	void MapEnemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX, CEnemy *enemy);  //ƒ}ƒbƒv‚É‚ ‚éŒš•¨‚Æ‚Ì“–‚½‚è”»’è
 	bool Item(D3DXVECTOR3 *pos);
+	void ItemAttack(CObjectX *pobj);
 	
 private:
 
 };
+
 #endif // !_CONLLISION_H_

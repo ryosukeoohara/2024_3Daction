@@ -21,6 +21,8 @@
 #include "enemy.h"
 #include "camera.h"
 #include "object.h"
+#include "gage.h"
+#include "billboard.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -69,10 +71,14 @@ CPlayer::CPlayer()
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pMotion = nullptr;
 	m_ppCharacter = nullptr;
+	m_pLife = nullptr;
+	m_pStamina = nullptr;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
 	m_fDiff = 0.0f;
 	m_fGrapRot = 0.0f;
+	m_fStamina = 0.0f;
+	m_nLife = 0;
 	m_bDesh = false;
 	m_bAttack = false;
 	m_bAvoid = false;
@@ -110,10 +116,14 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pMotion = nullptr;
 	m_ppCharacter = nullptr;
+	m_pLife = nullptr;
+	m_pStamina = nullptr;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
 	m_fDiff = 0.0f;
 	m_fGrapRot = 0.0f;
+	m_fStamina = 0.0f;
+	m_nLife = 0;
 	m_bDesh = false;
 	m_bAttack = false;
 	m_bAvoid = false;
@@ -208,9 +218,17 @@ HRESULT CPlayer::Init(void)
 	}
 
 	m_fGrapRot = 1.0f;
+	m_fStamina = 40.0f;
+	m_nLife = 10;
 
 	ReadText(PLAYER01_TEXT);
+
+	m_pLife = CGage2D::Create(D3DXVECTOR3(25.0f, 25.0f, 0.0f), 40.0f, (float)(m_nLife * 20), CGage2D::TYPE_LIFE);
+	m_pStamina = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, m_fStamina, CGage3D::TYPE_STAMINA);
+	m_pStamina->SetPosition(D3DXVECTOR3(m_Info.pos.x + 50.0f, m_Info.pos.y, m_Info.pos.z));
+	m_pStamina->SetPos(&m_Info.pos);
 	
+
 	return S_OK;
 }
 
@@ -262,6 +280,12 @@ void CPlayer::Update(void)
 	{
 		// XVˆ—
 		m_pMotion->Update();
+	}
+
+	if (m_fStamina < 40)
+	{
+		m_fStamina += 0.1f;
+		m_pStamina->GetBill()->SetTex(m_fStamina);
 	}
 }
 
@@ -585,12 +609,23 @@ void CPlayer::Action(void)
 		//m_pMotion->Set(TYPE_GRAP);
 	}
 
+	if (InputKeyboard->GetTrigger(DIK_X) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
+	{
+		m_nLife--;
+		//m_pLife->SetSize((float)m_nLife * 20.0f, 25.0f);
+	}
+
 	if (InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
 	{
 		m_bAvoid = true;
-
+		m_fStamina = m_fStamina - 10.0f;
 		m_Info.state = STATE_AVOID;
 		m_pMotion->Set(TYPE_AVOID);
+
+		if (m_pStamina != nullptr)
+		{
+			m_pStamina->GetBill()->SetTex(10.0f);
+		}
 	}
 
 	if (m_Info.state == STATE_AVOID)
@@ -603,10 +638,19 @@ void CPlayer::Action(void)
 		m_Info.pos.z += m_Info.move.z * 0.0005f;
 	}
 
+	if (m_Info.state == STATE_THROW && m_Obj != nullptr)
+	{
+		m_Obj->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
+		m_Obj->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, -D3DX_PI, -D3DX_PI * 0.5f));
+		CGame::GetCollision()->ItemAttack(m_Obj);
+
+	}
+
 	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && m_Info.state == STATE_THROW)
 	{
 		m_Obj->SetCurrent(nullptr);
-		m_Obj->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -30.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -30.0f));
+		m_Obj->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -60.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -60.0f));
+		m_Obj->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
 		m_Obj = nullptr;
 	}
 	

@@ -12,26 +12,26 @@ MODEL_FILENAME = data/MODEL/bike.x
 # 配置
 #============================================================================================
 ITEMSET
-    TYPE = 0
-    POS = 0.0 0.0 10.0
-    ROT = 0.0 0.0 0.0
-END_ITEMSET
-
-ITEMSET
-    TYPE = 0
-    POS = 0.0 0.0 30.0
-    ROT = 0.0 0.0 0.0
-END_ITEMSET
-
-ITEMSET
-    TYPE = 0
-    POS = 0.0 0.0 50.0
+    TYPE = 1
+    POS = 100.0 0.0 10.0
     ROT = 0.0 0.0 0.0
 END_ITEMSET
 
 ITEMSET
     TYPE = 1
-    POS = 0.0 0.0 100.0
+    POS = -100.0 0.0 30.0
+    ROT = 0.0 0.0 0.0
+END_ITEMSET
+
+ITEMSET
+    TYPE = 1
+    POS = 200.0 0.0 50.0
+    ROT = 0.0 0.0 0.0
+END_ITEMSET
+
+ITEMSET
+    TYPE = 1
+    POS = 0.0 0.0 -100.0
     ROT = 0.0 0.0 0.0
 END_ITEMSET
 

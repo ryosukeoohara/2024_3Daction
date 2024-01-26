@@ -20,6 +20,7 @@ CObject3D::CObject3D()
 	//値をクリア
 	m_pTexture = NULL;  //テクスチャへのポインタ
 	m_pVtxBuff = NULL;  //頂点情報を格納
+	m_pCurrent = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);                       
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);                       
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);                   
@@ -37,6 +38,7 @@ CObject3D::CObject3D(D3DXVECTOR3 pos)
 	//値をクリア
 	m_pTexture = NULL;  //テクスチャへのポインタ
 	m_pVtxBuff = NULL;  //頂点情報を格納
+	m_pCurrent = nullptr;
 	m_pos = pos;
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
@@ -182,15 +184,34 @@ void CObject3D::Draw(void)
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	if (m_pCurrent == nullptr)
+	{
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_rot.y, m_rot.x, m_rot.z);
 
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxRot);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxRot);
 
-	//位置を反映
-	D3DXMatrixTranslation(&m_mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+		//位置を反映
+		D3DXMatrixTranslation(&m_mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxTrans);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxTrans);
+	}
+	else
+	{
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_rot.y, m_rot.x, m_rot.z);
+
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxRot);
+
+		//位置を反映
+		D3DXMatrixTranslation(&m_mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxTrans);
+
+		// マトリックスと親のマトリックスをかけ合わせる
+		D3DXMatrixMultiply(&m_mtxWorld,
+			&m_mtxWorld, m_pCurrent);
+	}
 
 	//ワールドマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
@@ -254,6 +275,37 @@ void CObject3D::SetSize(float fHeight, float fWidth)
 	pVtx[3].pos.x = m_pos.x + m_fHeight;
 	pVtx[3].pos.y = 0.0f;
 	pVtx[3].pos.z = m_pos.z - m_fWidth;
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//================================================================
+// サイズ設定処理:中心が左端
+//================================================================
+void CObject3D::SetEdgeCenter(float fWidth, float fHeight)
+{
+	m_fHeight = fHeight;
+	m_fWidth = fWidth;
+
+	VERTEX_3D *pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点座標の設定
+	pVtx[0].pos.x = m_pos.x;
+	pVtx[0].pos.y = m_pos.y;
+	pVtx[0].pos.z = 0.0f;
+	pVtx[1].pos.x = m_pos.x + m_fWidth;
+	pVtx[1].pos.y = m_pos.y;
+	pVtx[1].pos.z = 0.0f;
+	pVtx[2].pos.x = m_pos.x;
+	pVtx[2].pos.y = m_pos.y + m_fHeight;
+	pVtx[2].pos.z = 0.0f;
+	pVtx[3].pos.x = m_pos.x + m_fWidth;
+	pVtx[3].pos.y = m_pos.y + m_fHeight;
+	pVtx[3].pos.z = 0.0f;
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

@@ -10,7 +10,6 @@
 #include "main.h"
 #include "object.h"
 
-
 //オブジェクト2Dクラス
 class CObject2D : public CObject
 {
@@ -30,10 +29,11 @@ public:		//誰でもアクセスできる
 	// 設定系
 	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }          // 位置
 	void SetRotition(D3DXVECTOR3 rot) { m_rot = rot; }          // 向き
-	void SetColor(D3DXCOLOR col) { m_col = col; }               // 色
+	void SetColor(D3DXCOLOR col);                               // 色
 	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }            // テクスチャのインデックス番号
 	void SetSize(float fWidth, float fHeight);                  // サイズ
-	void SetDraw(bool bverdict) { m_bDraw = bverdict; }          // 描画するかどうか
+	void SetEdgeCenter(float fWidth, float fHeight);            // サイズ
+	void SetDraw(bool bverdict) { m_bDraw = bverdict; }         // 描画するかどうか
 	
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }     // 位置

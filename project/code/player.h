@@ -8,19 +8,22 @@
 #define _PLAYER_H_             //2重インクルード防止のマクロ定義をする
 
 //*==========================================================
-//インクルードファイル
+// インクルードファイル
 //*==========================================================
 #include "object.h"
 
 //*==========================================================
-//前方宣言
+// 前方宣言
 //*==========================================================
 class CMotion;
 class CCharacter;
 class CObjectX;
+class CGage2D;
+class CGage3D;
+class CBillBoard;
 
 //*==========================================================
-//プレイヤークラス
+// プレイヤークラス
 //*==========================================================
 class CPlayer : public CObject
 {
@@ -140,11 +143,15 @@ private:
 	D3DXVECTOR3 m_posOrigin;             
 	CMotion *m_pMotion;                   // モーションへのポインタ
 	CCharacter **m_ppCharacter;           // キャラクターへのポインタ
-	CObjectX *m_Obj;
+	CObjectX *m_Obj;                      // 掴んでるオブジェクトのポインタ
+	CGage2D *m_pLife;                     // ゲージのポインタ
+	CGage3D *m_pStamina;                  // ゲージのポインタ
 	float m_fDest;
 	float m_fDestOld;
 	float m_fDiff;
 	float m_fGrapRot;
+	float m_fStamina;                     // スタミナ
+	int m_nLife;                          // 体力
 	bool m_bDesh;                         // ダッシュ
 	bool m_bAttack;                       // 攻撃
 	bool m_bAvoid;                        // 回避

@@ -9,26 +9,35 @@
 #define _BILLBOARD_H_             //2重インクルード防止のマクロ定義をする
 
 #include "main.h"
-#include "object3D.h"
+#include "object.h"
 
 //ビルボードクラス
-class CBillBoard : public CObject3D
+class CBillBoard : public CObject
 {
 public:
 	CBillBoard();
 	~CBillBoard();
 
-	HRESULT Init(void);  //ビルボードの初期化処理    
-	void Uninit(void);   //ビルボードの終了処理
-	void Update(void);   //ビルボードの更新処理
-	void Draw(void);     //ビルボードの描画処理
-
+	HRESULT Init(void);  // 初期化処理    
+	void Uninit(void);   // 終了処理
+	void Update(void);   // 更新処理
+	void Draw(void);     // 描画処理
+	 
 	static CBillBoard *Create(void);  //生成
+
+	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }        // 親のマトリックス
+	void SetSize(float fHeight, float fWidth);                            // サイズ
+	void SetTex(float fTex);
+	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }                    // 位置
+	void SetRotition(D3DXVECTOR3 rot) { m_rot = rot; }                    // 向き
+	void SetColor(D3DXCOLOR col);                                         // 色
+	void SetDraw(bool bDraw = true) { m_bDraw = bDraw; }                  // 描画するかどうか
 
 private:
 	LPDIRECT3DTEXTURE9 m_pTexture;       //テクスチャへのポインタ
 	D3DXMATRIX m_mtxView;
 	D3DXMATRIX m_mtxWorld;                     // ワールドマトリックス
+	D3DXMATRIX *m_pCurrent;
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;        // 頂点バッファへのポインタ
 	D3DXVECTOR3 m_pos;                         // 位置
 	D3DXVECTOR3 m_rot;                         // 向き

@@ -27,12 +27,14 @@ public:
 	void BindTexture(LPDIRECT3DTEXTURE9 m_Texture);  //テクスチャをバインド
 
 	// 設定系
-	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }          // 位置
-	void SetRotition(D3DXVECTOR3 rot) { m_rot = rot; }          // 向き
-	void SetColor(D3DXCOLOR col) { m_col = col; }               // 色
-	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }            // テクスチャのインデックス番号
-	void SetSize(float fHeight, float fWidth);                  // サイズ
-	void SetDraw(bool bverdict) { m_bDraw = bverdict; }         // 描画するかどうか
+	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }                    // 位置
+	void SetRotition(D3DXVECTOR3 rot) { m_rot = rot; }                    // 向き
+	void SetColor(D3DXCOLOR col) { m_col = col; }                         // 色
+	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }                      // テクスチャのインデックス番号
+	void SetSize(float fHeight, float fWidth);                            // サイズ
+	void SetEdgeCenter(float fWidth, float fHeight);                      // サイズ
+	void SetDraw(bool bverdict) { m_bDraw = bverdict; }                   // 描画するかどうか
+	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }        // 親のマトリックス
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }     // 位置
@@ -47,6 +49,7 @@ public:
 private:
 	LPDIRECT3DTEXTURE9 m_pTexture;             // テクスチャへのポインタ
 	D3DXMATRIX m_mtxWorld;                     // ワールドマトリックス
+	D3DXMATRIX *m_pCurrent;                    // 親のマトリックス
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;        // 頂点バッファへのポインタ
 	D3DXVECTOR3 m_pos;                         // 位置
 	D3DXVECTOR3 m_rot;                         // 向き
