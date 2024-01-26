@@ -13,7 +13,7 @@
 
 const char *CItem::m_apTexName[MAX_ITEM] =
 {
-	"data\\MODEL\\01_enemy_body.x",
+	"data\\MODEL\\refrigerator.x",
 	"data\\MODEL\\bike.x",     // Ž©“]ŽÔ
 };
 

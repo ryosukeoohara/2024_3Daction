@@ -286,19 +286,19 @@ void CEnemy::Controll(void)
 	}
 	else
 	{
-		if (m_Info.state != STATE_GRAP)
-		{
-			m_Info.move.y -= 0.8f;
-		}
-	
 		Attack();
 		Move();
-
-		// 移動量
-		m_Info.pos.x += m_Info.move.x;
-		m_Info.pos.y += m_Info.move.y;
-		m_Info.pos.z += m_Info.move.z;
 	}
+
+	if (m_Info.state != STATE_GRAP)
+	{
+		m_Info.move.y -= 0.9f;
+	}
+
+	// 移動量
+	m_Info.pos.x += m_Info.move.x;
+	m_Info.pos.y += m_Info.move.y;
+	m_Info.pos.z += m_Info.move.z;
 
 	if (m_Info.pos.y <= 0.0f)
 	{
@@ -327,7 +327,7 @@ void CEnemy::Move(void)
 	//プレイヤーの情報取得
 	CPlayer *pPlayer = CGame::GetPlayer();
 
-	if (CGame::GetCollision()->Circle(&m_Info.pos, 400.0f, pPlayer) == true)
+	if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
 	{//円の中にプレイヤーが入った
 
 		D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
@@ -407,9 +407,9 @@ void CEnemy::Move(void)
 void CEnemy::Damege(void)
 {
 	// 移動量
-	m_Info.pos.x += m_Info.move.x * -1.5f;
-	m_Info.pos.y += m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z * -1.5f;
+	/*m_Info.pos.x += m_Info.move.x * -1.5f;
+	m_Info.pos.y = m_Info.move.y;
+	m_Info.pos.z += m_Info.move.z * -1.5f;*/
 
 	m_nDamegeCounter--;
 

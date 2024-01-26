@@ -565,24 +565,30 @@ void CPlayer::Action(void)
 
 	if (InputKeyboard->GetTrigger(DIK_SPACE) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
 	{
-		m_bAttack = true;
+		if (m_Info.state != STATE_GRAP)
+		{
+			m_bAttack = true;
+		}
 	}
 
 	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
 	{
-		if (m_Info.state != STATE_GRAP)
+		if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID)
 		{
-			m_bGrap = true;
-		}
-		else
-		{
-			m_bGrap = false;
+			if (m_Info.state != STATE_GRAP)
+			{
+				m_bGrap = true;
+			}
+			else
+			{
+				m_bGrap = false;
+			}
 		}
 	}
 
 	if (InputKeyboard->GetTrigger(DIK_F) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_LB, 0) == true)
 	{
-		if (m_Info.state != STATE_THROW)
+		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP)
 		{
 			if (m_bLift == true)
 			{
@@ -595,6 +601,15 @@ void CPlayer::Action(void)
 				m_bLift = true;
 				CManager::Getinstance()->GetDebugProc()->Print("“–‚½‚Á‚Ä‚é`");
 			}
+		}
+	}
+
+	if (m_bLift == true && m_bDesh == true)
+	{
+		if (m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW)
+		{
+			m_Info.state = STATE_GRAPDASH;
+			m_pMotion->Set(TYPE_GRAPDASH);
 		}
 	}
 
@@ -634,7 +649,24 @@ void CPlayer::Action(void)
 		m_bAttack = false;
 	}
 
-	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_bLift == true)
+	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE)
+	{
+		D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
+
+		D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+		Objpos.x = mtx->_41;
+		Objpos.y = mtx->_42;
+		Objpos.z = mtx->_43;
+
+		if (CGame::GetEnemy()->GetState() != CEnemy::STATE_DAMEGE && CGame::GetCollision()->Circle(&Objpos, &CGame::GetEnemy()->GetPosition(), 50.0f, 50.0f) == true)
+		{
+			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -0.5f, 15.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -0.5f));
+			CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+		}
+	}
+
+ 	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_bLift == true)
 	{
 		m_Info.state = STATE_LIFT;
 		m_pMotion->Set(TYPE_LIFT);
@@ -652,7 +684,9 @@ void CPlayer::Action(void)
 
 	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
 	{
-		if (m_Info.state != STATE_AVOID)
+		if (m_Info.state != STATE_AVOID && m_Info.state != STATE_LIFT && 
+			m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP && 
+			m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH)
 		{
 			if (m_fStamina >= LOSTSTMINA)
 			{
@@ -684,7 +718,6 @@ void CPlayer::Action(void)
 		m_Obj->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
 		m_Obj->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, -D3DX_PI, -D3DX_PI * 0.5f));
 		CGame::GetCollision()->ItemAttack(m_Obj);
-
 	}
 
 	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && m_Info.state == STATE_THROW)
@@ -731,7 +764,8 @@ void CPlayer::Action(void)
 		CGame::GetEnemy()->SetState(CEnemy::STATE_GRAP);
 	}
 
-	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_bDesh == true && m_bAttack == false && m_bAvoi == false)
+	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW 
+     && m_bDesh == true && m_bAttack == false && m_bAvoi == false)
 	{
 		m_Info.state = STATE_MOVE;
 
@@ -739,7 +773,7 @@ void CPlayer::Action(void)
 		m_pMotion->Set(TYPE_MOVE);
 	}
 
-	if (m_pMotion->IsFinish() == true
+	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
 		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false && 
 			m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID 
 		 && m_Info.state != STATE_LIFT && m_Info.state != STATE_HEAT && m_Info.state != STATE_THROW))
@@ -751,6 +785,7 @@ void CPlayer::Action(void)
 		m_bLift = false;
 		m_bAttack = false;
 		m_nCntColi = 0;
+		CGame::GetCollision()->SetbColli(false);
 
 		if (m_Obj != nullptr)
 		{

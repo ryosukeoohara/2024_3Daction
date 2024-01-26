@@ -34,7 +34,7 @@ public:
 	bool BulletEnemy(D3DXVECTOR3 *pos, float fWidthX, float fWidthY, CEnemy **pEnemy);     //弾との当たり判定
 	bool BulletPlayer(D3DXVECTOR3 *pos, float fWidthX, float fWidthZ, CPlayer *pPlayer);  //弾との当たり判定
 	bool BulletMap(D3DXVECTOR3 *pos, CObjectX **pObjectX);       //弾と建物の当たり判定
-	bool Circle(D3DXVECTOR3 *pos, float fRadius, CPlayer *pPlayer);  //円の当たり判定
+	bool Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyRadius, float fTargetRadius);  //円の当たり判定
 	bool Player(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, float fWidthZ, CPlayer *pPlayer);  //ぷれいやーとの当たり判定
 	void Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX);  //マップにある建物との当たり判定
 	bool Block(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, float fWidthZ);  //ブロックとの判定
@@ -42,8 +42,11 @@ public:
 	void MapEnemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX, CEnemy *enemy);  //マップにある建物との当たり判定
 	bool Item(D3DXVECTOR3 *pos);
 	void ItemAttack(CObjectX *pobj);
+
+	void SetbColli(bool bValue) { m_bColli = bValue; }
 	
 private:
+	bool m_bColli;
 
 };
 

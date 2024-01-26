@@ -40,6 +40,7 @@ public:
 		STATE_GRAP,
 		STATE_THROW,
 		STATE_HEAT,
+		STATE_GRAPDASH,
 		STATE_MAX
 	};
 
@@ -56,6 +57,7 @@ private:
 		TYPE_AVOID,                      // ‰ñ”ð
 		TYPE_LIFT,                       // Ž‚¿ã‚°‚é
 		TYPE_THROW,                      // “Š‚°‚é
+		TYPE_GRAPDASH,                   // Ž‚Á‚Ä‘–‚é
 		TYPE_MAX
 	} ;
 

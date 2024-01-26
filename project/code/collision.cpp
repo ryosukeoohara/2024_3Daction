@@ -28,7 +28,7 @@
 //=============================================================================
 CCollision::CCollision()
 {
-
+	m_bColli = false;
 }
 
 //=============================================================================
@@ -83,23 +83,20 @@ bool CCollision::Enemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, flo
 //=============================================================================
 //‰~‚Ì“–‚½‚è”»’èˆ—
 //=============================================================================
-bool CCollision::Circle(D3DXVECTOR3 *pPos, float fRadius, CPlayer *pPlayer)
+bool CCollision::Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyRadius, float fTargetRadius)
 {
-	D3DXVECTOR3 pos = pPlayer->GetPosition();
-
-	float PlayerfRadius = 50.0f;
-
-	float circleX = pPos->x - pos.x;
-	float circleZ = pPos->z - pos.z;
+	float circleX = pMyPos->x - pTargetPos->x;
+	float circleZ = pMyPos->z - pTargetPos->z;
 	float c = 0.0f;
 
 	c = (float)sqrt(circleX * circleX + circleZ * circleZ);
 
-	if (c <= fRadius + PlayerfRadius)
+	if (c <= fMyRadius + fTargetRadius)
 	{
+		m_bColli = true;
 		return true;
 	}
-
+	
 	return false;
 }
 
@@ -262,7 +259,7 @@ void CCollision::ItemAttack(CObjectX * pobj)
 		if (c <= fRadius + PlayerfRadius)
 		{
 			CGame::GetEnemy()->SetRotition(-CGame::GetPlayer()->GetRotition());
-			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * 3.0f, 1.0f, cosf(CGame::GetPlayer()->GetRotition().y) * 3.0f));
+			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -3.0f, 1.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -3.0f));
 			CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
 		}
 	}
