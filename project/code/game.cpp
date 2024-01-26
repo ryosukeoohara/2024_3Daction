@@ -100,7 +100,7 @@ HRESULT CGame::Init(void)
 	// ƒvƒŒƒCƒ„[‚Ì¶¬
 	if (m_pPlayer == nullptr)
 	{
-		m_pPlayer = CPlayer::Create();
+		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
 	// “G‚Ì¶¬

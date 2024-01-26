@@ -101,7 +101,7 @@ CPlayer::CPlayer()
 CPlayer::CPlayer(D3DXVECTOR3 pos)
 {
 	// 初期化
-	SetPosition(pos);
+	m_Info.pos = pos;
 	m_Info.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Info.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -595,7 +595,7 @@ void CPlayer::Action(void)
 		}
 	}
 
-	if (InputKeyboard->GetTrigger(DIK_Q) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
+	/*if (InputKeyboard->GetTrigger(DIK_Q) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
 	{
 		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_HEAT)
 		{
@@ -608,7 +608,7 @@ void CPlayer::Action(void)
 			CManager::Getinstance()->GetCamera()->SetRot(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
 			m_Info.state = STATE_HEAT;
 		}
-	}
+	}*/
 
 	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
 	{
@@ -645,12 +645,6 @@ void CPlayer::Action(void)
 
 		// モーションをセット(近接攻撃)
 		//m_pMotion->Set(TYPE_GRAP);
-	}
-
-	if (InputKeyboard->GetTrigger(DIK_X) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
-	{
-		m_nLife--;
-		m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_nLife * 20);
 	}
 
 	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
