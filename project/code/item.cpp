@@ -9,6 +9,7 @@
 #include "item.h"
 #include "objectX.h"
 #include "debugproc.h"
+#include "object.h"
 
 const char *CItem::m_apTexName[MAX_ITEM] =
 {

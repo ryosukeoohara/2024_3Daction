@@ -261,7 +261,7 @@ void CCollision::ItemAttack(CObjectX * pobj)
 
 		if (c <= fRadius + PlayerfRadius)
 		{
-			CGame::GetEnemy()->SetRotition(CGame::GetPlayer()->GetRotition());
+			CGame::GetEnemy()->SetRotition(-CGame::GetPlayer()->GetRotition());
 			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * 3.0f, 1.0f, cosf(CGame::GetPlayer()->GetRotition().y) * 3.0f));
 			CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
 		}

@@ -2217,21 +2217,6 @@ MOTIONSET
 			ROT = 0.00 0.00 0.00
 		END_PARTS
 
-		PARTS	# ----- [ 3 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 1.54 1.01
-		END_PARTS
-
-		PARTS	# ----- [ 4 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 0.00 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 5 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 0.00 0.00
-		END_PARTS
-
 		PARTS	# ----- [ 6 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 -1.51 -1.10
@@ -2243,6 +2228,21 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_PARTS
+		
+		PARTS	# ----- [ 3 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 1.54 1.01
+		END_PARTS
+
+		PARTS	# ----- [ 4 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_PARTS
+
+		PARTS	# ----- [ 5 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_PARTS
@@ -2305,20 +2305,7 @@ MOTIONSET
 			ROT = 0.00 0.00 0.00
 		END_PARTS
 
-		PARTS	# ----- [ 3 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 1.01 1.01
-		END_PARTS
-
-		PARTS	# ----- [ 4 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 1.29 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 5 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 0.00 0.00
-		END_PARTS
+		
 
 		PARTS	# ----- [ 6 ] -----
 			POS = 0.00 0.00 0.00
@@ -2331,6 +2318,21 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 8 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.00 0.00
+		END_PARTS
+		
+		PARTS	# ----- [ 3 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 1.01 1.01
+		END_PARTS
+
+		PARTS	# ----- [ 4 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 1.29 0.00
+		END_PARTS
+
+		PARTS	# ----- [ 5 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
 		END_PARTS
@@ -2393,20 +2395,7 @@ MOTIONSET
 			ROT = 0.00 0.00 0.00
 		END_PARTS
 
-		PARTS	# ----- [ 3 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.53 1.67 1.45
-		END_PARTS
-
-		PARTS	# ----- [ 4 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 1.29 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 5 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.53 0.13 -0.06
-		END_PARTS
+		
 
 		PARTS	# ----- [ 6 ] -----
 			POS = 0.00 0.00 0.00
@@ -2421,6 +2410,21 @@ MOTIONSET
 		PARTS	# ----- [ 8 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 -0.94
+		END_PARTS
+		
+		PARTS	# ----- [ 3 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.53 1.67 1.45
+		END_PARTS
+
+		PARTS	# ----- [ 4 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 1.29 0.00
+		END_PARTS
+
+		PARTS	# ----- [ 5 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.53 0.13 -0.06
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
@@ -2481,20 +2485,7 @@ MOTIONSET
 			ROT = 0.00 0.00 0.00
 		END_PARTS
 
-		PARTS	# ----- [ 3 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.66 1.48 1.73
-		END_PARTS
-
-		PARTS	# ----- [ 4 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 1.29 0.00
-		END_PARTS
-
-		PARTS	# ----- [ 5 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.53 0.13 -0.06
-		END_PARTS
+		
 
 		PARTS	# ----- [ 6 ] -----
 			POS = 0.00 0.00 0.00
@@ -2509,6 +2500,21 @@ MOTIONSET
 		PARTS	# ----- [ 8 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 -0.94
+		END_PARTS
+		
+		PARTS	# ----- [ 3 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.66 1.48 1.73
+		END_PARTS
+
+		PARTS	# ----- [ 4 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 1.29 0.00
+		END_PARTS
+
+		PARTS	# ----- [ 5 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.53 0.13 -0.06
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
@@ -2569,20 +2575,7 @@ MOTIONSET
 			ROT = 0.00 0.00 0.00
 		END_PARTS
 		
-		PARTS	# ----- [ 3 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.22 1.29 0.41
-		END_PARTS
-
-		PARTS	# ----- [ 4 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 0.94 0.47
-		END_PARTS
-
-		PARTS	# ----- [ 5 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 -0.09 0.75
-		END_PARTS
+		
 
 		PARTS	# ----- [ 6 ] -----
 			POS = 0.00 0.00 0.00
@@ -2597,6 +2590,21 @@ MOTIONSET
 		PARTS	# ----- [ 8 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
+		END_PARTS
+		
+		PARTS	# ----- [ 3 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.22 1.29 0.41
+		END_PARTS
+
+		PARTS	# ----- [ 4 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.94 0.47
+		END_PARTS
+
+		PARTS	# ----- [ 5 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 -0.09 0.75
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
@@ -2657,20 +2665,7 @@ MOTIONSET
 			ROT = 0.00 0.00 0.00
 		END_PARTS
 
-		PARTS	# ----- [ 3 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.22 1.29 0.41
-		END_PARTS
-
-		PARTS	# ----- [ 4 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 0.94 0.47
-		END_PARTS
-
-		PARTS	# ----- [ 5 ] -----
-			POS = 0.00 0.00 0.00
-			ROT = 0.00 -0.09 0.75
-		END_PARTS
+		
 
 		PARTS	# ----- [ 6 ] -----
 			POS = 0.00 0.00 0.00
@@ -2685,6 +2680,21 @@ MOTIONSET
 		PARTS	# ----- [ 8 ] -----
 			POS = 0.00 0.00 0.00
 			ROT = 0.00 0.00 0.00
+		END_PARTS
+		
+		PARTS	# ----- [ 3 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.22 1.29 0.41
+		END_PARTS
+
+		PARTS	# ----- [ 4 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 0.94 0.47
+		END_PARTS
+
+		PARTS	# ----- [ 5 ] -----
+			POS = 0.00 0.00 0.00
+			ROT = 0.00 -0.09 0.75
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----

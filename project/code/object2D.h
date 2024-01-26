@@ -33,6 +33,7 @@ public:		//誰でもアクセスできる
 	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }            // テクスチャのインデックス番号
 	void SetSize(float fWidth, float fHeight);                  // サイズ
 	void SetEdgeCenter(float fWidth, float fHeight);            // サイズ
+	void SetEdgeCenterTex(float ftex);
 	void SetDraw(bool bverdict) { m_bDraw = bverdict; }         // 描画するかどうか
 	
 	// 取得系

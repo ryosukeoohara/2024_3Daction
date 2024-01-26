@@ -27,7 +27,8 @@ public:
 	{
 		STATE_NONE = 0,    // なんもない
 		STATE_NEUTRAL,     // 待機
-		STATE_MOVE,        // 移動
+		STATE_DASH,        // 移動
+		STATE_WALK,        // 移動
 		STATE_ATTACK,      // 攻撃
 		STATE_GRAP,        // 投げられ待ち
 		STATE_DAMEGE,      // 攻撃受けた
@@ -39,9 +40,9 @@ private:
 	//モーション
 	enum MOTIONTYPE
 	{
-		TYPE_NEUTRAL = 0,              //ニュートラル
-		TYPE_MOVE,                     //移動
-		TYPE_JUMP,                     //ジャンプ
+		TYPE_NEUTRAL = 0,              // ニュートラル
+		TYPE_DASH,                     // 移動
+		TYPE_ATTACK,                   // 攻撃
 		TYPE_MAX
 	};
 
@@ -87,13 +88,10 @@ public:
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }          // 移動量
 	STATE GetState(void) { return m_Info.state; }              // 状態
 	int GetLife(void) { return m_Info.nLife; }                 // 体力
-
 	CCharacter **GetCharcter(void) { return m_apModel; }
-
 	static int GetNumAll(void) { return m_nNumAll; }
 
-	CEnemy *m_pNext;       //次のオブジェクトへのポインタ
-										       
+								       
 private:
 
 	void Controll(void);                       // 制御処理
@@ -106,6 +104,11 @@ private:
 	static int m_nNumAll;                      // 敵の総数
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	D3DXMATRIX *m_pCurrent;                     // 親のマトリックス
+	static CEnemy *m_pTop;  //先頭のオブジェクトへのポインタ
+	static CEnemy *m_pCur; //最後尾のオブジェクトへのポインタ
+	static CEnemy *m_pNext;
+	CEnemy *m_pPrev;       //前のオブジェクトへのポインタ
+	bool m_bDeath;          //死亡フラグ
 	
 	//*=============================================================================
 	// 外部ファイル読み込み用

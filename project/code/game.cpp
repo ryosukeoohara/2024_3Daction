@@ -158,12 +158,12 @@ void CGame::Uninit(void)
 	}
 
 	// “G‚Ì”jŠü
-	if (m_pEnemyManager != nullptr)
+	/*if (m_pEnemyManager != nullptr)
 	{
 		m_pEnemyManager->Uninit();
 		delete m_pEnemyManager;
 		m_pEnemyManager = nullptr;
-	}
+	}*/
 }
 
 //===========================================================

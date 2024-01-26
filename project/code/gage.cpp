@@ -170,11 +170,6 @@ CGage3D * CGage3D::Create(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE3DTYPE t
 	return pGage;
 }
 
-void CGage3D::SetSize(float fHeight, float fWidth)
-{
-	m_pBillBoard->SetSize(fHeight, fWidth);
-}
-
 //===========================================================
 // ‰Šú‰»ˆ—
 //===========================================================
@@ -215,8 +210,6 @@ void CGage3D::Uninit(void)
 void CGage3D::Update(void)
 {
 	SetMixPos();
-
-	//m_pBillBoard->SetPosition(CGame::GetPlayer()->GetPosition());
 }
 
 //===========================================================
@@ -260,7 +253,7 @@ void CGage3D::SetMixPos(void)
 
 	D3DXVECTOR3 pos = *m_pPos;
 
-	m_pPos->y += m_UpHeight;
+	pos.y += m_UpHeight;
 
-	m_pBillBoard->SetPosition(D3DXVECTOR3(m_pPos->x, m_pPos->y, m_pPos->z));
+	m_pBillBoard->SetPosition(D3DXVECTOR3(pos.x, pos.y, pos.z));
 }

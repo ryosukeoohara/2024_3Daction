@@ -20,7 +20,13 @@
 #include "score.h"
 #include "player.h"
 #include "character.h"
+#include "collision.h"
 #include <assert.h>
+
+// 静的メンバ変数
+CEnemy *CEnemy::m_pTop = nullptr;
+CEnemy *CEnemy::m_pCur = nullptr;
+CEnemy *CEnemy::m_pNext = nullptr;
 
 //*=============================================================================
 // マクロ定義
@@ -55,8 +61,23 @@ CEnemy::CEnemy()
 	m_Info.nLife = 0;
 	m_Info.nIdxID = -1;
 	m_nDamegeCounter = 0;
-
 	m_pCurrent = nullptr;
+	m_bDeath = false;
+
+	/*CEnemy *pEnemy = m_pTop;
+
+	if (m_pTop == nullptr)
+	{
+		m_pTop = this;
+
+		m_pCur = this;
+	}
+	else if (m_pTop != nullptr)
+	{
+		m_pPrev = m_pCur;
+		m_pPrev->m_pNext = this;
+		m_pCur = this;
+	}*/
 }
 
 //==============================================================================
@@ -74,8 +95,22 @@ CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Info.nLife = nlife;
 	m_Info.nIdxID = -1;
 	m_nDamegeCounter = 0;
+	m_bDeath = false;
 
-	m_pCurrent = nullptr;
+	/*CEnemy *pEnemy = m_pTop;
+
+	if (m_pTop == nullptr)
+	{
+		m_pTop = this;
+
+		m_pCur = this;
+	}
+	else if (m_pTop != nullptr)
+	{
+		m_pPrev = m_pCur;
+		m_pPrev->m_pNext = this;
+		m_pCur = this;
+	}*/
 }
 
 //==============================================================================
@@ -130,6 +165,8 @@ HRESULT CEnemy::Init(void)
 //==============================================================================
 void CEnemy::Uninit(void)
 {
+	m_bDeath = true;
+
 	//サウンドの情報を取得
 	CSound *pSound = CManager::Getinstance()->GetSound();
 
@@ -143,7 +180,32 @@ void CEnemy::Uninit(void)
 		delete m_pMotion;
 		m_pMotion = nullptr;
 	}
-	
+
+	/*CEnemy *pobject = m_pTop;
+
+	while (pobject != nullptr)
+	{
+		CEnemy *pObjectNext = pobject->m_pNext;
+
+		if (pobject->m_bDeath == true)
+		{
+			pobject->m_pPrev->m_pNext = pobject->m_pNext;
+
+			if (pobject->m_pNext != nullptr)
+			{
+				pobject->m_pNext->m_pPrev = pobject->m_pPrev;
+			}
+			else
+			{
+				m_pCur = pobject->m_pPrev;
+			}
+
+			pobject = nullptr;
+		}
+
+		pobject = pObjectNext;
+	}*/
+
 	CObject::Release();
 }
 
@@ -262,7 +324,81 @@ void CEnemy::Attack(void)
 //==============================================================================
 void CEnemy::Move(void)
 {
-	
+	//プレイヤーの情報取得
+	CPlayer *pPlayer = CGame::GetPlayer();
+
+	if (CGame::GetCollision()->Circle(&m_Info.pos, 400.0f, pPlayer) == true)
+	{//円の中にプレイヤーが入った
+
+		D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
+
+		float fDiffmove, fDestmove;
+
+		fDest = m_Info.pos - PlayerPos;
+
+		fDestmove = atan2f(fDest.x, fDest.z);
+		fDiffmove = fDestmove - m_Info.rot.y;
+
+		//角度の値を修正する--------------------------------------------------
+		if (fDiffmove >= D3DX_PI)
+		{
+			fDiffmove = -D3DX_PI;
+		}
+		else if (fDiffmove <= -D3DX_PI)
+		{
+			fDiffmove = D3DX_PI;
+		}
+
+		m_Info.rot.y += fDiffmove * 0.05f;
+
+		//角度の値を修正する--------------------------------------------------
+		if (m_Info.rot.y > D3DX_PI)
+		{
+			m_Info.rot.y = -D3DX_PI;
+		}
+		else if (m_Info.rot.y < -D3DX_PI)
+		{
+			m_Info.rot.y = D3DX_PI;
+		}
+
+		//移動量を更新(減衰させる)
+		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
+		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
+
+		if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
+		{
+			m_Info.move.x = 0.0f;
+			m_Info.move.z = 0.0f;
+
+			if (m_Info.state != STATE_ATTACK)
+			{
+				m_Info.state = STATE_ATTACK;
+				m_pMotion->Set(TYPE_ATTACK);
+			}
+		}
+		else
+		{
+			if (m_Info.state != STATE_DASH)
+			{
+				m_Info.state = STATE_DASH;
+				m_pMotion->Set(TYPE_DASH);
+			}
+		}
+
+		m_Info.pos.x += m_Info.move.x * 0.5f;
+		m_Info.pos.z += m_Info.move.z * 0.5f;
+	}
+	else
+	{
+		m_Info.move.x = 0.0f;
+		m_Info.move.z = 0.0f;
+
+		if (m_Info.state != STATE_NEUTRAL)
+		{
+			m_Info.state = STATE_NEUTRAL;
+			m_pMotion->Set(TYPE_NEUTRAL);
+		}
+	}
 }
 
 //==============================================================================

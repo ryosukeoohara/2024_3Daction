@@ -34,6 +34,8 @@ public:
 	static CGage2D *Create(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE2DTYPE type);      // 生成
 	void SetSize(float fHeight, float fWidth);                            // サイズ
 
+	CObject2D *GetObj2D(void) { return m_pObject2D; }
+
 private:
 
 	void SetCol(void);
@@ -72,7 +74,6 @@ public:
 	static CGage3D *Create(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE3DTYPE type);      // 生成
 	void SetCurrent(D3DXMATRIX Current) { m_pCurrent = Current; }        // 親のマトリックス
 	void SetPos(D3DXVECTOR3 *pPos) { m_pPos = pPos; }
-	void SetSize(float fHeight, float fWidth);                            // サイズ
 	void SetUpHeight(float fUpHei) { m_UpHeight = fUpHei; }
 
 	CBillBoard *GetBill(void) { return m_pBillBoard; }

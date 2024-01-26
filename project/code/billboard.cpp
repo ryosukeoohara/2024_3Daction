@@ -98,8 +98,8 @@ void CBillBoard::SetTex(float fTex)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//í∏ì_ç¿ïWÇÃê›íË
-	pVtx[0].pos = D3DXVECTOR3(50.0f,             m_fWidth - fTex, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(50.0f + m_fHeight, m_fWidth - fTex, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(50.0f,             + fTex, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(50.0f + m_fHeight, + fTex, 0.0f);
 	pVtx[2].pos = D3DXVECTOR3(50.0f,             0.0f,  0.0f);
 	pVtx[3].pos = D3DXVECTOR3(50.0f + m_fHeight, 0.0f,  0.0f);
 

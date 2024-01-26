@@ -41,6 +41,7 @@
 #define SPEED         (1.0f)                                      // 移動の速さ
 #define FRIST         (21)                                        // 攻撃判定発生開始
 #define FINISH        (31)                                        // 攻撃判定終了
+#define LOSTSTMINA    (10)                                        // ダッシュのスタミナ消費量
 #define PLAYER01_TEXT ("data\\TEXT\\motion_neet2.txt")       // プレイヤーのテキストファイル
 #define PLAYER02_TEXT ("data\\TEXT\\motion_set_player2.txt")      // プレイヤーのテキストファイル
 
@@ -223,12 +224,12 @@ HRESULT CPlayer::Init(void)
 
 	ReadText(PLAYER01_TEXT);
 
-	m_pLife = CGage2D::Create(D3DXVECTOR3(25.0f, 25.0f, 0.0f), 40.0f, (float)(m_nLife * 20), CGage2D::TYPE_LIFE);
+	m_pLife = CGage2D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), 40.0f, (float)(m_nLife * 20), CGage2D::TYPE_LIFE);
+	m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_nLife * 20);
 	m_pStamina = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, m_fStamina, CGage3D::TYPE_STAMINA);
-	m_pStamina->SetPosition(D3DXVECTOR3(m_Info.pos.x + 50.0f, m_Info.pos.y, m_Info.pos.z));
 	m_pStamina->SetPos(&m_Info.pos);
+	m_pStamina->GetBill()->SetTex(m_fStamina);
 	
-
 	return S_OK;
 }
 
@@ -242,6 +243,43 @@ void CPlayer::Uninit(void)
 
 	//サウンドストップ
 	pSound->Stop();
+
+	if (m_pMotion != nullptr)
+	{
+		//終了処理
+		m_pMotion->Uninit();
+		delete m_pMotion;
+		m_pMotion = nullptr;
+	}
+
+	if (m_ppCharacter != nullptr)
+	{
+		for (int nCount = 0; nCount < m_nNumModel; nCount++)
+		{
+			if (m_ppCharacter[nCount] != nullptr)
+			{
+				m_ppCharacter[nCount]->Uninit();
+				m_ppCharacter[nCount] = nullptr;
+			}
+		}
+
+		delete m_ppCharacter;
+		m_ppCharacter = nullptr;
+	}
+
+	if (m_pStamina != nullptr)
+	{
+		m_pStamina->Uninit();
+		delete m_pStamina;
+		m_pStamina = nullptr;
+	}
+
+	if (m_pLife != nullptr)
+	{
+		m_pLife->Uninit();
+		delete m_pLife;
+		m_pLife = nullptr;
+	}
 
 	CObject::Release();
 }
@@ -593,7 +631,7 @@ void CPlayer::Action(void)
 		m_bAttack = false;
 	}
 
-	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_bLift == true)
+	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_bLift == true)
 	{
 		m_Info.state = STATE_LIFT;
 		m_pMotion->Set(TYPE_LIFT);
@@ -612,19 +650,22 @@ void CPlayer::Action(void)
 	if (InputKeyboard->GetTrigger(DIK_X) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
 	{
 		m_nLife--;
-		//m_pLife->SetSize((float)m_nLife * 20.0f, 25.0f);
+		m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_nLife * 20);
 	}
 
-	if (InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
+	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
 	{
-		m_bAvoid = true;
-		m_fStamina = m_fStamina - 10.0f;
-		m_Info.state = STATE_AVOID;
-		m_pMotion->Set(TYPE_AVOID);
-
-		if (m_pStamina != nullptr)
+		if (m_fStamina >= LOSTSTMINA)
 		{
-			m_pStamina->GetBill()->SetTex(10.0f);
+			m_bAvoid = true;
+			m_fStamina -= LOSTSTMINA;
+			m_Info.state = STATE_AVOID;
+			m_pMotion->Set(TYPE_AVOID);
+
+			if (m_pStamina != nullptr)
+			{
+				m_pStamina->GetBill()->SetTex(m_fStamina);
+			}
 		}
 	}
 
@@ -710,6 +751,13 @@ void CPlayer::Action(void)
 		m_bLift = false;
 		m_bAttack = false;
 		m_nCntColi = 0;
+
+		if (m_Obj != nullptr)
+		{
+			m_Info.state = STATE_LIFT;
+			m_pMotion->Set(TYPE_LIFT);
+			m_bLift = true;
+		}
 	}
 
 	CManager::Getinstance()->GetDebugProc()->Print("回転量:%f", m_fGrapRot);

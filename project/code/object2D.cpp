@@ -279,3 +279,31 @@ void CObject2D::SetEdgeCenter(float fWidth, float fHeight)
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
 }
+
+//================================================================
+// サイズ設定処理:中心が左端
+//================================================================
+void CObject2D::SetEdgeCenterTex(float ftex)
+{
+	VERTEX_2D *pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点座標の設定
+	pVtx[0].pos.x = m_pos.x;
+	pVtx[0].pos.y = m_pos.y;
+	pVtx[0].pos.z = 0.0f;
+	pVtx[1].pos.x = m_pos.x + ftex;
+	pVtx[1].pos.y = m_pos.y;
+	pVtx[1].pos.z = 0.0f;
+	pVtx[2].pos.x = m_pos.x;
+	pVtx[2].pos.y = m_pos.y + m_fHeight;
+	pVtx[2].pos.z = 0.0f;
+	pVtx[3].pos.x = m_pos.x + ftex;
+	pVtx[3].pos.y = m_pos.y + m_fHeight;
+	pVtx[3].pos.z = 0.0f;
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}

@@ -212,7 +212,11 @@ void CObject::UpdateAll(void)
 	{
 		CObject *pObjectNext = pObject->m_pNext;
 
-		pObject->Update();
+		if (pObject->m_bDeath == false)
+		{
+			pObject->Update();
+		}
+
 		pObject = pObjectNext;
 	}
 
