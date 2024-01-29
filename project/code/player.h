@@ -44,6 +44,11 @@ public:
 		STATE_MAX
 	};
 
+	enum HEATACT
+	{
+		HEATACT_BIKE = 0,
+	};
+
 private:
 
 	//モーション
@@ -93,6 +98,7 @@ private:
 	};
 
 	INFO m_Info;                          // 情報
+	HEATACT m_HeatAct;
 	
 public:
 	CPlayer();  //コンストラクタ

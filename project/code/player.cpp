@@ -401,11 +401,11 @@ void CPlayer::Move(void)
 	//カメラ取得
 	CCamera *pCamera = CManager::Getinstance()->GetCamera();
 
-	D3DXVECTOR3 CameraRot = pCamera->GetRot();
+	D3DXVECTOR3 CameraRot = pCamera->GetRotation();
 
 	m_bDesh = false;
 
-	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_AVOID && m_Info.state != STATE_ATTACK)
+	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_AVOID && m_Info.state != STATE_ATTACK && m_Info.state != STATE_HEAT)
 	{
 		//上に移動----------------------------------------------
 		if (InputKeyboard->GetPress(DIK_W) == true || pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) > 0)
@@ -565,7 +565,7 @@ void CPlayer::Action(void)
 
 	if (InputKeyboard->GetTrigger(DIK_SPACE) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
 	{
-		if (m_Info.state != STATE_GRAP)
+		if (m_Info.state != STATE_GRAP && m_Info.state != STATE_HEAT)
 		{
 			m_bAttack = true;
 		}
@@ -613,20 +613,16 @@ void CPlayer::Action(void)
 		}
 	}
 
-	/*if (InputKeyboard->GetTrigger(DIK_Q) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_Q) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
 	{
-		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_HEAT)
-		{
-			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_GAME);
-			m_Info.state = STATE_NONE;
-		}
-		else if(CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
+		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
 		{
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
-			CManager::Getinstance()->GetCamera()->SetRot(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
+			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
 			m_Info.state = STATE_HEAT;
+			m_pMotion->Set(TYPE_THROW);
 		}
-	}*/
+	}
 
 	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
 	{
@@ -649,24 +645,27 @@ void CPlayer::Action(void)
 		m_bAttack = false;
 	}
 
-	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE)
+	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE && m_Info.state != STATE_HEAT)
 	{
-		D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
-
-		D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-		Objpos.x = mtx->_41;
-		Objpos.y = mtx->_42;
-		Objpos.z = mtx->_43;
-
-		if (CGame::GetEnemy()->GetState() != CEnemy::STATE_DAMEGE && CGame::GetCollision()->Circle(&Objpos, &CGame::GetEnemy()->GetPosition(), 50.0f, 50.0f) == true)
+		if (m_Obj != nullptr)
 		{
-			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -0.5f, 15.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -0.5f));
-			CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+			D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
+
+			D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+			Objpos.x = mtx->_41;
+			Objpos.y = mtx->_42;
+			Objpos.z = mtx->_43;
+
+			if (CGame::GetEnemy()->GetState() != CEnemy::STATE_DAMEGE && CGame::GetCollision()->Circle(&Objpos, &CGame::GetEnemy()->GetPosition(), 50.0f, 50.0f) == true)
+			{
+				CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -0.5f, 15.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -0.5f));
+				CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+			}
 		}
 	}
 
- 	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_bLift == true)
+ 	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_HEAT && m_bLift == true)
 	{
 		m_Info.state = STATE_LIFT;
 		m_pMotion->Set(TYPE_LIFT);
@@ -720,7 +719,7 @@ void CPlayer::Action(void)
 		CGame::GetCollision()->ItemAttack(m_Obj);
 	}
 
-	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && m_Info.state == STATE_THROW)
+	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && (m_Info.state == STATE_THROW || m_Info.state == STATE_HEAT))
 	{
 		m_Obj->SetCurrent(nullptr);
 		m_Obj->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -60.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -60.0f));
@@ -764,13 +763,18 @@ void CPlayer::Action(void)
 		CGame::GetEnemy()->SetState(CEnemy::STATE_GRAP);
 	}
 
-	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW 
+	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW && m_Info.state != STATE_HEAT
      && m_bDesh == true && m_bAttack == false && m_bAvoi == false)
 	{
 		m_Info.state = STATE_MOVE;
 
 		//モーションをセット(移動)
 		m_pMotion->Set(TYPE_MOVE);
+	}
+
+	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEAT)
+	{
+		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
 	}
 
 	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
@@ -818,7 +822,7 @@ void CPlayer::GrapRotition(void)
 	//カメラ取得
 	CCamera *pCamera = CManager::Getinstance()->GetCamera();
 
-	D3DXVECTOR3 CameraRot = pCamera->GetRot();
+	D3DXVECTOR3 CameraRot = pCamera->GetRotation();
 
 	m_fDestOld = m_fDest;
 

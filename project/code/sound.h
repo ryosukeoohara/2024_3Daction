@@ -30,11 +30,7 @@ public:
 	//*****************************************************************************
 	typedef enum
 	{
-		SOUND_LABEL_BGM000 = 0,
-		SOUND_LABEL_BGM001,
-		SOUND_LABEL_BGM002,
-		SOUND_LABEL_BGM003,
-		SOUND_LABEL_SESWORD,
+		SOUND_LABEL_SESWORD = 0,
 		SOUND_LABEL_SELOOSER,
 		SOUND_LABEL_SEJUMP00,
 		SOUND_LABEL_SEJUMP01,
@@ -58,10 +54,6 @@ private:
 	// サウンドの情報
 	SOUNDINFO m_aSoundInfo[SOUND_LABEL_MAX] =
 	{
-		{ "data/SOUND/BGM/game.wav", -1 },     //ゲームのBGM
-		{ "data/SOUND/BGM/result.wav", -1 },   //リザルトのBGM
-		{ "data/SOUND/BGM/title.wav", -1 },    //タイトルのBGM
-		{ "data/SOUND/BGM/tutorial.wav", -1 }, //チュートリアルのBGM
 		{ "data/SOUND/SE/swing.wav", 0 },    //刀で切る音
 		{ "data/SOUND/SE/looser.wav", 0 },     //倒れる音
 		{ "data/SOUND/SE/jump000.wav", 0 },       //ジャンプ

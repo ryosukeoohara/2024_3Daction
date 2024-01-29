@@ -111,9 +111,25 @@ void CCamera::SetCamera(void)
 }
 
 //================================================================
+// 注視点設定
+//================================================================
+void CCamera::SetPositionR(D3DXVECTOR3 pos)
+{
+	m_posR = pos;
+}
+
+//================================================================
+// 視点設定
+//================================================================
+void CCamera::SetPositionV(D3DXVECTOR3 pos)
+{
+	m_posV = pos;
+}
+
+//================================================================
 // 向き設定
 //================================================================
-void CCamera::SetRot(D3DXVECTOR3 Rot)
+void CCamera::SetRotation(D3DXVECTOR3 Rot)
 {
 	m_rot = Rot;
 
@@ -145,6 +161,10 @@ void CCamera::Mode(void)
 		break;
 	case CCamera::MODE_GAME:
 
+		m_OldposR = m_posR;
+		m_OldposV = m_posV;
+		m_Oldrot = m_rot;
+
 		CameraV();
 		break;
 	case CCamera::MODE_RESULT:
@@ -155,6 +175,11 @@ void CCamera::Mode(void)
 
 		Heat();
 		break;
+
+	case CCamera::MODE_RETURN:
+		Heat();
+		Return();
+		break;
 	case CCamera::MODE_MAX:
 		break;
 	default:
@@ -162,7 +187,7 @@ void CCamera::Mode(void)
 	}
 
 	//向きを設定
-	SetRot(m_rot);
+	SetRotation(m_rot);
 
 	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
 
@@ -206,6 +231,36 @@ void CCamera::Heat(void)
 }
 
 //================================================================
+// 元の位置に戻ってくる
+//================================================================
+void CCamera::Return(void)
+{
+	if (m_nCounter <= 120)
+	{
+		// カメラを目標の向きまで回転させる
+		D3DXVECTOR3 rotDest = m_Oldrot - m_rot;
+		SetRotation(m_rot + rotDest * 0.1f);
+
+		D3DXVECTOR3 posDestR = m_OldposR - m_posR;
+		SetPositionR(m_posR + posDestR * 0.1f);
+
+		D3DXVECTOR3 posDestV = m_OldposV - m_posV;
+		SetPositionV(m_posV + posDestV * 0.1f);
+
+		m_nCounter++;
+	}
+	else
+	{
+		// カメラモードをゲーム
+		m_mode = MODE_GAME;
+
+		// カウンターをリセット
+		m_nCounter = 0;
+	}
+	
+}
+
+//================================================================
 // 視点の移動
 //================================================================
 void CCamera::CameraV(void)
@@ -233,7 +288,7 @@ void CCamera::CameraV(void)
 		m_rot.y -= 0.05f;
 	}
 
-	m_rot.y += MousePos.x * 0.005f;
+	//m_rot.y += MousePos.x * 0.005f;
 
 	if (m_rot.y > D3DX_PI)
 	{
@@ -271,16 +326,7 @@ void CCamera::CameraV(void)
 //================================================================
 void CCamera::CameraR(void)
 {
-	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
-
-	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
-
-	D3DXVECTOR2 MousePos = pInputMouse->GetMouseMove();
-
-	m_rot.z += MousePos.y * 0.005f;
-
-	m_posR.x = m_posV.x - sinf(m_rot.y) * CAMERA_DISTNCE;
-	m_posR.z = m_posV.z - cosf(m_rot.y) * CAMERA_DISTNCE;
+	
 }
 
 //================================================================
@@ -291,106 +337,4 @@ void CCamera::Title(void)
 	m_posV = D3DXVECTOR3(-500.0f, 80.0f, -200.0f);
 	m_posR = D3DXVECTOR3(-875.0f, 70.0f, 50.0f);
 	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
-}
-
-//================================================================
-// ボスが登場するときのカメラ
-//================================================================
-void CCamera::Edit(void)
-{
-	////キーボードの情報を取得
-	//CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
-
-	//CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
-
-	//D3DXVECTOR2 MousePos = pInputMouse->GetMouseMove();
-
-	//CPlayer *pPlayer = CGame::GetPlayer();
-
-	//D3DXVECTOR3 pos = pPlayer->Getpos();
-
-	//if (InputKeyboard->GetPress(DIK_F) == true)
-	//{
-	//	m_move.x += sinf(m_rot.y) * 1.1f;
-	//}
-
-	//if (InputKeyboard->GetPress(DIK_H) == true)
-	//{
-	//	m_move.x -= sinf(m_rot.y) * 1.1f;
-	//}
-
-	//if (InputKeyboard->GetPress(DIK_T) == true)
-	//{
-	//	m_move.y += 1.0f;
-	//}
-
-	//if (InputKeyboard->GetPress(DIK_G) == true)
-	//{
-	//	m_move.y -= 1.0f;
-	//}
-
-	//m_rot.y += MousePos.x * 0.005f;
-
-	//if (m_rot.y > D3DX_PI)
-	//{
-	//	m_rot.y -= D3DX_PI * 2.0f;
-	//}
-	//else if (m_rot.y < -D3DX_PI)
-	//{
-	//	m_rot.y += D3DX_PI * 2.0f;
-	//}
-
-	//m_posV.x = m_posR.x - sinf(m_rot.y) * -2300.0f;
-	//m_posV.z = m_posR.z - cosf(m_rot.y) * -2300.0f;
-
-	//m_posR.x = m_posV.x - sinf(m_rot.y) * 2300.0f;
-	//m_posR.z = m_posV.z - cosf(m_rot.y) * 2300.0f;
-
-	//m_posR.x += m_move.x;
-	//m_posV.x += m_move.x;
-
-	//m_posR.y += m_move.y;
-	//m_posV.y += m_move.y;
-
-	////m_posV += m_move;
-	////m_posR += m_move;
-
-	//m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f + m_posV.y, 30.0f + m_posV.z);
-	//m_posR = D3DXVECTOR3(100.0f + m_posR.x, 50.0f + m_posR.y, m_posR.z + 10.0f);
-	//m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
-}
-
-//================================================================
-// 遠距離武器を使っているときのカメラ
-//================================================================
-void CCamera::Scope(void)
-{
-	/*CInputMouse *pInputMouse = CManager::GetInputMouse();
-
-	D3DXVECTOR2 MousePos = pInputMouse->GetMouseMove();
-
-	CPlayer *pPlayer = CGame::GetPlayer();
-
-	m_rot.y += MousePos.x * 0.005f;
-
-	if (m_rot.y > D3DX_PI)
-	{
-		m_rot.y -= D3DX_PI * 2.0f;
-	}
-	else if (m_rot.y < -D3DX_PI)
-	{
-		m_rot.y += D3DX_PI * 2.0f;
-	}
-
-	m_posR.x = m_posV.x - sinf(m_rot.y) * 50.0f;
-	m_posR.z = m_posV.z - cosf(m_rot.y) * 50.0f;
-
-	if (pPlayer != NULL)
-	{
-		D3DXVECTOR3 pos = pPlayer->Getpos();
-
-		m_posV = D3DXVECTOR3(pos.x , 70.0f, pos.z);
-		m_posR = D3DXVECTOR3(m_posR.x, 70.0f, m_posR.z);
-		m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
-	}*/
 }
