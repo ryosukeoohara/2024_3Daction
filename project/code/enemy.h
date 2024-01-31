@@ -35,16 +35,17 @@ public:
 		STATE_MAX
 	};
 
-private:
-
 	//モーション
 	enum MOTIONTYPE
 	{
 		TYPE_NEUTRAL = 0,              // ニュートラル
 		TYPE_DASH,                     // 移動
 		TYPE_ATTACK,                   // 攻撃
+		TYPE_DAMEGE,                   // ダメージ
 		TYPE_MAX
 	};
+
+private:
 
 	struct INFO
 	{
@@ -90,6 +91,7 @@ public:
 	int GetLife(void) { return m_Info.nLife; }                 // 体力
 	CCharacter **GetCharcter(void) { return m_apModel; }
 	static int GetNumAll(void) { return m_nNumAll; }
+	CMotion *GetMotion(void) { return m_pMotion; }
 
 								       
 private:
@@ -99,6 +101,7 @@ private:
 	void Move(void);
 	void Damege(void);
 
+	//CEnemy *m_apEnemy[]
 	CMotion *m_pMotion;                        // モーションへのポインタ
 	CCharacter **m_apModel;                    // モデル(パーツ)へのポインタ
 	static int m_nNumAll;                      // 敵の総数

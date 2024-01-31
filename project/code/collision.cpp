@@ -22,6 +22,8 @@
 #include "enemymanager.h"
 #include "item.h"
 #include "character.h"
+#include "motion.h"
+#include "map.h"
 
 //=============================================================================
 //コンストラクタ
@@ -93,10 +95,40 @@ bool CCollision::Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyR
 
 	if (c <= fMyRadius + fTargetRadius)
 	{
-		m_bColli = true;
 		return true;
 	}
 	
+	return false;
+}
+
+//=============================================================================
+//円の当たり判定処理
+//=============================================================================
+bool CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTargetRadius, float fHeight)
+{
+	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
+	CEnemy **ppEnemy = pEnemyManager->GetEnemy();
+
+	for (int nCount = 0; nCount < CGame::GetEnemyManager()->GetNum(); nCount++)
+	{
+		if (ppEnemy[nCount] != nullptr)
+		{
+			float circleX = pMyPos->x - ppEnemy[nCount]->GetPosition().x;
+			float circleZ = pMyPos->z - ppEnemy[nCount]->GetPosition().z;
+			float c = 0.0f;
+
+			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+			if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE)
+			{
+				ppEnemy[nCount]->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -5.0f, 10.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -5.0f));
+				ppEnemy[nCount]->SetState(CEnemy::STATE_DAMEGE);
+				ppEnemy[nCount]->GetMotion()->Set(CEnemy::TYPE_DAMEGE);
+				//return true;
+			}
+		}
+	}
+
 	return false;
 }
 
@@ -111,9 +143,72 @@ bool CCollision::Player(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, fl
 //=============================================================================
 //マップにある建物との当たり判定
 //=============================================================================
-void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX)
+void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius)
 {
+	int nNum = CGame::GetMap()->GetNum();
 
+	CObjectX **pMap = CGame::GetMap()->GetObjectX();
+
+	for (int nCount = 0; nCount < nNum; nCount++)
+	{
+		if (pMap[nCount] != nullptr && pMap[nCount]->GetbColli() == true)
+		{
+			D3DXVECTOR3 Mappos = pMap[nCount]->GetPosition();
+
+			D3DXVECTOR3 vtxMin = pMap[nCount]->GetVtxMin();
+
+			D3DXVECTOR3 vtxMax = pMap[nCount]->GetVtxMax();
+
+			if (pos->x + fRadius > Mappos.x + vtxMin.x
+				&& pos->x + fRadius < Mappos.x + vtxMax.x
+				&& pos->z + fRadius > Mappos.z + vtxMin.z
+				&& pos->z + fRadius < Mappos.z + vtxMax.z)
+			{
+				//ブロックの上======================================
+				if (pos->z + fRadius <= Mappos.z + vtxMax.z
+					&& posOld->z + fRadius >= Mappos.z + vtxMax.z)
+				{
+					pos->z = Mappos.z + vtxMax.z - fRadius;
+
+					//return true;
+				}
+
+				//ブロックの下======================================
+				else if (pos->z + fRadius >= Mappos.z + vtxMin.z
+					&& posOld->z + fRadius <= Mappos.z + vtxMin.z)
+				{
+					pos->z = Mappos.z + vtxMin.z - fRadius;
+
+					//return true;
+				}
+
+				//横からめり込んだ
+				else if (pos->x + fRadius > Mappos.x + vtxMin.x
+					&& pos->x + fRadius < Mappos.x + vtxMax.x)
+				{
+					//ブロックの左側面==================================
+					if (pos->x + fRadius >= Mappos.x + vtxMin.x
+						&& posOld->x + fRadius <= Mappos.x + vtxMin.x)
+					{
+						pos->x = Mappos.x + vtxMin.x - fRadius;
+
+						//return true;
+					}
+
+					//ブロックの右側面==================================
+					else if (pos->x - fRadius <= Mappos.x + vtxMax.x
+						&& posOld->x - fRadius >= Mappos.x - vtxMax.x)
+					{
+						pos->x = Mappos.x + vtxMax.x - fRadius;
+
+						//return true;
+					}
+				}
+			}
+		}
+	}
+
+	//return false;
 }
 
 //=============================================================================

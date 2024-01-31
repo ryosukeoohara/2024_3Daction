@@ -23,6 +23,7 @@
 #include "object.h"
 #include "gage.h"
 #include "billboard.h"
+#include "enemymanager.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -39,6 +40,7 @@
 #define PLAYER_X      (40.0f)                                     // プレイヤーのX軸の幅
 #define PLAYER_Z      (10.0f)                                     // プレイヤーのZ軸の幅
 #define SPEED         (1.0f)                                      // 移動の速さ
+#define MOVE          (4.0f)
 #define FRIST         (21)                                        // 攻撃判定発生開始
 #define FINISH        (31)                                        // 攻撃判定終了
 #define LOSTSTMINA    (10)                                        // ダッシュのスタミナ消費量
@@ -371,8 +373,9 @@ void CPlayer::Draw(void)
 //================================================================
 void CPlayer::Control(void)
 {
-	Move();
-	Action();
+	Move();     // 移動
+	Action();   // アクション
+	State();    // 状態
 
 	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CManager::Getinstance()->GetDebugProc()->Print("プレイヤーの向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
@@ -404,6 +407,8 @@ void CPlayer::Move(void)
 	D3DXVECTOR3 CameraRot = pCamera->GetRotation();
 
 	m_bDesh = false;
+
+	m_Info.posOld = m_Info.pos;
 
 	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_AVOID && m_Info.state != STATE_ATTACK && m_Info.state != STATE_HEAT)
 	{
@@ -461,7 +466,7 @@ void CPlayer::Move(void)
 			else if (InputKeyboard->GetPress(DIK_A) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
 			{//Aキーも押した 左下に移動
 
-			 // 移動量
+				// 移動量
 				m_Info.move.x += sinf(CameraRot.y + (D3DX_PI * 0.25f)) * SPEED;
 				m_Info.move.z += cosf(CameraRot.y + (D3DX_PI * 0.25f)) * SPEED;
 
@@ -471,7 +476,7 @@ void CPlayer::Move(void)
 			else
 			{//Sキーだけ押した 真下に移動
 
-			 // 移動量
+				// 移動量
 				m_Info.move.x += sinf(CameraRot.y) * SPEED;
 				m_Info.move.z += cosf(CameraRot.y) * SPEED;
 
@@ -498,7 +503,7 @@ void CPlayer::Move(void)
 		else if (InputKeyboard->GetPress(DIK_A) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) < 0)
 		{//Aキーだけ押した
 
-		 // 移動量
+			// 移動量
 			m_Info.move.x += sinf(CameraRot.y + (D3DX_PI * 0.5f)) * SPEED;
 			m_Info.move.z += cosf(CameraRot.y + (D3DX_PI * 0.5f)) * SPEED;
 
@@ -547,6 +552,8 @@ void CPlayer::Move(void)
 	//移動量を更新(減衰させる)--------------------------------------------
 	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
+
+	CGame::GetCollision()->Map(&m_Info.pos, &m_Info.posOld, 30.0f);
 }
 
 //================================================================
@@ -563,6 +570,7 @@ void CPlayer::Action(void)
 	//ゲームパッドを取得
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
+	// 通常攻撃
 	if (InputKeyboard->GetTrigger(DIK_SPACE) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
 	{
 		if (m_Info.state != STATE_GRAP && m_Info.state != STATE_HEAT)
@@ -571,48 +579,7 @@ void CPlayer::Action(void)
 		}
 	}
 
-	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
-	{
-		if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID)
-		{
-			if (m_Info.state != STATE_GRAP)
-			{
-				m_bGrap = true;
-			}
-			else
-			{
-				m_bGrap = false;
-			}
-		}
-	}
-
-	if (InputKeyboard->GetTrigger(DIK_F) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_LB, 0) == true)
-	{
-		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP)
-		{
-			if (m_bLift == true)
-			{
-				m_Info.state = STATE_THROW;
-				m_pMotion->Set(TYPE_THROW);
-			}
-
-			if (m_Obj == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
-			{
-				m_bLift = true;
-				CManager::Getinstance()->GetDebugProc()->Print("当たってる～");
-			}
-		}
-	}
-
-	if (m_bLift == true && m_bDesh == true)
-	{
-		if (m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW)
-		{
-			m_Info.state = STATE_GRAPDASH;
-			m_pMotion->Set(TYPE_GRAPDASH);
-		}
-	}
-
+	// ヒートアクション
 	if (InputKeyboard->GetTrigger(DIK_Q) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
 	{
 		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
@@ -624,180 +591,11 @@ void CPlayer::Action(void)
 		}
 	}
 
-	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
-	{
-		m_Info.state = STATE_ATTACK;
-		m_Info.Atc = TYPE01_ATTACK;
-		m_pMotion->Set(TYPE_ATTACK01);
-		m_bAttack = false;
-	}
+	// 投げ
+	Grap();
 
-	if (m_Info.Atc == TYPE01_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
-	{
-		m_Info.Atc = TYPE02_ATTACK;
-		m_pMotion->Set(TYPE_ATTACK02);
-		m_bAttack = false;
-	}
-	if (m_Info.Atc == TYPE02_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
-	{
-		m_Info.Atc = TYPE03_ATTACK;
-		m_pMotion->Set(TYPE_ATTACK03);
-		m_bAttack = false;
-	}
-
-	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE && m_Info.state != STATE_HEAT)
-	{
-		if (m_Obj != nullptr)
-		{
-			D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
-
-			D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-			Objpos.x = mtx->_41;
-			Objpos.y = mtx->_42;
-			Objpos.z = mtx->_43;
-
-			if (CGame::GetEnemy()->GetState() != CEnemy::STATE_DAMEGE && CGame::GetCollision()->Circle(&Objpos, &CGame::GetEnemy()->GetPosition(), 50.0f, 50.0f) == true)
-			{
-				CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -0.5f, 15.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -0.5f));
-				CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
-			}
-		}
-	}
-
- 	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_HEAT && m_bLift == true)
-	{
-		m_Info.state = STATE_LIFT;
-		m_pMotion->Set(TYPE_LIFT);
-	}
-
-	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_ATTACK &&m_bGrap == true)
-	{
-		m_bDesh = false;
-
-		m_Info.state = STATE_GRAP;
-
-		// モーションをセット(近接攻撃)
-		//m_pMotion->Set(TYPE_GRAP);
-	}
-
-	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
-	{
-		if (m_Info.state != STATE_AVOID && m_Info.state != STATE_LIFT && 
-			m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP && 
-			m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH)
-		{
-			if (m_fStamina >= LOSTSTMINA)
-			{
-				m_bAvoid = true;
-				m_fStamina -= LOSTSTMINA;
-				m_Info.state = STATE_AVOID;
-				m_pMotion->Set(TYPE_AVOID);
-
-				if (m_pStamina != nullptr)
-				{
-					m_pStamina->GetBill()->SetTex(m_fStamina);
-				}
-			}
-		}
-	}
-
-	if (m_Info.state == STATE_AVOID)
-	{
-		m_bDesh = false;
-		m_Info.move.x += sinf(m_Info.rot.y + D3DX_PI) * 0.5f;
-		m_Info.move.z += cosf(m_Info.rot.y + D3DX_PI) * 0.5f;
-
-		m_Info.pos.x += m_Info.move.x * 0.0005f;
-		m_Info.pos.z += m_Info.move.z * 0.0005f;
-	}
-
-	if (m_Info.state == STATE_THROW && m_Obj != nullptr)
-	{
-		m_Obj->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
-		m_Obj->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, -D3DX_PI, -D3DX_PI * 0.5f));
-		CGame::GetCollision()->ItemAttack(m_Obj);
-	}
-
-	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && (m_Info.state == STATE_THROW || m_Info.state == STATE_HEAT))
-	{
-		m_Obj->SetCurrent(nullptr);
-		m_Obj->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -60.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -60.0f));
-		m_Obj->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
-		m_Obj = nullptr;
-	}
-	
-	if (m_Info.state == STATE_GRAP && m_bGrap == false)
-	{
-		CGame::GetEnemy()->SetCurrent(nullptr);
-		CGame::GetEnemy()->SetPosition(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y + 50.0f, m_Info.pos.z));
-		CGame::GetEnemy()->SetRotition(m_Info.rot);
-		CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * (m_fGrapRot * 3.0f), 1.0f, cosf(m_Info.rot.y) * (m_fGrapRot * 3.0f)));
-		CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
-		m_fGrapRot = 1.0f;
-	}
-
-	if (m_bAttack == true)
-	{
-		m_nCntColi++;
-
-		if (m_nCntColi >= 15 && 20 >= m_nCntColi)
-		{
-			if (CGame::GetCollision() != nullptr)
-			{
-				/*if (CGame::GetCollision()->Sword(m_ppCharacter[28]->GetMtxWorld(), m_ppCharacter[28]->GetMtxWorld(), 100.0f, CGame::GetEnemy()) == true)
-				{
-				CManager::Getinstance()->GetDebugProc()->Print("あったり～");
-				}*/
-			}
-
-			CManager::Getinstance()->GetDebugProc()->Print("はははははは～");
-		}
-	}
-
-	if (m_bGrap == true)
-	{
-		CGame::GetEnemy()->SetCurrent(&m_Info.mtxWorld);
-		CGame::GetEnemy()->SetPosition(D3DXVECTOR3(0.0f, 50.0f, 0.0f));
-		CGame::GetEnemy()->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, D3DX_PI));
-		CGame::GetEnemy()->SetState(CEnemy::STATE_GRAP);
-	}
-
-	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW && m_Info.state != STATE_HEAT
-     && m_bDesh == true && m_bAttack == false && m_bAvoi == false)
-	{
-		m_Info.state = STATE_MOVE;
-
-		//モーションをセット(移動)
-		m_pMotion->Set(TYPE_MOVE);
-	}
-
-	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEAT)
-	{
-		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
-	}
-
-	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
-		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false && 
-			m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID 
-		 && m_Info.state != STATE_LIFT && m_Info.state != STATE_HEAT && m_Info.state != STATE_THROW))
-	{
-		//モーションをセット(待機)
-		m_pMotion->Set(TYPE_NEUTRAL);
-		m_Info.state = STATE_NEUTRAL;
-		m_Info.Atc = TYPE00_NONE;
-		m_bLift = false;
-		m_bAttack = false;
-		m_nCntColi = 0;
-		CGame::GetCollision()->SetbColli(false);
-
-		if (m_Obj != nullptr)
-		{
-			m_Info.state = STATE_LIFT;
-			m_pMotion->Set(TYPE_LIFT);
-			m_bLift = true;
-		}
-	}
+	// 回避
+	Avoid();
 
 	CManager::Getinstance()->GetDebugProc()->Print("回転量:%f", m_fGrapRot);
 }
@@ -941,6 +739,254 @@ void CPlayer::GrapRotition(void)
 	else if (m_Info.rot.y < -D3DX_PI)
 	{
 		m_Info.rot.y = D3DX_PI;
+	}
+}
+
+//================================================================
+// 投げる処理
+//================================================================
+void CPlayer::Grap(void)
+{
+	//キーボードを取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	// ジャイアントスイング
+	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
+	{
+		if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID)
+		{
+			if (m_Info.state != STATE_GRAP)
+			{
+				m_bGrap = true;
+			}
+			else
+			{
+				m_bGrap = false;
+			}
+		}
+	}
+
+	// アイテム持つ
+	if (InputKeyboard->GetTrigger(DIK_F) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_LB, 0) == true)
+	{
+		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP)
+		{
+			if (m_bLift == true)
+			{
+				m_Info.state = STATE_THROW;
+				m_pMotion->Set(TYPE_THROW);
+			}
+
+			if (m_Obj == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
+			{
+				m_bLift = true;
+				CManager::Getinstance()->GetDebugProc()->Print("当たってる～");
+			}
+		}
+	}
+}
+
+//================================================================
+// 回避処理
+//================================================================
+void CPlayer::Avoid(void)
+{
+	//キーボードを取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
+	{
+		if (m_Info.state != STATE_AVOID && m_Info.state != STATE_LIFT &&
+			m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP &&
+			m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH)
+		{
+			if (m_fStamina >= LOSTSTMINA)
+			{// 消費量より多かったら
+
+				// スタミナ減らして回避状態に
+				m_bAvoid = true;
+				m_fStamina -= LOSTSTMINA;
+				m_Info.state = STATE_AVOID;
+				m_pMotion->Set(TYPE_AVOID);
+
+				if (m_pStamina != nullptr)
+				{
+					m_pStamina->GetBill()->SetTex(m_fStamina);
+				}
+			}
+		}
+	}
+}
+
+//================================================================
+// 状態処理
+//================================================================
+void CPlayer::State(void)
+{
+	if (m_bLift == true && m_bDesh == true)
+	{
+		if (m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW)
+		{
+			m_Info.state = STATE_GRAPDASH;
+			m_pMotion->Set(TYPE_GRAPDASH);
+		}
+	}
+
+	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
+	{
+		m_Info.state = STATE_ATTACK;
+		m_Info.Atc = TYPE01_ATTACK;
+		m_pMotion->Set(TYPE_ATTACK01);
+		m_bAttack = false;
+
+		// 移動量
+		m_Info.move.x -= sinf(m_Info.rot.y) * MOVE;
+		m_Info.move.z -= cosf(m_Info.rot.y) * MOVE;
+	}
+
+	if (m_Info.Atc == TYPE01_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
+	{
+		m_Info.Atc = TYPE02_ATTACK;
+		m_pMotion->Set(TYPE_ATTACK02);
+		m_bAttack = false;
+
+		// 移動量
+		m_Info.move.x -= sinf(m_Info.rot.y) * MOVE;
+		m_Info.move.z -= cosf(m_Info.rot.y) * MOVE;
+	}
+	if (m_Info.Atc == TYPE02_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
+	{
+		m_Info.Atc = TYPE03_ATTACK;
+		m_pMotion->Set(TYPE_ATTACK03);
+		m_bAttack = false;
+
+		// 移動量
+		m_Info.move.x -= sinf(m_Info.rot.y) * 8.0f;
+		m_Info.move.z -= cosf(m_Info.rot.y) * 8.0f;
+	}
+
+	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE && m_Info.state != STATE_HEAT)
+	{
+		if (m_Obj != nullptr)
+		{
+			D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
+
+			D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+			Objpos.x = mtx->_41;
+			Objpos.y = mtx->_42;
+			Objpos.z = mtx->_43;
+
+			if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
+			{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+				if (CGame::GetCollision()->AttackCircle(&Objpos, 50.0f, 50.0f, 100.0f) == true)
+				{
+					
+				}
+			}
+		}
+	}
+
+	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_HEAT && m_bLift == true)
+	{
+		m_Info.state = STATE_LIFT;
+		m_pMotion->Set(TYPE_LIFT);
+	}
+
+	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_ATTACK &&m_bGrap == true)
+	{
+		m_bDesh = false;
+
+		m_Info.state = STATE_GRAP;
+
+		// モーションをセット(近接攻撃)
+		//m_pMotion->Set(TYPE_GRAP);
+	}
+
+	if (m_Info.state == STATE_AVOID)
+	{
+		m_bDesh = false;
+		m_Info.move.x += sinf(m_Info.rot.y + D3DX_PI) * 0.5f;
+		m_Info.move.z += cosf(m_Info.rot.y + D3DX_PI) * 0.5f;
+
+		//m_Info.pos.x += m_Info.move.x * 0.0005f;
+		//m_Info.pos.z += m_Info.move.z * 0.0005f;
+	}
+
+	if (m_Info.state == STATE_THROW && m_Obj != nullptr)
+	{
+		m_Obj->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
+		m_Obj->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, -D3DX_PI, -D3DX_PI * 0.5f));
+		CGame::GetCollision()->ItemAttack(m_Obj);
+	}
+
+	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && (m_Info.state == STATE_THROW || m_Info.state == STATE_HEAT))
+	{
+		m_Obj->SetCurrent(nullptr);
+		m_Obj->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -60.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -60.0f));
+		m_Obj->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
+		m_Obj = nullptr;
+	}
+
+	/*if (m_Info.state == STATE_GRAP && m_bGrap == false)
+	{
+		CGame::GetEnemy()->SetCurrent(nullptr);
+		CGame::GetEnemy()->SetPosition(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y + 50.0f, m_Info.pos.z));
+		CGame::GetEnemy()->SetRotition(m_Info.rot);
+		CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * (m_fGrapRot * 3.0f), 1.0f, cosf(m_Info.rot.y) * (m_fGrapRot * 3.0f)));
+		CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+		m_fGrapRot = 1.0f;
+	}
+
+	if (m_bGrap == true)
+	{
+		CGame::GetEnemy()->SetCurrent(&m_Info.mtxWorld);
+		CGame::GetEnemy()->SetPosition(D3DXVECTOR3(0.0f, 50.0f, 0.0f));
+		CGame::GetEnemy()->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, D3DX_PI));
+		CGame::GetEnemy()->SetState(CEnemy::STATE_GRAP);
+	}*/
+
+	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW && m_Info.state != STATE_HEAT
+		&& m_bDesh == true && m_bAttack == false && m_bAvoi == false)
+	{
+		m_Info.state = STATE_MOVE;
+
+		//モーションをセット(移動)
+		m_pMotion->Set(TYPE_MOVE);
+	}
+
+	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEAT)
+	{
+		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
+	}
+
+	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
+		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false &&
+			m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID
+			&& m_Info.state != STATE_LIFT && m_Info.state != STATE_HEAT && m_Info.state != STATE_THROW))
+	{
+		//モーションをセット(待機)
+		m_pMotion->Set(TYPE_NEUTRAL);
+		m_Info.state = STATE_NEUTRAL;
+		m_Info.Atc = TYPE00_NONE;
+		m_bLift = false;
+		m_bAttack = false;
+		m_nCntColi = 0;
+		CGame::GetCollision()->SetbColli(false);
+
+		if (m_Obj != nullptr)
+		{
+			m_Info.state = STATE_LIFT;
+			m_pMotion->Set(TYPE_LIFT);
+			m_bLift = true;
+		}
 	}
 }
 

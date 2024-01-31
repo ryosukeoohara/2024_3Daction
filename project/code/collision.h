@@ -10,8 +10,7 @@
 //=============
 //前方宣言
 //=============
-class CEnemyWeak;
-class CEnemyBoss;
+class CEnemyManager;
 class CPlayer;
 class CEnemy;
 class CBullet;
@@ -31,12 +30,10 @@ public:
 	static CCollision *Create(void);
 
 	bool Enemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, float fWidthZ, CEnemy **pEnemy);  //敵との当たり判定(プレイヤー基準)
-	bool BulletEnemy(D3DXVECTOR3 *pos, float fWidthX, float fWidthY, CEnemy **pEnemy);     //弾との当たり判定
-	bool BulletPlayer(D3DXVECTOR3 *pos, float fWidthX, float fWidthZ, CPlayer *pPlayer);  //弾との当たり判定
-	bool BulletMap(D3DXVECTOR3 *pos, CObjectX **pObjectX);       //弾と建物の当たり判定
 	bool Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyRadius, float fTargetRadius);  //円の当たり判定
+	bool AttackCircle(D3DXVECTOR3 *pMyPos, float fMyRadius, float fTargetRadius, float fHeight);  //円の当たり判定
 	bool Player(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, float fWidthZ, CPlayer *pPlayer);  //ぷれいやーとの当たり判定
-	void Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX);  //マップにある建物との当たり判定
+	void Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius);  //マップにある建物との当たり判定
 	bool Block(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, float fWidthZ);  //ブロックとの判定
 	bool Sword(D3DXMATRIX matrix1, D3DXMATRIX matrix2, float flength, CEnemy *pEnemy);
 	void MapEnemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX, CEnemy *enemy);  //マップにある建物との当たり判定
@@ -44,6 +41,7 @@ public:
 	void ItemAttack(CObjectX *pobj);
 
 	void SetbColli(bool bValue) { m_bColli = bValue; }
+	bool GetbColli(void) { return m_bColli; }
 	
 private:
 	bool m_bColli;

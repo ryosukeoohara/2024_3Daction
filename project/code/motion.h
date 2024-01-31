@@ -39,42 +39,17 @@ private:
 	//モーション---------------------------------------------------------------
 	typedef struct
 	{
-		int m_nNumKey;  //キーの総数
-		int m_nLoop;    //ループするかどうか
-		bool m_bLoop;   //ループするかどうか
-		bool m_bFinish; //終了したかどうか
+		int m_nNumKey;    // キーの総数
+		int m_nLoop;      // ループするかどうか
+		int m_nNumFrame;  // フレームの総数
+		int m_nAttackOccurs;  // 攻撃判定発生フレーム
+		int m_nAttackEnd;  // 攻撃判定終了フレーム
+		bool m_bLoop;     // ループするかどうか
+		bool m_bFinish;   // 終了したかどうか
 
 		KEYINFO m_KeySet[MAX_INFO];
 
 	} INFO;
-
-	//モデル---------------------------------------------------------------
-	typedef struct
-	{
-		D3DXVECTOR3 m_pos;
-		D3DXVECTOR3 m_rot;
-
-	} OLDKEY;
-
-	//モデル---------------------------------------------------------------
-	typedef struct
-	{
-		OLDKEY m_aKey[MAX_INFO];  //現在のキー
-		int m_nFrame;   //モーションのフレーム数
-
-	} OLDKEYINFO;
-
-	//モーション---------------------------------------------------------------
-	typedef struct
-	{
-		int m_nNumKey;  //キーの総数
-		int m_nLoop;    //ループするかどうか
-		bool m_bLoop;   //ループするかどうか
-		bool m_bFinish; //終了したかどうか
-
-		OLDKEYINFO m_KeySet[MAX_INFO];
-
-	} OLDINFO;
 
 public:
 	CMotion();
@@ -84,14 +59,23 @@ public:
 	void Uninit(void);
 	void Update(void);
 
-	void Set(int nType);
-	int GetType(void);
 	bool IsFinish(void);
-	void SetInfo(void);
-	void SetModel(CCharacter **ppModel, int nNumModel);
-	//CCharacter **GetModel(void) { return m_ppModel; }
-	void ReadText(const char *TextFilename);        //外部ファイル読み込み
-	int GetNumFrame(void) { return m_nCurrentFrame;	}   //モーションの総フレーム
+	
+	// 読み込み系
+	void ReadText(const char *TextFilename);            // 外部ファイル読み込み
+	
+	// 設定系
+	void Set(int nType);                                // モーション
+	void SetInfo(void);                                 // 情報
+	void SetModel(CCharacter **ppModel, int nNumModel); // キャラクターのモデル
+
+	// 取得系
+	int GetType(void);                                  // 種類
+	int GetNumFrame(void) { return m_nNowFrame; }   // モーションの総フレーム
+	int GetNowFrame(void);
+	int GetAttackOccurs(void);
+	int GetAttackEnd(void);
+	INFO GetInfo(void);
 
 private:
 
@@ -108,7 +92,7 @@ private:
 	int  m_nCounter;             //フレーム数に達したか
 	int  m_nCntkeySet;
 	int m_nNumFrame;             //モーションのフレーム数
-	int m_nCurrentFrame;
+	int m_nNowFrame;
 	bool m_bFinish;              //終了したかどうか
 	
 	CCharacter **m_ppModel;  //モデルへのダブルポインタ

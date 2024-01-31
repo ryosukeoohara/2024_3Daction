@@ -239,13 +239,13 @@ void CCamera::Return(void)
 	{
 		// ƒJƒƒ‰‚ğ–Ú•W‚ÌŒü‚«‚Ü‚Å‰ñ“]‚³‚¹‚é
 		D3DXVECTOR3 rotDest = m_Oldrot - m_rot;
-		SetRotation(m_rot + rotDest * 0.1f);
+		SetRotation(m_rot + rotDest * 0.05f);
 
 		D3DXVECTOR3 posDestR = m_OldposR - m_posR;
-		SetPositionR(m_posR + posDestR * 0.1f);
+		SetPositionR(m_posR + posDestR * 0.05f);
 
 		D3DXVECTOR3 posDestV = m_OldposV - m_posV;
-		SetPositionV(m_posV + posDestV * 0.1f);
+		SetPositionV(m_posV + posDestV * 0.05f);
 
 		m_nCounter++;
 	}

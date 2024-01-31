@@ -26,7 +26,7 @@ CMotion::CMotion()
 	m_nCounter = 0;
 	m_nCntkeySet = 0;
 	m_nNumFrame = 0;
-	m_nCurrentFrame = 0;
+	m_nNowFrame = 0;
 	m_bLoop = false;
 	m_bFinish = false;
 }
@@ -148,12 +148,12 @@ void CMotion::Update(void)
 		}
 
 		m_nCounter++;
-		m_nCurrentFrame++;
+		m_nNowFrame++;
 
 		if (m_aInfo[m_nType].m_nLoop == 0 && m_nKey + 1 >= m_aInfo[m_nType].m_nNumKey)
 		{
 			m_aInfo[m_nType].m_bFinish = true;
-			m_nCurrentFrame = 0;
+			m_nNowFrame = 0;
 		}
 
 		if (m_nCounter >= m_aInfo[m_nType].m_KeySet[m_nKey].m_nFrame)
@@ -178,7 +178,7 @@ void CMotion::Set(int nType)
 
 	m_nCounter = 0;
 	m_nKey = 0;
-	m_nCurrentFrame = 0;
+	m_nNowFrame = 0;
 }
 
 //===========================================================
@@ -190,7 +190,39 @@ int CMotion::GetType(void)
 }
 
 //===========================================================
-//終了したかどうか
+// 現在のフレーム取得
+//===========================================================
+int CMotion::GetNowFrame(void)
+{
+	return m_nNowFrame;
+}
+
+//===========================================================
+// 攻撃判定発生フレーム取得
+//===========================================================
+int CMotion::GetAttackOccurs(void)
+{
+	return m_aInfo[m_nType].m_nAttackOccurs;
+}
+
+//===========================================================
+// 攻撃判定終了フレーム取得
+//===========================================================
+int CMotion::GetAttackEnd(void)
+{
+	return m_aInfo[m_nType].m_nAttackEnd;
+}
+
+//===========================================================
+// 設定処理
+//===========================================================
+CMotion::INFO CMotion::GetInfo(void)
+{
+	return m_aInfo[m_nType];
+}
+
+//===========================================================
+// 終了したかどうか
 //===========================================================
 bool CMotion::IsFinish(void)
 {
@@ -198,7 +230,7 @@ bool CMotion::IsFinish(void)
 }
 
 //===========================================================
-//情報設定処理
+// 情報設定処理
 //===========================================================
 void CMotion::SetInfo(void)
 {
@@ -210,7 +242,7 @@ void CMotion::SetInfo(void)
 }
 
 //===========================================================
-//情報設定処理
+// 情報設定処理
 //===========================================================
 void CMotion::SetModel(CCharacter **ppModel, int nNumModel)
 {
@@ -263,6 +295,24 @@ void CMotion::ReadText(const char *TextFilename)
 						{
 							fscanf(pFile, "%s", &aString);
 							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nNumKey);
+						}
+
+						if (strcmp("NUM_FRAME", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nNumFrame);
+						}
+
+						if (strcmp("STRAT_COLLI", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nAttackOccurs);
+						}
+
+						if (strcmp("END_COLLI", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nAttackEnd);
 						}
 
 						if (strcmp("KEYSET", aString) == 0)

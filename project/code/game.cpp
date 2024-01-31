@@ -25,6 +25,7 @@
 #include "enemymanager.h"
 #include "collision.h"
 #include "item.h"
+#include "map.h"
 
 //================================================================
 //　静的メンバ変数
@@ -35,6 +36,7 @@ CEnemy *CGame::m_pEnemy = nullptr;
 CEnemyManager *CGame::m_pEnemyManager = nullptr;
 CCollision *CGame::m_Collision = nullptr;
 CItem *CGame::m_pItem = nullptr;
+CMap *CGame::m_pMap = nullptr;
 
 //===========================================================
 //　コンストラクタ
@@ -103,10 +105,15 @@ HRESULT CGame::Init(void)
 		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
+	if (m_pEnemyManager == nullptr)
+	{
+		m_pEnemyManager = CEnemyManager::Create();
+	}
+
 	// 敵の生成
 	if (m_pEnemy == nullptr)
 	{
-		m_pEnemy = CEnemy::Create(D3DXVECTOR3(0.0f, 0.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1);
+		//m_pEnemy = CEnemy::Create(D3DXVECTOR3(0.0f, 0.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1);
 	}
 
 	// 当たり判定
@@ -120,11 +127,11 @@ HRESULT CGame::Init(void)
 		m_pItem = CItem::Create();
 	}
 
-	/*if (m_pEnemyManager == nullptr)
+	if (m_pMap == nullptr)
 	{
-		m_pEnemyManager = CEnemyManager::Create();
-	}*/
-	
+		m_pMap = CMap::Create();
+	}
+
 	return S_OK;
 }
 
@@ -158,12 +165,20 @@ void CGame::Uninit(void)
 	}
 
 	// 敵の破棄
-	/*if (m_pEnemyManager != nullptr)
+	if (m_pEnemyManager != nullptr)
 	{
 		m_pEnemyManager->Uninit();
 		delete m_pEnemyManager;
 		m_pEnemyManager = nullptr;
-	}*/
+	}
+
+	// マップの破棄
+	if (m_pMap != nullptr)
+	{
+		m_pMap->Uninit();
+		delete m_pMap;
+		m_pMap = nullptr;
+	}
 }
 
 //===========================================================

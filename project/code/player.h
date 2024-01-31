@@ -136,6 +136,9 @@ private:
 	void Move(void);                      // 移動
 	void Action(void);                    // 攻撃
 	void GrapRotition(void);              // ジャイアントスイング
+	void Grap(void);
+	void Avoid(void);
+	void State(void);
 	void ReadText(const char *fliename);  // テキストファイル読み込み
 
 	int m_nNumModel;                    //モデル(パーツ)の総数

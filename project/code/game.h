@@ -13,6 +13,7 @@
 class CPause;
 class CEnemyManager;
 class CItem;
+class CMap;
 
 //ゲームクラス
 class CGame : public CScene
@@ -36,8 +37,10 @@ public:
 	bool GetbPause(void) { return m_bPause; }
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 	static CEnemy *GetEnemy(void) { return m_pEnemy; }
+	static CEnemyManager *GetEnemyManager(void) { return m_pEnemyManager; }
 	static CCollision *GetCollision(void) { return m_Collision; }
 	static CItem *GetItem(void) { return m_pItem; }
+	static CMap *GetMap(void) { return m_pMap; }
 
 private:
 	static CPause *m_pPause;
@@ -46,6 +49,7 @@ private:
 	static CEnemyManager *m_pEnemyManager;
 	static CCollision *m_Collision;
 	static CItem *m_pItem;
+	static CMap *m_pMap;
 	bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか
 	static int m_nCounter;
