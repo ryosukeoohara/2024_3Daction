@@ -10,8 +10,8 @@
 #include "object2D.h"
 
 //前方宣言
-class CChibi;
-class CFoot;
+class CField;
+class CObject2D;
 
 //タイトルクラス
 class CTitle : public CScene
@@ -27,12 +27,9 @@ public:
 
 	static CTitle *Create(void);
 
-	static CChibi *GetPlayerChibi(void) { return m_PlayerChibi; }
-	static CFoot *GetPlayerFoot(void) { return m_PlayerFoot; }
-
 private:
-	static CChibi *m_PlayerChibi;
-	static CFoot *m_PlayerFoot;
+	CField *m_pField;
+	CObject2D *m_pBg;
 
 };
 #endif // !_TITLE_H_

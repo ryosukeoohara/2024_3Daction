@@ -272,14 +272,12 @@ void CPlayer::Uninit(void)
 	if (m_pStamina != nullptr)
 	{
 		m_pStamina->Uninit();
-		delete m_pStamina;
 		m_pStamina = nullptr;
 	}
 
 	if (m_pLife != nullptr)
 	{
 		m_pLife->Uninit();
-		delete m_pLife;
 		m_pLife = nullptr;
 	}
 

@@ -16,6 +16,8 @@
 #include "sound.h"
 #include "score.h"
 #include "camera.h"
+#include "input.h"
+#include "fade.h"
 
 //===========================================================
 //コンストラクタ
@@ -71,7 +73,27 @@ void CResult::Uninit(void)
 //===========================================================
 void CResult::Update(void)
 {
-	
+	//キーボードを取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//マウスを取得
+	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	//フェードの情報を取得
+	CFade *pFade = CManager::Getinstance()->GetFade();
+
+	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	{//ENTERキーを押したかつシーンがタイトルのとき
+
+		if (pFade->Get() != pFade->FADE_OUT)
+		{
+			//シーンをゲームに遷移
+			pFade->Set(CScene::MODE_TITLE);
+		}
+	}
 }
 
 //===========================================================

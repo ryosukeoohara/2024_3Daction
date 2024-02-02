@@ -21,6 +21,7 @@
 #include "player.h"
 #include "character.h"
 #include "collision.h"
+#include "enemymanager.h"
 #include <assert.h>
 
 // 静的メンバ変数
@@ -154,8 +155,6 @@ HRESULT CEnemy::Init(void)
 
 	m_nDamegeCounter = DAMEGECOUNT;
 
-	ReadText(ENEMY_TEXT);
-
 	return S_OK;
 }
 
@@ -279,35 +278,45 @@ void CEnemy::Draw(void)
 //==============================================================================
 void CEnemy::Controll(void)
 {
-	if (m_Info.state == STATE_DAMEGE)
-	{
-		Damege();
-	}
-	else
-	{
-		Attack();
-		Move();
-	}
+	//if (m_Info.state == STATE_DAMEGE)
+	//{
+	//	Damege();
+	//}
+	//else
+	//{
+	//	if (m_Type == TYPE_ENEMY)
+	//	{
+	//		Move();
+	//	}
+	//}
 
-	if (m_Info.state != STATE_GRAP)
-	{
-		m_Info.move.y -= 0.9f;
-	}
+	//if (m_Info.nLife <= 0)
+	//{
+	//	//this->Uninit();
+	//	CGame::GetEnemyManager()->Release(m_nIdx);
+	//	return;
+	//}
 
-	// 移動量
-	m_Info.pos.x += m_Info.move.x;
-	m_Info.pos.y += m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z;
+	//if (m_Info.state != STATE_GRAP)
+	//{
+	//	m_Info.move.y -= 0.9f;
+	//}
 
-	if (m_Info.pos.y <= 0.0f)
-	{
-		m_Info.pos.y = 0.0f;
-	}
+	//// 移動量
+	//m_Info.pos.x += m_Info.move.x;
+	//m_Info.pos.y += m_Info.move.y;
+	//m_Info.pos.z += m_Info.move.z;
 
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	//if (m_Info.pos.y <= 0.0f)
+	//{
+	//	m_Info.pos.y = 0.0f;
+	//}
+
+	////デバッグプロックの情報を取得
+	//CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+	//pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	//pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	//pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
 }
 
 //==============================================================================
@@ -315,7 +324,11 @@ void CEnemy::Controll(void)
 //==============================================================================
 void CEnemy::Attack(void)
 {
-
+	/*if (m_Info.state != STATE_ATTACK)
+	{
+		m_Info.state = STATE_ATTACK;
+		m_pMotion->Set(TYPE_ATTACK);
+	}*/
 }
 
 //==============================================================================
@@ -323,81 +336,78 @@ void CEnemy::Attack(void)
 //==============================================================================
 void CEnemy::Move(void)
 {
-	//プレイヤーの情報取得
-	CPlayer *pPlayer = CGame::GetPlayer();
+	////プレイヤーの情報取得
+	//CPlayer *pPlayer = CGame::GetPlayer();
 
-	if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
-	{//円の中にプレイヤーが入った
+	//if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
+	//{//円の中にプレイヤーが入った
 
-		D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
+	//	D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
 
-		float fDiffmove, fDestmove;
+	//	float fDiffmove, fDestmove;
 
-		fDest = m_Info.pos - PlayerPos;
+	//	fDest = m_Info.pos - PlayerPos;
 
-		fDestmove = atan2f(fDest.x, fDest.z);
-		fDiffmove = fDestmove - m_Info.rot.y;
+	//	fDestmove = atan2f(fDest.x, fDest.z);
+	//	fDiffmove = fDestmove - m_Info.rot.y;
 
-		//角度の値を修正する--------------------------------------------------
-		if (fDiffmove >= D3DX_PI)
-		{
-			fDiffmove = -D3DX_PI;
-		}
-		else if (fDiffmove <= -D3DX_PI)
-		{
-			fDiffmove = D3DX_PI;
-		}
+	//	//角度の値を修正する--------------------------------------------------
+	//	if (fDiffmove >= D3DX_PI)
+	//	{
+	//		fDiffmove = -D3DX_PI;
+	//	}
+	//	else if (fDiffmove <= -D3DX_PI)
+	//	{
+	//		fDiffmove = D3DX_PI;
+	//	}
 
-		m_Info.rot.y += fDiffmove * 0.05f;
+	//	m_Info.rot.y += fDiffmove * 0.05f;
 
-		//角度の値を修正する--------------------------------------------------
-		if (m_Info.rot.y > D3DX_PI)
-		{
-			m_Info.rot.y = -D3DX_PI;
-		}
-		else if (m_Info.rot.y < -D3DX_PI)
-		{
-			m_Info.rot.y = D3DX_PI;
-		}
+	//	//角度の値を修正する--------------------------------------------------
+	//	if (m_Info.rot.y > D3DX_PI)
+	//	{
+	//		m_Info.rot.y = -D3DX_PI;
+	//	}
+	//	else if (m_Info.rot.y < -D3DX_PI)
+	//	{
+	//		m_Info.rot.y = D3DX_PI;
+	//	}
 
-		//移動量を更新(減衰させる)
-		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
-		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
+	//	//移動量を更新(減衰させる)
+	//	m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
+	//	m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
 
-		if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
-		{
-			m_Info.move.x = 0.0f;
-			m_Info.move.z = 0.0f;
+	//	if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
+	//	{
+	//		Attack();
+	//		m_Info.move.x = 0.0f;
+	//		m_Info.move.z = 0.0f;
 
-			if (m_Info.state != STATE_ATTACK)
-			{
-				m_Info.state = STATE_ATTACK;
-				m_pMotion->Set(TYPE_ATTACK);
-			}
-		}
-		else
-		{
-			if (m_Info.state != STATE_DASH)
-			{
-				m_Info.state = STATE_DASH;
-				m_pMotion->Set(TYPE_DASH);
-			}
-		}
+	//		
+	//	}
+	//	else
+	//	{
+	//		if (m_Info.state != STATE_DASH)
+	//		{
+	//			m_Info.state = STATE_DASH;
+	//			m_pMotion->Set(TYPE_DASH);
+	//		}
+	//	}
 
-		m_Info.pos.x += m_Info.move.x * 0.5f;
-		m_Info.pos.z += m_Info.move.z * 0.5f;
-	}
-	else
-	{
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
+	//	m_Info.pos.x += m_Info.move.x * 0.5f;
+	//	m_Info.pos.z += m_Info.move.z * 0.5f;
+	//}
+	//else
+	//{
+	//	m_Info.move.x = 0.0f;
+	//	m_Info.move.z = 0.0f;
 
-		if (m_Info.state != STATE_NEUTRAL)
-		{
-			m_Info.state = STATE_NEUTRAL;
-			m_pMotion->Set(TYPE_NEUTRAL);
-		}
-	}
+	//	if (m_Info.state != STATE_NEUTRAL)
+	//	{
+	//		m_Info.state = STATE_NEUTRAL;
+	//		m_pMotion->Set(TYPE_NEUTRAL);
+	//	}
+	//}
 }
 
 //==============================================================================
@@ -410,7 +420,7 @@ void CEnemy::Damege(void)
 	m_Info.pos.y = m_Info.move.y;
 	m_Info.pos.z += m_Info.move.z * -1.5f;*/
 
-	m_nDamegeCounter--;
+	/*m_nDamegeCounter--;
 
 	if (m_nDamegeCounter < 0)
 	{
@@ -419,7 +429,7 @@ void CEnemy::Damege(void)
 
 		m_Info.move.x = 0.0f;
 		m_Info.move.z = 0.0f;
-	}
+	}*/
 }
 
 //==============================================================================
@@ -564,5 +574,3 @@ void CEnemy::ReadText(char *fliename)
 		m_pMotion->Set(TYPE_NEUTRAL);
 	}
 }
-
-

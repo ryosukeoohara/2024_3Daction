@@ -5,19 +5,19 @@
 //
 //=============================================================================
 
-#ifndef _OBJECT3D_H_             //このマクロ定義がされてなかったら
-#define _OBJECT3D_H_             //2重インクルード防止のマクロ定義をする
+#ifndef _OBJECTMESH_H_             //このマクロ定義がされてなかったら
+#define _OBJECTMESH_H_             //2重インクルード防止のマクロ定義をする
 
 #include "main.h"
 #include "object.h"
 
 //オブジェクト3Dクラス
-class CObject3D : public CObject
+class CObjectMesh : public CObject
 {
 public:
-	CObject3D();
-	CObject3D(D3DXVECTOR3 pos);  //コンストラクタ(overdose)
-	~CObject3D();
+	CObjectMesh();
+	CObjectMesh(D3DXVECTOR3 pos);  //コンストラクタ(overdose)
+	~CObjectMesh();
 
 	HRESULT Init(void);   // 初期化処理    
 	void Uninit(void);    // 終了処理
@@ -42,15 +42,14 @@ public:
 	D3DXCOLOR GetColor(void) { return m_col; }          // 色
 	int GetIdxTex(void) { return m_nIdxTexture; }       // テクスチャのインデックス番号
 
-	static CObject3D *Create(void);  //生成
-
-									 //	float GetHeight(D3DXVECTOR3 pos);
+	static CObjectMesh *Create(void);  //生成
 
 private:
 	LPDIRECT3DTEXTURE9 m_pTexture;             // テクスチャへのポインタ
 	D3DXMATRIX m_mtxWorld;                     // ワールドマトリックス
 	D3DXMATRIX *m_pCurrent;                    // 親のマトリックス
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;        // 頂点バッファへのポインタ
+	LPDIRECT3DINDEXBUFFER9 m_pIdxBuff;         // インデックスバッファ
 	D3DXVECTOR3 m_pos;                         // 位置
 	D3DXVECTOR3 m_rot;                         // 向き
 	D3DXCOLOR m_col;                           // 色
@@ -59,7 +58,5 @@ private:
 	float m_fWidth;                            // 幅
 	bool m_bDraw;                              // 描画するかどうか
 };
-
-
 
 #endif

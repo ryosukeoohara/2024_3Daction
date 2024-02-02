@@ -223,7 +223,7 @@ void CObject3D::Draw(void)
 	pDevice->SetFVF(FVF_VERTEX_3D);
 
 	//テクスチャの設定
-	//pDevice->SetTexture(0, m_pTexture);
+	pDevice->SetTexture(0, CManager::Getinstance()->GetTexture()->GetAddress(m_nIdxTexture));
 
 	//ポリゴンの描画  D3DPT_LINESTRIP
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,    //プリミティブの種類

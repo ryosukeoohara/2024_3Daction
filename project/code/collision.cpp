@@ -124,6 +124,9 @@ bool CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 				ppEnemy[nCount]->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -5.0f, 10.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -5.0f));
 				ppEnemy[nCount]->SetState(CEnemy::STATE_DAMEGE);
 				ppEnemy[nCount]->GetMotion()->Set(CEnemy::TYPE_DAMEGE);
+				int nLife = ppEnemy[nCount]->GetLife();
+				nLife -= 1;
+				ppEnemy[nCount]->SetLife(nLife);
 				//return true;
 			}
 		}
@@ -145,9 +148,14 @@ bool CCollision::Player(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fWidthX, fl
 //=============================================================================
 void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius)
 {
-	int nNum = CGame::GetMap()->GetNum();
+	int nNum = 0;
+	CObjectX **pMap = nullptr;
 
-	CObjectX **pMap = CGame::GetMap()->GetObjectX();
+	if (CGame::GetMap() != nullptr)
+	{
+		nNum = CGame::GetMap()->GetNum();
+		pMap = CGame::GetMap()->GetObjectX();
+	}
 
 	for (int nCount = 0; nCount < nNum; nCount++)
 	{
@@ -304,11 +312,17 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 {
 	CItem *pItem = CGame::GetItem();
 	CObjectX **pObjectX = pItem->GetObjectX();
+	int nNum = 0;
+
+	if (pItem != nullptr)
+	{
+		nNum = pItem->GetNum();
+	}
 
 	float PlayerfRadius = 50.0f;
 	float fRadius = 25.0f;
 
-	for (int nCount = 0; nCount < pItem->GetNum(); nCount++)
+	for (int nCount = 0; nCount < nNum; nCount++)
 	{
 		if (pObjectX[nCount] != nullptr)
 		{
@@ -342,20 +356,30 @@ void CCollision::ItemAttack(CObjectX * pobj)
 {
 	float PlayerfRadius = 50.0f;
 	float fRadius = 75.0f;
+	CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 
 	if (pobj != nullptr)
 	{
-		float circleX = CGame::GetEnemy()->GetPosition().x - (CGame::GetPlayer()->GetPosition().x + pobj->GetPosition().x);
-		float circleZ = CGame::GetEnemy()->GetPosition().z - (CGame::GetPlayer()->GetPosition().z + pobj->GetPosition().z);
-		float c = 0.0f;
-
-		c = (float)sqrt(circleX * circleX + circleZ * circleZ);
-
-		if (c <= fRadius + PlayerfRadius)
+		for (int nCount = 0; nCount < CGame::GetEnemyManager()->GetNum(); nCount++)
 		{
-			CGame::GetEnemy()->SetRotition(-CGame::GetPlayer()->GetRotition());
-			CGame::GetEnemy()->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -3.0f, 1.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -3.0f));
-			CGame::GetEnemy()->SetState(CEnemy::STATE_DAMEGE);
+			if (ppEnemy[nCount] != nullptr)
+			{
+				float circleX = ppEnemy[nCount]->GetPosition().x - (CGame::GetPlayer()->GetPosition().x + pobj->GetPosition().x);
+				float circleZ = ppEnemy[nCount]->GetPosition().z - (CGame::GetPlayer()->GetPosition().z + pobj->GetPosition().z);
+				float c = 0.0f;
+
+				c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+				if (c <= fRadius + PlayerfRadius)
+				{
+					ppEnemy[nCount]->SetRotition(-CGame::GetPlayer()->GetRotition());
+					ppEnemy[nCount]->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -3.0f, 1.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -3.0f));
+					ppEnemy[nCount]->SetState(CEnemy::STATE_DAMEGE);
+					int nLife = ppEnemy[nCount]->GetLife();
+					nLife -= 1;
+					ppEnemy[nCount]->SetLife(nLife);
+				}
+			}
 		}
 	}
 }

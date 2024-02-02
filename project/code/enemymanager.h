@@ -35,6 +35,7 @@ public:
 	void Update(void);             //XVˆ—
 
 	static CEnemyManager *Create(void);   // ¶¬ˆ—
+	void Release(int idx);
 
 	CEnemy **GetEnemy(void) { return m_appEnemy; }
 	int GetNum(void) { return m_nEnemyAll; }

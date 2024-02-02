@@ -149,9 +149,13 @@ void CMap::TextLoad(void)
 					m_appObjectX[nCntItem]->SetPosition(pos);
 					m_appObjectX[nCntItem]->SetRotition(rot);
 
-					if (nType >= 43 && nType <= 51)
+					if (nType >= 43 && nType <= 51 || nType == 56)
 					{
 						m_appObjectX[nCntItem]->SetbColli(false);
+					}
+					else
+					{
+						m_appObjectX[nCntItem]->SetbColli(true);
 					}
 
 					nCntItem++;

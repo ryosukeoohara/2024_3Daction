@@ -90,7 +90,7 @@ HRESULT CGame::Init(void)
 	pField->Init();
 	pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
 	pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	pField->SetSize(1000.0f, 1000.0f);
+	pField->SetSize(200.0f, 200.0f);
 	pField->SetDraw(true);
 
 	// ポーズの生成
@@ -144,7 +144,6 @@ void CGame::Uninit(void)
 	if (m_pPause != nullptr)
 	{
 		m_pPause->Uninit();
-		delete m_pPause;
 		m_pPause = nullptr;
 	}
 
@@ -152,15 +151,20 @@ void CGame::Uninit(void)
 	if (m_pPlayer != nullptr)
 	{
 		m_pPlayer->Uninit();
-		delete m_pPlayer;
 		m_pPlayer = nullptr;
+	}
+
+	// アイテムの破棄
+	if (m_pItem != nullptr)
+	{
+		m_pItem->Uninit();
+		m_pItem = nullptr;
 	}
 
 	// 敵の破棄
 	if (m_pEnemy != nullptr)
 	{
 		m_pEnemy->Uninit();
-		delete m_pEnemy;
 		m_pEnemy = nullptr;
 	}
 
@@ -168,7 +172,6 @@ void CGame::Uninit(void)
 	if (m_pEnemyManager != nullptr)
 	{
 		m_pEnemyManager->Uninit();
-		delete m_pEnemyManager;
 		m_pEnemyManager = nullptr;
 	}
 
@@ -176,7 +179,6 @@ void CGame::Uninit(void)
 	if (m_pMap != nullptr)
 	{
 		m_pMap->Uninit();
-		delete m_pMap;
 		m_pMap = nullptr;
 	}
 }
@@ -205,6 +207,28 @@ void CGame::Update(void)
 		}
 
 		return;
+	}
+
+	//キーボードを取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//マウスを取得
+	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	//フェードの情報を取得
+	CFade *pFade = CManager::Getinstance()->GetFade();
+
+	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
+	{//ENTERキーを押したかつシーンがタイトルのとき
+
+		if (pFade->Get() != pFade->FADE_OUT)
+		{
+			//シーンをゲームに遷移
+			pFade->Set(CScene::MODE_RESULT);
+		}
 	}
 
 	//すべての更新処理

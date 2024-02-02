@@ -10,6 +10,7 @@
 //*============================================================================
 #include "enemymanager.h"
 #include "enemy.h"
+#include "enemy_weak.h"
 
 //*============================================================================
 // 静的メンバ変数
@@ -65,7 +66,6 @@ void CEnemyManager::Uninit(void)
 
 				// 終了処理
 				m_appEnemy[nCount]->Uninit();
-				delete m_appEnemy[nCount];
 				m_appEnemy[nCount] = nullptr;
 			}
 		}
@@ -100,6 +100,22 @@ CEnemyManager * CEnemyManager::Create(void)
 	}
 
 	return pEnemyManager;
+}
+
+//=============================================================================
+// 消す
+//=============================================================================
+void CEnemyManager::Release(int idx)
+{
+	if (m_appEnemy[idx] != nullptr)
+	{
+		if (m_appEnemy[idx]->GetLife() <= 0)
+		{
+			// 終了処理
+			m_appEnemy[idx]->Uninit();
+			m_appEnemy[idx] = nullptr;
+		}
+	}
 }
 
 //=============================================================================
@@ -171,7 +187,9 @@ void CEnemyManager::ReadText(void)
 
 					if (m_appEnemy[nCntEnemy] == nullptr)
 					{
-						m_appEnemy[nCntEnemy] = CEnemy::Create(m_Readpos, m_Readrot, nLife);
+						m_appEnemy[nCntEnemy] = CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
+						m_appEnemy[nCntEnemy]->SetIdx(nCntEnemy);
+						m_appEnemy[nCntEnemy]->SetType(CEnemy::TYPE_WEAK);
 
 						nCntEnemy++;
 					}
@@ -189,6 +207,9 @@ void CEnemyManager::ReadText(void)
 	}
 }
 
+//=============================================================================
+// コンストラクタ
+//=============================================================================
 void CEnemyManager::ListOut(void)
 {
 	

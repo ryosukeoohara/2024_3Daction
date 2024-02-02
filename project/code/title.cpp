@@ -24,7 +24,8 @@
 //===========================================================
 CTitle::CTitle()
 {
-	
+	m_pField = nullptr;
+	m_pBg = nullptr;
 }
 
 //===========================================================
@@ -58,15 +59,27 @@ CTitle *CTitle::Create(void)
 HRESULT CTitle::Init(void)
 {
 	CField *pField = new CField;
-	pField->Init();
+
+	if (pField != nullptr)
+	{
+		pField->Init();
+		pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
+		pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		pField->SetSize(200.0f, 200.0f);
+		pField->SetDraw(true);
+	}
 
 	CObject2D *pBg = new CObject2D;
-	pBg->Init();
-	pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\taitoru.jpg"));
-	pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-	pBg->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
-	pBg->SetDraw(true);
 
+	if (pBg != nullptr)
+	{
+		pBg->Init();
+		pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\taitoru.jpg"));
+		pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+		pBg->SetSize(100.0f, 100.0f);
+		pBg->SetDraw(true);
+	}
+	
 	return S_OK;
 }
 
@@ -75,7 +88,19 @@ HRESULT CTitle::Init(void)
 //===========================================================
 void CTitle::Uninit(void)
 {
+	if (m_pField != nullptr)
+	{
+		m_pField->Uninit();
+		m_pField = nullptr;
+	}
+
+	if (m_pBg != nullptr)
+	{
+		m_pBg->Uninit();
+		m_pBg = nullptr;
+	}
 	
+	CObject::ReleaseAll();
 }
 
 //===========================================================
