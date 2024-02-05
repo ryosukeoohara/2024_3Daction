@@ -564,7 +564,7 @@ void CPlayer::Move(void)
 	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
 
-	CGame::GetCollision()->Map(&m_Info.pos, &m_Info.posOld, 30.0f);
+	CGame::GetCollision()->Map(&m_Info.pos, &m_Info.posOld, 40.0f);
 }
 
 //================================================================
@@ -897,10 +897,23 @@ void CPlayer::State(void)
 			if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
 			{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
 
-				if (CGame::GetCollision()->AttackCircle(&Objpos, 50.0f, 50.0f, 100.0f) == true)
-				{
-					
-				}
+				CGame::GetCollision()->AttackCircle(&Objpos, 50.0f, 50.0f, 100.0f);
+			}
+		}
+		else
+		{
+			D3DXMATRIX *mtx = m_ppCharacter[9]->GetMtxWorld();
+
+			D3DXVECTOR3 Handpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+			Handpos.x = mtx->_41;
+			Handpos.y = mtx->_42;
+			Handpos.z = mtx->_43;
+
+			if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
+			{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+				CGame::GetCollision()->AttackCircle(&Handpos, 50.0f, 50.0f, 100.0f);
 			}
 		}
 	}

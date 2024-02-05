@@ -37,6 +37,7 @@ CEnemyManager *CGame::m_pEnemyManager = nullptr;
 CCollision *CGame::m_Collision = nullptr;
 CItem *CGame::m_pItem = nullptr;
 CMap *CGame::m_pMap = nullptr;
+CGame::WAVE CGame::m_Wave = WAVE_00;
 
 //===========================================================
 //　コンストラクタ
@@ -81,18 +82,29 @@ CGame *CGame::Create(void)
 	return pGame;
 }
 
+void CGame::WaveControll(void)
+{
+	if (m_Wave == WAVE_00)
+	{
+		m_Wave = WAVE_01;
+		m_pEnemyManager->ReadText(ENEMYBOSS_TEXT);
+	}
+}
+
 //===========================================================
 //　初期化処理
 //===========================================================
 HRESULT CGame::Init(void)
 {
+	m_Wave = WAVE_00;
+
 	CField *pField = new CField;
 	pField->Init();
 	pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
 	pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	pField->SetSize(5000.0f, 5000.0f);
 	pField->SetDraw(true);
-
+	
 	// ポーズの生成
 	if (m_pPause == nullptr)
 	{
@@ -181,6 +193,8 @@ void CGame::Uninit(void)
 		m_pMap->Uninit();
 		m_pMap = nullptr;
 	}
+
+	CObject::ReleaseAll();
 }
 
 //===========================================================
@@ -226,8 +240,30 @@ void CGame::Update(void)
 
 		if (pFade->Get() != pFade->FADE_OUT)
 		{
+			m_Wave = WAVE_00;
 			//シーンをゲームに遷移
 			pFade->Set(CScene::MODE_RESULT);
+		}
+	}
+
+	if (m_pEnemyManager != nullptr)
+	{
+		m_pEnemyManager->Update();
+
+		if (m_pEnemyManager->GetNum() <= 0)
+		{
+			if (pFade->GetCol() >= 0.9f && pFade->FADE_IN)
+			{
+				CManager::Getinstance()->GetCamera()->Reset();
+				m_pPlayer->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
+				m_pPlayer->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				WaveControll();
+			}
+			
+			if (pFade->Get() != pFade->FADE_OUT)
+			{
+				pFade->Set();
+			}
 		}
 	}
 

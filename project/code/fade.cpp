@@ -17,6 +17,7 @@ CFade::CFade()
 	m_modeNext = m_modeNext;
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_nIdxTexture = -1;
+	m_bFade = false;
 }
 
 //================================================================
@@ -28,6 +29,7 @@ CFade::CFade(CScene::MODE modenext)
 	m_modeNext = modenext;
 	m_Color = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 	m_nIdxTexture = -1;
+	m_bFade = false;
 }
 
 //================================================================
@@ -155,13 +157,13 @@ void CFade::Update(void)
 			{
 				m_Color.a = 0.0f;
 				m_fade = FADE_NONE;
+				m_bFade = false;
 
 				//Uninit();
 
 				//return;
 			}
 		}
-
 		else if (m_fade == FADE_OUT)
 		{
 			m_Color.a += 0.015f;
@@ -172,7 +174,10 @@ void CFade::Update(void)
 
 				m_fade = FADE_IN;
 
-				CManager::Getinstance()->SetMode(m_modeNext);
+				if (m_modeNext != m_modeOld)
+				{
+					CManager::Getinstance()->SetMode(m_modeNext);
+				}
 			}
 		}
 	}
@@ -225,11 +230,26 @@ void CFade::Draw(void)
 }
 
 //================================================================
-//フェードの設定処理
+// 遷移
 //================================================================
 void CFade::Set(CScene::MODE modeNext)
 {
 	m_fade = FADE_OUT;
+	m_modeOld = m_modeNext;
 	m_modeNext = modeNext;
 	m_Color = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+//================================================================
+// 遷移しない
+//================================================================
+void CFade::Set(void)
+{
+	if (m_bFade == false)
+	{
+		m_fade = FADE_OUT;
+		m_bFade = true;
+		m_modeOld = m_modeNext;
+		m_Color = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	}
 }

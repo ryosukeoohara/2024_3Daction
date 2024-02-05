@@ -44,6 +44,8 @@ private:
 		int m_nNumFrame;  // フレームの総数
 		int m_nAttackOccurs;  // 攻撃判定発生フレーム
 		int m_nAttackEnd;  // 攻撃判定終了フレーム
+		int m_nAttackDamege;  // 攻撃力
+		float m_nBlowAway;    // 吹っ飛び
 		bool m_bLoop;     // ループするかどうか
 		bool m_bFinish;   // 終了したかどうか
 
@@ -75,6 +77,8 @@ public:
 	int GetNowFrame(void);
 	int GetAttackOccurs(void);
 	int GetAttackEnd(void);
+	int GetAttackDamege(void);
+	float GetBlowAway(void);
 	INFO GetInfo(void);
 
 private:

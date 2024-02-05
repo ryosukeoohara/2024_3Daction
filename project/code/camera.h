@@ -44,6 +44,7 @@ public:
 	void Title(void);
 	void Scope(void);
 	void SetCamera(void);
+	void Reset(void);
 
 	void Boss(void);
 

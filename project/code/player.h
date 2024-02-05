@@ -117,8 +117,8 @@ public:
 	void Hit(void);			                  // 攻撃をくらった時の処理
 
 	//　設定系
-	void SetPosition(D3DXVECTOR3 pos) { m_Info.move = pos; }         // 位置設定
-	void SetRotition(D3DXVECTOR3 rot) { m_Info.move = rot; }         // 向き設定
+	void SetPosition(D3DXVECTOR3 pos) { m_Info.pos = pos; }         // 位置設定
+	void SetRotition(D3DXVECTOR3 rot) { m_Info.rot = rot; }         // 向き設定
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }           // 移動量設定
 	void SetState(STATE state) { m_Info.state = state; }             // 状態
 	void SetGrapItem(CObjectX *obj) { m_Obj = obj; }
@@ -133,6 +133,7 @@ public:
 	D3DXMATRIX *GetMatrix(void) { return &m_Info.mtxWorld; }     // マトリックス
 	CCharacter **GetChar(void) { return m_ppCharacter; }
 	bool GetbAttack(void) { return m_bAttack; }                // 攻撃中かどうか
+	CMotion *GetMotion(void) { return m_pMotion; }
 
 private:
 

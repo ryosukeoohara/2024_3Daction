@@ -23,6 +23,7 @@
 #include "character.h"
 #include "collision.h"
 #include "enemymanager.h"
+#include "fade.h"
 #include <assert.h>
 
 //*=============================================================================
@@ -123,45 +124,39 @@ CEnemyBoss * CEnemyBoss::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyBoss::Controll(void)
-{
-	if (m_Info.state == STATE_DAMEGE)
-	{
-		Damege();
-	}
-	else
-	{
-		Move();
-	}
-
-	if (m_Info.nLife <= 0)
-	{
-		//this->Uninit();
-		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		return;
-	}
-
-	if (m_Info.state != STATE_GRAP)
-	{
-		m_Info.move.y -= 0.9f;
-	}
-
-	// 移動量
-	m_Info.pos.x += m_Info.move.x;
-	m_Info.pos.y += m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z;
-
-	if (m_Info.pos.y <= 0.0f)
-	{
-		m_Info.pos.y = 0.0f;
-	}
-
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-}
+//void CEnemyBoss::Controll(void)
+//{
+//	Move();
+//
+//	if (m_Info.nLife <= 0)
+//	{
+//		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
+//		int nNum = CGame::GetEnemyManager()->GetNum() - 1;
+//		CGame::GetEnemyManager()->SetNum(nNum);
+//		return;
+//	}
+//
+//	if (m_Info.state != STATE_GRAP)
+//	{
+//		m_Info.move.y -= 0.9f;
+//	}
+//
+//	// 移動量
+//	m_Info.pos.x += m_Info.move.x;
+//	m_Info.pos.y += m_Info.move.y;
+//	m_Info.pos.z += m_Info.move.z;
+//
+//	if (m_Info.pos.y <= 0.0f)
+//	{
+//		m_Info.pos.y = 0.0f;
+//	}
+//
+//	//デバッグプロックの情報を取得
+//	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+//	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+//	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+//	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+//}
 
 //==============================================================================
 // 制御処理
@@ -226,13 +221,12 @@ void CEnemyBoss::Move(void)
 	//プレイヤーの情報取得
 	CPlayer *pPlayer = CGame::GetPlayer();
 
-	if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
-	{//円の中にプレイヤーが入った
+	D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
 
-		D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
+	float fDiffmove, fDestmove;
 
-		float fDiffmove, fDestmove;
-
+	if (m_Info.state != STATE_DAMEGE)
+	{
 		fDest = m_Info.pos - PlayerPos;
 
 		fDestmove = atan2f(fDest.x, fDest.z);
@@ -263,36 +257,28 @@ void CEnemyBoss::Move(void)
 		//移動量を更新(減衰させる)
 		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
 		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
+	}
 
-		if (fDest.x <= 80.0f && fDest.x >= -80.0f && fDest.z <= 80.0f && fDest.z >= -80.0f)
+	if (fDest.x <= 80.0f && fDest.x >= -80.0f && fDest.z <= 80.0f && fDest.z >= -80.0f)
+	{
+		if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
 		{
-			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK)
-			{
-				m_Info.state = STATE_NEUTRAL;
-				GetMotion()->Set(TYPE_NEUTRAL);
-			}
-
-			Attack();
-
-			m_Info.move.x = 0.0f;
-			m_Info.move.z = 0.0f;
-		}
-		else
-		{
-			if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK)
-			{
-				m_Info.state = STATE_DASH;
-				GetMotion()->Set(TYPE_DASH);
-			}
+			m_Info.state = STATE_NEUTRAL;
+			GetMotion()->Set(TYPE_NEUTRAL);
 		}
 
-		m_Info.pos.x += m_Info.move.x * 0.5f;
-		m_Info.pos.z += m_Info.move.z * 0.5f;
+		Attack();
+
+		m_Info.move.x = 0.0f;
+		m_Info.move.z = 0.0f;
 	}
 	else
 	{
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
+		if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+		{
+			m_Info.state = STATE_DASH;
+			GetMotion()->Set(TYPE_DASH);
+		}
 	}
 
 	if (GetMotion()->IsFinish() == true)
@@ -305,24 +291,16 @@ void CEnemyBoss::Move(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyBoss::Damege(void)
-{
-	// 移動量
-	/*m_Info.pos.x += m_Info.move.x * -1.5f;
-	m_Info.pos.y = m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z * -1.5f;*/
-
-	m_nDamegeCounter--;
-
-	if (m_nDamegeCounter < 0)
-	{
-		m_nDamegeCounter = DAMEGECOUNT;
-		m_Info.state = STATE_NEUTRAL;
-
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
-	}
-}
+//void CEnemyBoss::Damege(int damege)
+//{
+//	m_Info.nLife -= damege;
+//
+//	if (m_Info.state != STATE_DAMEGE)
+//	{
+//		m_Info.state = STATE_DAMEGE;
+//		GetMotion()->Set(TYPE_DAMEGE);
+//	}
+//}
 
 //==============================================================================
 // 初期化処理
@@ -342,6 +320,15 @@ void CEnemyBoss::Uninit(void)
 {
 	CEnemy::Uninit();
 	CObject::Release();
+
+	//フェードの情報を取得
+	CFade *pFade = CManager::Getinstance()->GetFade();
+
+	if (pFade->Get() != pFade->FADE_OUT)
+	{
+		//シーンをゲームに遷移
+		pFade->Set(CScene::MODE_RESULT);
+	}
 }
 
 //==============================================================================

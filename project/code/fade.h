@@ -31,8 +31,14 @@ public:
 	void Uninit(void);                         //終了処理
 	void Update(void);                         //更新処理
 	void Draw(void);                           //描画処理
+
+	// 設定系
 	void Set(CScene::MODE modenext);           //設定処理
+	void Set(void);
+
+	// 取得系
 	FADE Get(void) { return m_fade; }          //取得処理
+	float GetCol(void) { return m_Color.a; }
 
 	static CFade *Create(CScene::MODE modenext);                //生成
 
@@ -41,9 +47,10 @@ private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;         //頂点情報を格納
 	FADE m_fade;                                //フェードの状態
 	CScene::MODE m_modeNext;                    //次の画面
+	CScene::MODE m_modeOld;                    //次の画面
 	D3DXCOLOR m_Color;                          //ポリゴンの色
-							                    
 	int m_nIdxTexture;                          //テクスチャのインデックス番号
+	bool m_bFade;
 };
 
 #endif

@@ -28,7 +28,6 @@
 //*=============================================================================
 // マクロ定義
 //*=============================================================================
-#define ENEMY_TEXT   ("data\\TEXT\\motion_set_enemy.txt")   //敵のテキストファイル
 #define ENETEXT ("data\\TEXT\\yanki00.txt")
 
 // 無名名前空間を定義
@@ -160,45 +159,49 @@ void CEnemyWeak::Draw(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyWeak::Controll(void)
-{
-	if (m_Info.state == STATE_DAMEGE)
-	{
-		Damege();
-	}
-	else
-	{
-		Move();
-	}
-
-	if (m_Info.nLife <= 0)
-	{
-		//this->Uninit();
-		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		return;
-	}
-
-	if (m_Info.state != STATE_GRAP)
-	{
-		m_Info.move.y -= 0.9f;
-	}
-
-	// 移動量
-	m_Info.pos.x += m_Info.move.x;
-	m_Info.pos.y += m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z;
-
-	if (m_Info.pos.y <= 0.0f)
-	{
-		m_Info.pos.y = 0.0f;
-	}
-
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-}
+//void CEnemyWeak::Controll(void)
+//{
+//	Move();
+//
+//	if (m_Info.state == STATE_DAMEGE)
+//	{
+//		m_nDamegeCounter--;
+//
+//		if (m_nDamegeCounter <= 0)
+//		{
+//			m_Info.state = STATE_NONE;
+//		}
+//	}
+//	
+//	if (m_Info.nLife <= 0)
+//	{
+//		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
+//		int nNum = CGame::GetEnemyManager()->GetNum() - 1;
+//		CGame::GetEnemyManager()->SetNum(nNum);
+//		return;
+//	}
+//
+//	if (m_Info.state != STATE_GRAP)
+//	{
+//		m_Info.move.y -= 0.9f;
+//	}
+//
+//	// 移動量
+//	m_Info.pos.x += m_Info.move.x;
+//	m_Info.pos.y += m_Info.move.y;
+//	m_Info.pos.z += m_Info.move.z;
+//
+//	if (m_Info.pos.y <= 0.0f)
+//	{
+//		m_Info.pos.y = 0.0f;
+//	}
+//
+//	//デバッグプロックの情報を取得
+//	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+//	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+//	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+//	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+//}
 
 //==============================================================================
 // 制御処理
@@ -251,40 +254,43 @@ void CEnemyWeak::Move(void)
 
 		float fDiffmove, fDestmove;
 
-		fDest = m_Info.pos - PlayerPos;
-
-		fDestmove = atan2f(fDest.x, fDest.z);
-		fDiffmove = fDestmove - m_Info.rot.y;
-
-		//角度の値を修正する--------------------------------------------------
-		if (fDiffmove >= D3DX_PI)
+		if (m_Info.state != STATE_DAMEGE)
 		{
-			fDiffmove = -D3DX_PI;
-		}
-		else if (fDiffmove <= -D3DX_PI)
-		{
-			fDiffmove = D3DX_PI;
-		}
+			fDest = m_Info.pos - PlayerPos;
 
-		m_Info.rot.y += fDiffmove * 0.05f;
+			fDestmove = atan2f(fDest.x, fDest.z);
+			fDiffmove = fDestmove - m_Info.rot.y;
 
-		//角度の値を修正する--------------------------------------------------
-		if (m_Info.rot.y > D3DX_PI)
-		{
-			m_Info.rot.y = -D3DX_PI;
+			//角度の値を修正する--------------------------------------------------
+			if (fDiffmove >= D3DX_PI)
+			{
+				fDiffmove = -D3DX_PI;
+			}
+			else if (fDiffmove <= -D3DX_PI)
+			{
+				fDiffmove = D3DX_PI;
+			}
+
+			m_Info.rot.y += fDiffmove * 0.05f;
+
+			//角度の値を修正する--------------------------------------------------
+			if (m_Info.rot.y > D3DX_PI)
+			{
+				m_Info.rot.y = -D3DX_PI;
+			}
+			else if (m_Info.rot.y < -D3DX_PI)
+			{
+				m_Info.rot.y = D3DX_PI;
+			}
+
+			//移動量を更新(減衰させる)
+			m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
+			m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
 		}
-		else if (m_Info.rot.y < -D3DX_PI)
-		{
-			m_Info.rot.y = D3DX_PI;
-		}
-
-		//移動量を更新(減衰させる)
-		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
-		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
-
+		
 		if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
 		{
-			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK)
+			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
 			{
 				m_Info.state = STATE_NEUTRAL;
 				GetMotion()->Set(TYPE_NEUTRAL);
@@ -296,20 +302,23 @@ void CEnemyWeak::Move(void)
 		}
 		else
 		{
-			if (m_Info.state != STATE_DASH)
+			if (m_Info.state != STATE_DASH && m_Info.state != STATE_DAMEGE)
 			{
 				m_Info.state = STATE_DASH;
 				GetMotion()->Set(TYPE_DASH);
 			}
 		}
-
-		m_Info.pos.x += m_Info.move.x * 0.5f;
-		m_Info.pos.z += m_Info.move.z * 0.5f;
 	}
 	else
 	{
 		m_Info.move.x = 0.0f;
 		m_Info.move.z = 0.0f;
+
+		if (m_Info.state != STATE_NEUTRAL)
+		{
+			m_Info.state = STATE_NEUTRAL;
+			GetMotion()->Set(TYPE_NEUTRAL);
+		}
 	}
 
 	if (GetMotion()->IsFinish() == true)
@@ -322,21 +331,13 @@ void CEnemyWeak::Move(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyWeak::Damege(void)
-{
-	// 移動量
-	/*m_Info.pos.x += m_Info.move.x * -1.5f;
-	m_Info.pos.y = m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z * -1.5f;*/
-
-	m_nDamegeCounter--;
-
-	if (m_nDamegeCounter < 0)
-	{
-		m_nDamegeCounter = DAMEGECOUNT;
-		m_Info.state = STATE_NEUTRAL;
-
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
-	}
-}
+//void CEnemyWeak::Damege(int damege)
+//{
+//	m_Info.nLife -= damege;
+//
+//	if (m_Info.state != STATE_DAMEGE)
+//	{
+//		m_Info.state = STATE_DAMEGE;
+//		GetMotion()->Set(TYPE_DAMEGE);
+//	}
+//}

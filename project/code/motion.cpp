@@ -214,6 +214,22 @@ int CMotion::GetAttackEnd(void)
 }
 
 //===========================================================
+// çUåÇóÕ
+//===========================================================
+int CMotion::GetAttackDamege(void)
+{
+	return m_aInfo[m_nType].m_nAttackDamege;
+}
+
+//===========================================================
+// êÅÇ¡îÚÇ—
+//===========================================================
+float CMotion::GetBlowAway(void)
+{
+	return m_aInfo[m_nType].m_nBlowAway;
+}
+
+//===========================================================
 // ê›íËèàóù
 //===========================================================
 CMotion::INFO CMotion::GetInfo(void)
@@ -313,6 +329,18 @@ void CMotion::ReadText(const char *TextFilename)
 						{
 							fscanf(pFile, "%s", &aString);
 							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nAttackEnd);
+						}
+
+						if (strcmp("ATTACK", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nAttackDamege);
+						}
+
+						if (strcmp("BLOWAWAY", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%f", &m_aInfo[nCntMotion].m_nBlowAway);
 						}
 
 						if (strcmp("KEYSET", aString) == 0)

@@ -48,10 +48,10 @@ public:
 private:
 
 	// 敵の動き制御
-	void Controll(void) override;
+	//void Controll(void) override;
 	void Attack(void) override;
 	void Move(void) override;
-	void Damege(void) override;
+	//void Damege(int damege) override;
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル

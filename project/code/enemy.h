@@ -91,14 +91,15 @@ public:
 	static int GetNumAll(void) { return m_nNumAll; }
 	CMotion *GetMotion(void) { return m_pMotion; }
 
+	virtual void Damege(int damege, float blowaway);
+
 protected:
 
 	// 制御処理
-	virtual void Controll(void);                       
+	void Controll(void);
 	virtual void Attack(void);
 	virtual void Move(void);
-	virtual void Damege(void);
-
+	
 	struct INFO
 	{
 		D3DXVECTOR3 pos;                         // 位置
@@ -116,15 +117,13 @@ protected:
 
 private:
 
-	
-
 	//CEnemy *m_apEnemy[]
 	CMotion *m_pMotion;                        // モーションへのポインタ
 	CCharacter **m_apModel;                    // モデル(パーツ)へのポインタ
 	static int m_nNumAll;                      // 敵の総数
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nIdx;
-	D3DXMATRIX *m_pCurrent;                     // 親のマトリックス
+	D3DXMATRIX *m_pCurrent;                    // 親のマトリックス
 	static CEnemy *m_pTop;  //先頭のオブジェクトへのポインタ
 	static CEnemy *m_pCur; //最後尾のオブジェクトへのポインタ
 	static CEnemy *m_pNext;

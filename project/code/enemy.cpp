@@ -63,21 +63,6 @@ CEnemy::CEnemy()
 	m_nDamegeCounter = 0;
 	m_pCurrent = nullptr;
 	m_bDeath = false;
-
-	/*CEnemy *pEnemy = m_pTop;
-
-	if (m_pTop == nullptr)
-	{
-		m_pTop = this;
-
-		m_pCur = this;
-	}
-	else if (m_pTop != nullptr)
-	{
-		m_pPrev = m_pCur;
-		m_pPrev->m_pNext = this;
-		m_pCur = this;
-	}*/
 }
 
 //==============================================================================
@@ -96,21 +81,6 @@ CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Info.nIdxID = -1;
 	m_nDamegeCounter = 0;
 	m_bDeath = false;
-
-	/*CEnemy *pEnemy = m_pTop;
-
-	if (m_pTop == nullptr)
-	{
-		m_pTop = this;
-
-		m_pCur = this;
-	}
-	else if (m_pTop != nullptr)
-	{
-		m_pPrev = m_pCur;
-		m_pPrev->m_pNext = this;
-		m_pCur = this;
-	}*/
 }
 
 //==============================================================================
@@ -178,31 +148,6 @@ void CEnemy::Uninit(void)
 		delete m_pMotion;
 		m_pMotion = nullptr;
 	}
-
-	/*CEnemy *pobject = m_pTop;
-
-	while (pobject != nullptr)
-	{
-		CEnemy *pObjectNext = pobject->m_pNext;
-
-		if (pobject->m_bDeath == true)
-		{
-			pobject->m_pPrev->m_pNext = pobject->m_pNext;
-
-			if (pobject->m_pNext != nullptr)
-			{
-				pobject->m_pNext->m_pPrev = pobject->m_pPrev;
-			}
-			else
-			{
-				m_pCur = pobject->m_pPrev;
-			}
-
-			pobject = nullptr;
-		}
-
-		pobject = pObjectNext;
-	}*/
 
 	CObject::Release();
 }
@@ -278,45 +223,47 @@ void CEnemy::Draw(void)
 //==============================================================================
 void CEnemy::Controll(void)
 {
-	//if (m_Info.state == STATE_DAMEGE)
-	//{
-	//	Damege();
-	//}
-	//else
-	//{
-	//	if (m_Type == TYPE_ENEMY)
-	//	{
-	//		Move();
-	//	}
-	//}
+	Move();
 
-	//if (m_Info.nLife <= 0)
-	//{
-	//	//this->Uninit();
-	//	CGame::GetEnemyManager()->Release(m_nIdx);
-	//	return;
-	//}
+	if (m_Info.state == STATE_DAMEGE)
+	{
+		m_nDamegeCounter--;
 
-	//if (m_Info.state != STATE_GRAP)
-	//{
-	//	m_Info.move.y -= 0.9f;
-	//}
+		if (m_nDamegeCounter <= 0)
+		{
+			m_Info.state = STATE_NONE;
+			m_nDamegeCounter = DAMEGECOUNT;
+		}
+	}
 
-	//// 移動量
-	//m_Info.pos.x += m_Info.move.x;
-	//m_Info.pos.y += m_Info.move.y;
-	//m_Info.pos.z += m_Info.move.z;
+	if (m_Info.nLife <= 0)
+	{
+		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
+		int nNum = CGame::GetEnemyManager()->GetNum() - 1;
+		CGame::GetEnemyManager()->SetNum(nNum);
+		return;
+	}
 
-	//if (m_Info.pos.y <= 0.0f)
-	//{
-	//	m_Info.pos.y = 0.0f;
-	//}
+	if (m_Info.state != STATE_GRAP)
+	{
+		m_Info.move.y -= 0.9f;
+	}
 
-	////デバッグプロックの情報を取得
-	//CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	//pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	//pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	//pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+	// 移動量
+	m_Info.pos.x += m_Info.move.x;
+	m_Info.pos.y += m_Info.move.y;
+	m_Info.pos.z += m_Info.move.z;
+
+	if (m_Info.pos.y <= 0.0f)
+	{
+		m_Info.pos.y = 0.0f;
+	}
+
+	//デバッグプロックの情報を取得
+	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
 }
 
 //==============================================================================
@@ -413,23 +360,16 @@ void CEnemy::Move(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemy::Damege(void)
+void CEnemy::Damege(int damege, float blowaway)
 {
-	// 移動量
-	/*m_Info.pos.x += m_Info.move.x * -1.5f;
-	m_Info.pos.y = m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z * -1.5f;*/
+	m_Info.nLife -= damege;
+	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	/*m_nDamegeCounter--;
-
-	if (m_nDamegeCounter < 0)
+	if (m_Info.state != STATE_DAMEGE)
 	{
-		m_nDamegeCounter = DAMEGECOUNT;
-		m_Info.state = STATE_NEUTRAL;
-
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
-	}*/
+		m_Info.state = STATE_DAMEGE;
+		m_pMotion->Set(TYPE_DAMEGE);
+	}
 }
 
 //==============================================================================

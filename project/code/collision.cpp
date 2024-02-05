@@ -24,6 +24,7 @@
 #include "character.h"
 #include "motion.h"
 #include "map.h"
+#include "motion.h"
 
 //=============================================================================
 //コンストラクタ
@@ -104,7 +105,7 @@ bool CCollision::Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyR
 //=============================================================================
 //円の当たり判定処理
 //=============================================================================
-bool CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTargetRadius, float fHeight)
+void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTargetRadius, float fHeight)
 {
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
 	CEnemy **ppEnemy = pEnemyManager->GetEnemy();
@@ -121,18 +122,10 @@ bool CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 
 			if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE)
 			{
-				ppEnemy[nCount]->SetMove(D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -5.0f, 10.0f, cosf(CGame::GetPlayer()->GetRotition().y) * -5.0f));
-				ppEnemy[nCount]->SetState(CEnemy::STATE_DAMEGE);
-				ppEnemy[nCount]->GetMotion()->Set(CEnemy::TYPE_DAMEGE);
-				int nLife = ppEnemy[nCount]->GetLife();
-				nLife -= 1;
-				ppEnemy[nCount]->SetLife(nLife);
-				//return true;
+				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway());
 			}
 		}
 	}
-
-	return false;
 }
 
 //=============================================================================

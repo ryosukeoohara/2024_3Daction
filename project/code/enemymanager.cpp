@@ -12,6 +12,8 @@
 #include "enemy.h"
 #include "enemy_weak.h"
 #include "enemy_boss.h"
+#include "manager.h"
+#include "input.h"
 
 //*============================================================================
 // 静的メンバ変数
@@ -23,7 +25,7 @@ CEnemy *CEnemyManager::m_pSNext = nullptr;
 //*============================================================================
 // マクロ定義
 //*============================================================================
-#define ENEMY_TEXT   ("data\\TEXT\\enemyinformation.txt")    //敵の最大数
+
 
 //=============================================================================
 // コンストラクタ
@@ -81,7 +83,17 @@ void CEnemyManager::Uninit(void)
 //=============================================================================
 void CEnemyManager::Update(void)
 {
-	
+	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_K) == true)
+	{
+		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
+		{
+			if (m_appEnemy[nCount] != nullptr)
+			{// 使用されていたら
+
+				m_appEnemy[nCount]->SetLife(0);
+			}
+		}
+	}
 }
 
 //=============================================================================
@@ -97,7 +109,7 @@ CEnemyManager * CEnemyManager::Create(void)
 
 		pEnemyManager->Init();
 
-		pEnemyManager->ReadText();
+		pEnemyManager->ReadText(ENEMYINFO_TEXT);
 	}
 
 	return pEnemyManager;
@@ -122,7 +134,7 @@ void CEnemyManager::Release(int idx)
 //=============================================================================
 //テキストファイル読み込み
 //=============================================================================
-void CEnemyManager::ReadText(void)
+void CEnemyManager::ReadText(const char *text)
 {
 	int nLife = 0;
 	int nType = -1;
@@ -131,7 +143,7 @@ void CEnemyManager::ReadText(void)
 
 	FILE *pFile;   //ファイルポインタを宣言
 
-	pFile = fopen(ENEMY_TEXT, "r");
+	pFile = fopen(text, "r");
 
 	if (pFile != NULL)
 	{//ファイルを開けた場合
@@ -148,6 +160,7 @@ void CEnemyManager::ReadText(void)
 				fscanf(pFile, "%d", &m_nEnemyAll);  //モデルの総数
 
 				m_appEnemy = new CEnemy*[m_nEnemyAll];
+				SetNum(m_nEnemyAll);
 
 			}  //NUM_MODELのかっこ
 

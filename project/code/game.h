@@ -19,6 +19,17 @@ class CMap;
 class CGame : public CScene
 {
 public:
+
+	enum WAVE
+	{
+		WAVE_00 = 0,
+		WAVE_01,
+		WAVE_MAX
+	};
+
+	static WAVE m_Wave;
+
+public:
 	CGame();
 	CGame(CScene::MODE mode);
 	~CGame();
@@ -41,8 +52,12 @@ public:
 	static CCollision *GetCollision(void) { return m_Collision; }
 	static CItem *GetItem(void) { return m_pItem; }
 	static CMap *GetMap(void) { return m_pMap; }
+	static WAVE GetWave(void) { return m_Wave; }
 
 private:
+
+	static void WaveControll(void);
+
 	static CPause *m_pPause;
 	static CPlayer *m_pPlayer;
 	static CEnemy *m_pEnemy;
