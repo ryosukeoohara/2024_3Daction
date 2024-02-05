@@ -164,7 +164,7 @@ CHARACTERSET
 		INDEX = 17
 		PARENT = 16					# (親)左腿
 		POS = 0.0 -19.0 0.0
-		ROT = 0.0 60.0 170.0
+		ROT = 0.0 0.0 0.0
 	END_PARTSSET
 	
 END_CHARACTERSET
@@ -1400,8 +1400,10 @@ END_MOTIONSET
 # ぐるぐるパンチモーション
 #---------------------------------------
 MOTIONSET
-	LOOP = 1
+	LOOP = 0
 	NUM_KEY = 9
+	STRAT_COLLI = 30 # 攻撃判定発生フレーム
+	END_COLLI = 60  # 攻撃判定終了フレーム
 
 	KEYSET			# --- << 0 / 9 >> ---
 		FRAME = 20
@@ -1592,7 +1594,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 2 / 9 >> ---
-		FRAME = 5
+		FRAME = 15
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.25 -0.63 0.00
 			POS = 0.00 -6.50 -32.00
@@ -1686,7 +1688,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 3 / 9 >> ---
-		FRAME = 5
+		FRAME = 15
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.25 -1.32 0.00
 			POS = 0.00 -6.50 -32.00
@@ -1780,7 +1782,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 4 / 9 >> ---
-		FRAME = 5
+		FRAME = 15
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.25 -2.73 0.00
 			POS = 0.00 -5.00 -32.00
@@ -1874,7 +1876,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 5 / 9 >> ---
-		FRAME = 5
+		FRAME = 15
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.23 -4.59 0.00
 			POS = 0.00 -5.00 -32.00
@@ -1968,7 +1970,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 6 / 9 >> ---
-		FRAME = 5
+		FRAME = 15
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.46 -0.13 0.00
 			POS = 0.00 -5.00 -32.00
@@ -2254,7 +2256,7 @@ END_MOTIONSET
 # パンチモーション
 #---------------------------------------
 MOTIONSET
-	LOOP = 1
+	LOOP = 0
 	NUM_KEY = 4
 	
 	KEYSET			# --- << 0 / 4 >> ---

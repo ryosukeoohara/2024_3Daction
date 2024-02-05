@@ -41,6 +41,7 @@ public:
 		STATE_THROW,
 		STATE_HEAT,
 		STATE_GRAPDASH,
+		STATE_DAMEGE,
 		STATE_MAX
 	};
 
@@ -95,6 +96,7 @@ private:
 		D3DXMATRIX mtxWorld;              // ワールドマトリックス
 		STATE state;                      // 状態
 		ATTACKTYPE Atc;
+		int nLife;
 	};
 
 	INFO m_Info;                          // 情報
@@ -120,12 +122,14 @@ public:
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }           // 移動量設定
 	void SetState(STATE state) { m_Info.state = state; }             // 状態
 	void SetGrapItem(CObjectX *obj) { m_Obj = obj; }
+	void SetLife(int nlife) { m_Info.nLife = nlife; }                // 体力
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置取得
 	D3DXVECTOR3 GetRotition(void) { return m_Info.rot; }       // 向き取得
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }          // 移動量取得
 	STATE GetState(void) { return m_Info.state; }              // 状態
+	int GetLife(void) { return m_Info.nLife; }                 // 体力
 	D3DXMATRIX *GetMatrix(void) { return &m_Info.mtxWorld; }     // マトリックス
 	CCharacter **GetChar(void) { return m_ppCharacter; }
 	bool GetbAttack(void) { return m_bAttack; }                // 攻撃中かどうか
@@ -139,6 +143,7 @@ private:
 	void Grap(void);
 	void Avoid(void);
 	void State(void);
+	void Damege(void);
 	void ReadText(const char *fliename);  // テキストファイル読み込み
 
 	int m_nNumModel;                    //モデル(パーツ)の総数
@@ -147,6 +152,7 @@ private:
 	int m_nIdx;
 	int m_nParent;
 	int m_nCntColi;
+	int m_nDamegeCounter;
 	char m_filename[128] = {};
 
 	D3DXVECTOR3 m_Readpos;

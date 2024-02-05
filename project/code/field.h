@@ -7,9 +7,9 @@
 #ifndef _FIELD_H_
 #define _FIELD_H_
 
-#include "object3D.h"
+#include "objectMesh.h"
 
-class CField : public CObject3D
+class CField : public CObjectMesh
 {
 public:
 	CField();

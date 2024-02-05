@@ -207,8 +207,32 @@ void CEnemyWeak::Attack(void)
 {
 	if (m_Info.state != STATE_ATTACK)
 	{
-		m_Info.state = STATE_ATTACK;
-		GetMotion()->Set(TYPE_ATTACK);
+		m_nAtcCounter++;
+
+		if (m_nAtcCounter >= 60)
+		{
+			m_nAtcCounter = 0;
+
+			{
+				m_Info.state = STATE_ATTACK;
+				GetMotion()->Set(TYPE_ATTACK);
+			}
+		}
+	}
+	else
+	{
+		if (GetMotion()->GetAttackOccurs() <= GetMotion()->GetNowFrame() && GetMotion()->GetAttackEnd() >= GetMotion()->GetNowFrame())
+		{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
+			{
+				CGame::GetPlayer()->SetState(CPlayer::STATE_DAMEGE);
+				CGame::GetPlayer()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * -5.0f, 10.0f, cosf(m_Info.rot.y) * -5.0f));
+				int nLife = CGame::GetPlayer()->GetLife();
+				nLife--;
+				CGame::GetPlayer()->SetLife(nLife);
+			}
+		}
 	}
 }
 
@@ -260,11 +284,15 @@ void CEnemyWeak::Move(void)
 
 		if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
 		{
+			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK)
+			{
+				m_Info.state = STATE_NEUTRAL;
+				GetMotion()->Set(TYPE_NEUTRAL);
+			}
+
 			Attack();
 			m_Info.move.x = 0.0f;
 			m_Info.move.z = 0.0f;
-
-
 		}
 		else
 		{
@@ -282,12 +310,12 @@ void CEnemyWeak::Move(void)
 	{
 		m_Info.move.x = 0.0f;
 		m_Info.move.z = 0.0f;
+	}
 
-		if (m_Info.state != STATE_NEUTRAL)
-		{
-			m_Info.state = STATE_NEUTRAL;
-			GetMotion()->Set(TYPE_NEUTRAL);
-		}
+	if (GetMotion()->IsFinish() == true)
+	{
+		m_Info.state = STATE_NEUTRAL;
+		GetMotion()->Set(TYPE_NEUTRAL);
 	}
 }
 

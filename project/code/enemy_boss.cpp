@@ -77,6 +77,7 @@ CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	SetRotition(rot);
 	SetLife(nlife);
 	SetState(CEnemy::STATE_NONE);
+	m_nAtcCounter = 0;
 
 	/*CEnemyBoss *pEnemy = m_pTop;
 
@@ -130,10 +131,7 @@ void CEnemyBoss::Controll(void)
 	}
 	else
 	{
-		if (m_Type == TYPE_ENEMY)
-		{
-			Move();
-		}
+		Move();
 	}
 
 	if (m_Info.nLife <= 0)
@@ -172,8 +170,51 @@ void CEnemyBoss::Attack(void)
 {
 	if (m_Info.state != STATE_ATTACK)
 	{
-		m_Info.state = STATE_ATTACK;
-		GetMotion()->Set(TYPE_ATTACK);
+		m_nAtcCounter++;
+
+		if (m_nAtcCounter >= 40)
+		{
+			m_nAtcCounter = 0;
+
+			//乱数の種を設定
+			srand((unsigned int)time(0));
+
+			int AttackType = rand() % 2;  //攻撃の種類抽選
+
+			switch (AttackType)
+			{
+			case 0:
+
+				m_Info.state = STATE_ATTACK;
+				GetMotion()->Set(TYPE_GURUGURUPUNCH);
+
+				break;
+
+			case 1:
+
+				m_Info.state = STATE_ATTACK;
+				GetMotion()->Set(TYPE_PUNCH);
+
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else
+	{
+		if (GetMotion()->GetAttackOccurs() <= GetMotion()->GetNowFrame() && GetMotion()->GetAttackEnd() >= GetMotion()->GetNowFrame())
+		{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
+			{
+				CGame::GetPlayer()->SetState(CPlayer::STATE_DAMEGE);
+				CGame::GetPlayer()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * -5.0f, 10.0f, cosf(m_Info.rot.y) * -5.0f));
+				int nLife = CGame::GetPlayer()->GetLife();
+				nLife--;
+				CGame::GetPlayer()->SetLife(nLife);
+			}
+		}
 	}
 }
 
@@ -223,17 +264,22 @@ void CEnemyBoss::Move(void)
 		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
 		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
 
-		if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
+		if (fDest.x <= 80.0f && fDest.x >= -80.0f && fDest.z <= 80.0f && fDest.z >= -80.0f)
 		{
+			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK)
+			{
+				m_Info.state = STATE_NEUTRAL;
+				GetMotion()->Set(TYPE_NEUTRAL);
+			}
+
 			Attack();
+
 			m_Info.move.x = 0.0f;
 			m_Info.move.z = 0.0f;
-
-
 		}
 		else
 		{
-			if (m_Info.state != STATE_DASH)
+			if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK)
 			{
 				m_Info.state = STATE_DASH;
 				GetMotion()->Set(TYPE_DASH);
@@ -247,12 +293,12 @@ void CEnemyBoss::Move(void)
 	{
 		m_Info.move.x = 0.0f;
 		m_Info.move.z = 0.0f;
+	}
 
-		if (m_Info.state != STATE_NEUTRAL)
-		{
-			m_Info.state = STATE_NEUTRAL;
-			GetMotion()->Set(TYPE_NEUTRAL);
-		}
+	if (GetMotion()->IsFinish() == true)
+	{
+		m_Info.state = STATE_NEUTRAL;
+		GetMotion()->Set(TYPE_NEUTRAL);
 	}
 }
 
@@ -283,6 +329,7 @@ void CEnemyBoss::Damege(void)
 //==============================================================================
 HRESULT CEnemyBoss::Init(void)
 {
+	CEnemy::Init();
 	ReadText(ENEMY_TEXT);
 
 	return S_OK;

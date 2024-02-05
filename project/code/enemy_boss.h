@@ -29,6 +29,8 @@ public:
 		TYPE_DASH,                     // 移動
 		TYPE_ATTACK,                   // 攻撃
 		TYPE_DAMEGE,                   // ダメージ
+		TYPE_GURUGURUPUNCH,            // ぐるぐるパンチ
+		TYPE_PUNCH,                    // パンチ
 		TYPE_MAX
 	};
 
@@ -45,9 +47,8 @@ public:
 
 	static CEnemyBoss *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife);    //生成
 
-	
-	
 private:
+
 	// 敵の動き制御
 	void Controll(void) override;
 	void Attack(void) override;
@@ -55,6 +56,7 @@ private:
 	void Damege(void) override;
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
+	int m_nAtcCounter;                         // 攻撃のインターバル
 	int m_nIdx;
 
 };

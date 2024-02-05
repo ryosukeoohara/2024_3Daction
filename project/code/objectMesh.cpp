@@ -352,7 +352,7 @@ void CObjectMesh::SetSize(float fHeight, float fWidth)
 		{
 			/*pIdx[0] = (WID + ((nWidth + nHeight) * 2) + 2 / HEI + nWidth) +
 				     -(HEI + (nHeight * 2) + 1 / WID + nHeight + nWidth);*/
-			int i = nHeight * 1 + ((nWidth - nHeight) * WID);
+			int i = (nHeight + 1) + (nWidth  * WID) - nHeight * HEI;
 
 			pIdx += 1;
 

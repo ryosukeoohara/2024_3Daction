@@ -287,7 +287,7 @@ void CCamera::CameraV(void)
 		m_rot.y -= 0.05f;
 	}
 
-	//m_rot.y += MousePos.x * 0.005f;
+	m_rot.y += MousePos.x * 0.005f;
 
 	if (m_rot.y > D3DX_PI)
 	{

@@ -485,7 +485,6 @@ void CEnemy::ReadText(char *fliename)
 
 				}  //MODEL_LILENAME‚Ì‚©‚Á‚±
 
-
 				if (strcmp("CHARACTERSET", aString) == 0)
 				{
 					while (strcmp("END_CHARACTERSET", aString) != 0)

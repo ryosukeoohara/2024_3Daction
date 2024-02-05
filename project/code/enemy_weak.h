@@ -54,6 +54,7 @@ private:
 	void Damege(void) override;
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
+	int m_nAtcCounter;                         // 攻撃のインターバル
 	int m_nIdx;
 };
 

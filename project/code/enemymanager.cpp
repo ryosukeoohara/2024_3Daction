@@ -11,6 +11,7 @@
 #include "enemymanager.h"
 #include "enemy.h"
 #include "enemy_weak.h"
+#include "enemy_boss.h"
 
 //*============================================================================
 // Ã“Iƒƒ“ƒo•Ï”
@@ -124,6 +125,7 @@ void CEnemyManager::Release(int idx)
 void CEnemyManager::ReadText(void)
 {
 	int nLife = 0;
+	int nType = -1;
 	int nCntEnemy = 0;
 	char aString[128] = {};
 
@@ -181,15 +183,30 @@ void CEnemyManager::ReadText(void)
 							fscanf(pFile, "%d", &nLife);       //“G‚Ì‘Ì—Í
 						}
 
+						if (strcmp("TYPE", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);       //=
+							fscanf(pFile, "%d", &nType);       //“G‚Ì‘Ì—Í
+						}
+
 					}//ENEMYSET_END‚Ì‚©‚Á‚± 
 
 					m_appEnemy[nCntEnemy] = nullptr;
 
 					if (m_appEnemy[nCntEnemy] == nullptr)
 					{
-						m_appEnemy[nCntEnemy] = CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
-						m_appEnemy[nCntEnemy]->SetIdx(nCntEnemy);
-						m_appEnemy[nCntEnemy]->SetType(CEnemy::TYPE_WEAK);
+						if (nType == CEnemy::TYPE_WEAK)
+						{
+							m_appEnemy[nCntEnemy] = CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
+							m_appEnemy[nCntEnemy]->SetIdx(nCntEnemy);
+							m_appEnemy[nCntEnemy]->SetType(CEnemy::TYPE_WEAK);
+						}
+						else if (nType == CEnemy::TYPE_BOSS)
+						{
+							m_appEnemy[nCntEnemy] = CEnemyBoss::Create(m_Readpos, m_Readrot, nLife);
+							m_appEnemy[nCntEnemy]->SetIdx(nCntEnemy);
+							m_appEnemy[nCntEnemy]->SetType(CEnemy::TYPE_BOSS);
+						}
 
 						nCntEnemy++;
 					}

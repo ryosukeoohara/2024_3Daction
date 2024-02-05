@@ -64,11 +64,13 @@ CPlayer::CPlayer()
 	m_Info.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Info.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_Info.state = STATE_NONE;
+	m_Info.nLife = 0;
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 
 	m_nIdxTexture = -1;
 	m_nIdxShaadow = -1;
 	m_nCntColi = 0;
+	m_nDamegeCounter = 0;
 	m_Readpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Readrot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -109,11 +111,13 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_Info.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Info.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_Info.state = STATE_NONE;
+	m_Info.nLife = 0;
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 
 	m_nIdxTexture = -1;
 	m_nIdxShaadow = -1;
 	m_nCntColi = 0;
+	m_nDamegeCounter = 0;
 	m_Readpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Readrot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -222,12 +226,12 @@ HRESULT CPlayer::Init(void)
 
 	m_fGrapRot = 1.0f;
 	m_fStamina = 40.0f;
-	m_nLife = 10;
+	m_Info.nLife = 10;
 
 	ReadText(PLAYER01_TEXT);
 
 	m_pLife = CGage2D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), 40.0f, (float)(m_nLife * 20), CGage2D::TYPE_LIFE);
-	m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_nLife * 20);
+	m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_Info.nLife * 20);
 	m_pStamina = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, m_fStamina, CGage3D::TYPE_STAMINA);
 	m_pStamina->SetPos(&m_Info.pos);
 	m_pStamina->GetBill()->SetTex(m_fStamina);
@@ -323,7 +327,16 @@ void CPlayer::Update(void)
 	if (m_fStamina < 40)
 	{
 		m_fStamina += 0.1f;
-		m_pStamina->GetBill()->SetTex(m_fStamina);
+
+		if (m_pStamina != nullptr)
+		{
+			m_pStamina->GetBill()->SetTex(m_fStamina);
+		}
+	}
+
+	if (m_pLife != nullptr)
+	{
+		m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_Info.nLife * 20);
 	}
 }
 
@@ -408,7 +421,7 @@ void CPlayer::Move(void)
 
 	m_Info.posOld = m_Info.pos;
 
-	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_AVOID && m_Info.state != STATE_ATTACK && m_Info.state != STATE_HEAT)
+	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_AVOID && m_Info.state != STATE_ATTACK && m_Info.state != STATE_HEAT && m_Info.state != STATE_DAMEGE)
 	{
 		//ã‚ÉˆÚ“®----------------------------------------------
 		if (InputKeyboard->GetPress(DIK_W) == true || pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) > 0)
@@ -569,7 +582,7 @@ void CPlayer::Action(void)
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
 	// ’ÊíUŒ‚
-	if (InputKeyboard->GetTrigger(DIK_SPACE) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
 	{
 		if (m_Info.state != STATE_GRAP && m_Info.state != STATE_HEAT)
 		{
@@ -986,6 +999,21 @@ void CPlayer::State(void)
 			m_bLift = true;
 		}
 	}
+}
+
+//================================================================
+// ƒ_ƒ[ƒW
+//================================================================
+void CPlayer::Damege(void)
+{
+	if (m_Info.state != STATE_DAMEGE)
+	{
+		m_Info.state = STATE_DAMEGE;
+		//m_pMotion->Set();
+		m_nDamegeCounter = 10;
+	}
+
+	m_nDamegeCounter--;
 }
 
 //================================================================

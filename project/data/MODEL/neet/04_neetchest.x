@@ -324,7 +324,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "Documentsneet.png";
+    "data\\TEXTURE\\Documentsneet.png";
    }
   }
   Material {
@@ -333,7 +333,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "neett.jpg";
+    "data\\TEXTURE\\neett.jpg";
    }
   }
   Material {
@@ -342,7 +342,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Photoshop\\neett.png";
+    "data\\TEXTURE\\neett.png";
    }
   }
   Material {
@@ -351,7 +351,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "UV_Grid.png";
+    "data\\TEXTURE\\UV_Grid.png";
    }
   }
   Material {
@@ -360,7 +360,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "UV_Grid.png";
+    "data\\TEXTURE\\UV_Grid.png";
    }
   }
   Material {

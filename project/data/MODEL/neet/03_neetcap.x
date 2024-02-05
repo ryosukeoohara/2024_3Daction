@@ -3970,7 +3970,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Documents\\Photoshop\\cap.png";
+    "data\\TEXTURE\\cap.png";
    }
   }
   Material {
@@ -3979,7 +3979,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "neet.jpg";
+    "data\\TEXTURE\\neet.jpg";
    }
   }
   Material {

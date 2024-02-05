@@ -52,13 +52,13 @@ CHARACTERSET
     PARTSSET
         INDEX = 2
         PARENT = 1
-        POS = -0.4 20.4 -1.6
+        POS = -0.4 25.4 -1.6
         ROT = 0.0 0.0 0.0
     END_PARTSSET
     PARTSSET
         INDEX = 3
         PARENT = 1
-        POS = 7.6 15.1 -1.0
+        POS = 7.6 20.1 -1.0
         ROT = 0.0 0.0 0.0
     END_PARTSSET
     PARTSSET
@@ -76,7 +76,7 @@ CHARACTERSET
     PARTSSET
         INDEX = 6
         PARENT = 1
-        POS = -6.9 15.2 -1.4
+        POS = -6.9 20.2 -1.4
         ROT = 0.0 0.0 0.0
     END_PARTSSET
     PARTSSET
@@ -635,9 +635,11 @@ END_MOTIONSET
 # [1]番目のモーション(攻撃)
 #===============================
 MOTIONSET
-	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
+	LOOP = 1		# ループするかどうか[0:ループしない / 1:ループする]
 	NUM_KEY = 6		# キー数
-
+	STRAT_COLLI = 20 # 攻撃判定発生フレーム
+	END_COLLI = 25  # 攻撃判定終了フレーム
+	
 	KEYSET			# --- << 0 / 6 >> ---
 		FRAME = 20
 		PARTS	# ----- [ 0 ] -----

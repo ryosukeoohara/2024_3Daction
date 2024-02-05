@@ -90,7 +90,7 @@ HRESULT CGame::Init(void)
 	pField->Init();
 	pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
 	pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	pField->SetSize(200.0f, 200.0f);
+	pField->SetSize(5000.0f, 5000.0f);
 	pField->SetDraw(true);
 
 	// ƒ|[ƒY‚Ì¶¬

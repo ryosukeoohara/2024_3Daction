@@ -50,8 +50,7 @@ public:
 	// 敵の種類
 	enum TYPE
 	{
-		TYPE_NONE = 0,  // なんもない
-		TYPE_WEAK,      // ザコ
+		TYPE_WEAK = 0,      // ザコ
 		TYPE_BOSS,      // ボス
 	};
 

@@ -61,7 +61,7 @@ HRESULT CField::Init(void)
 	CTexture *pTexture = CManager::Getinstance()->GetTexture();
 
 	//‰Šú‰»ˆ—
-	CObject3D::Init();
+	CObjectMesh::Init();
 
 	return S_OK;
 }
@@ -72,7 +72,7 @@ HRESULT CField::Init(void)
 void CField::Uninit(void)
 {
 	//I—¹ˆ—
-	CObject3D::Uninit();
+	CObjectMesh::Uninit();
 }
 
 //===========================================================
@@ -81,7 +81,7 @@ void CField::Uninit(void)
 void CField::Update(void)
 {
 	//XVˆ—
-	CObject3D::Update();
+	CObjectMesh::Update();
 	//CObject3D::SetVtxField();
 }
 
@@ -97,5 +97,5 @@ void CField::Draw(void)
 	pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture));
 
 	//•`‰æˆ—
-	CObject3D::Draw();
+	CObjectMesh::Draw();
 }
