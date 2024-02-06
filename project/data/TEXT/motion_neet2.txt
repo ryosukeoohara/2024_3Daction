@@ -2972,6 +2972,9 @@ END_MOTIONSET
 MOTIONSET
 	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
 	NUM_KEY = 5		# キー数
+	STRAT_COLLI = 8 # 攻撃判定発生フレーム
+	END_COLLI = 15  # 攻撃判定終了フレーム
+	ATTACK = 250     # ダメージ
 
 	KEYSET			# --- << 0 / 5 >> ---
 		FRAME = 5

@@ -34,12 +34,15 @@ public:
 		TYPE_MAX
 	};
 
-	enum CHASE
+	enum ATTACKTYPE
 	{
-		CHASE_OFF = 0,
-		CHASE_ON,
-		CHASE_MAX
+		ATTACKTYPE_GURUGURU = 0,
+		ATTACKTYPE_PUNCH,
+		ATTACKTYPE_FLY,
+		ATTACKTYPE_MAX
 	};
+
+
 
 public:
 
@@ -54,6 +57,9 @@ public:
 
 	static CEnemyBoss *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife);    //生成
 
+	// 設定系
+	void SetChase(CHASE cha) { m_Chase = cha; }
+
 private:
 
 	// 敵の動き制御
@@ -65,6 +71,7 @@ private:
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル
 	int m_nIdx;
+	
 
 };
 

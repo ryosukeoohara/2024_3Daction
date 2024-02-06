@@ -35,6 +35,7 @@ class CTitle;
 class CResult;
 class CFade;
 class CPause;
+class CUtility;
 
 //シーンクラス
 class CScene /*: public CObject*/
@@ -107,6 +108,7 @@ public:		//誰でもアクセスできる
 	CScene *GetScene(void);
 	CFade *GetFade(void);
 	CPause *GetPause(void);
+	CUtility *GetUtility(void);
 	
 
 	void SetMode(CScene::MODE mode);
@@ -136,6 +138,7 @@ private:	//自分だけがアクセスできる
 	CScene *m_pScene;
 	CFade *m_Fade;
 	CPause *m_Pause;
+	CUtility *m_pUtility;
 	
 
 	int m_ResetCounter;  //リセットした回数

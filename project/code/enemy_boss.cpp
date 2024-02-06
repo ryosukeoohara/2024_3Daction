@@ -24,6 +24,7 @@
 #include "collision.h"
 #include "enemymanager.h"
 #include "fade.h"
+#include "utility.h"
 #include <assert.h>
 
 //*=============================================================================
@@ -42,6 +43,7 @@ namespace
 //==============================================================================
 CEnemyBoss::CEnemyBoss()
 {
+	m_Chase = CHASE_ON;
 	/*CEnemyBoss *pEnemy = m_pTop;
 
 	if (m_pTop == nullptr)
@@ -79,6 +81,7 @@ CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	SetLife(nlife);
 	SetState(CEnemy::STATE_NONE);
 	m_nAtcCounter = 0;
+	m_Chase = CHASE_ON;
 
 	/*CEnemyBoss *pEnemy = m_pTop;
 
@@ -174,21 +177,28 @@ void CEnemyBoss::Attack(void)
 			//—”‚ÌŽí‚ðÝ’è
 			srand((unsigned int)time(0));
 
-			int AttackType = rand() % 2;  //UŒ‚‚ÌŽí—Þ’Š‘I
+			int AttackType = rand() % ATTACKTYPE_MAX;  //UŒ‚‚ÌŽí—Þ’Š‘I
 
 			switch (AttackType)
 			{
-			case 0:
+			case ATTACKTYPE_GURUGURU:
 
 				m_Info.state = STATE_ATTACK;
 				GetMotion()->Set(TYPE_GURUGURUPUNCH);
 
 				break;
 
-			case 1:
+			case ATTACKTYPE_PUNCH:
 
 				m_Info.state = STATE_ATTACK;
 				GetMotion()->Set(TYPE_PUNCH);
+
+				break;
+
+			case ATTACKTYPE_FLY:
+
+				m_Info.state = STATE_ATTACK;
+				GetMotion()->Set(TYPE_ATTACK);
 
 				break;
 			default:
@@ -221,70 +231,64 @@ void CEnemyBoss::Move(void)
 	//ƒvƒŒƒCƒ„[‚Ìî•ñŽæ“¾
 	CPlayer *pPlayer = CGame::GetPlayer();
 
-	D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
+	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
-	float fDiffmove, fDestmove;
+	float fDiffmove = 0.0f;
 
-	if (m_Info.state != STATE_DAMEGE)
+	if (m_Chase == CHASE_ON)
 	{
-		fDest = m_Info.pos - PlayerPos;
-
-		fDestmove = atan2f(fDest.x, fDest.z);
-		fDiffmove = fDestmove - m_Info.rot.y;
-
-		//Šp“x‚Ì’l‚ðC³‚·‚é--------------------------------------------------
-		if (fDiffmove >= D3DX_PI)
+		if (m_Info.state != STATE_DAMEGE)
 		{
-			fDiffmove = -D3DX_PI;
-		}
-		else if (fDiffmove <= -D3DX_PI)
-		{
-			fDiffmove = D3DX_PI;
-		}
+			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
 
-		m_Info.rot.y += fDiffmove * 0.05f;
+			fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
+			
+			m_Info.rot.y += fDiffmove * 0.05f;
 
-		//Šp“x‚Ì’l‚ðC³‚·‚é--------------------------------------------------
-		if (m_Info.rot.y > D3DX_PI)
-		{
-			m_Info.rot.y = -D3DX_PI;
-		}
-		else if (m_Info.rot.y < -D3DX_PI)
-		{
-			m_Info.rot.y = D3DX_PI;
+			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+
+			//ˆÚ“®—Ê‚ðXV(Œ¸Š‚³‚¹‚é)
+			m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
+			m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
 		}
 
-		//ˆÚ“®—Ê‚ðXV(Œ¸Š‚³‚¹‚é)
-		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
-		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
-	}
+		D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
 
-	if (fDest.x <= 80.0f && fDest.x >= -80.0f && fDest.z <= 80.0f && fDest.z >= -80.0f)
-	{
-		if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+		if (Dest.x <= 80.0f && Dest.x >= -80.0f && Dest.z <= 80.0f && Dest.z >= -80.0f)
+		{
+			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+			{
+				m_Info.state = STATE_NEUTRAL;
+				GetMotion()->Set(TYPE_NEUTRAL);
+			}
+
+			Attack();
+
+			m_Info.move.x = 0.0f;
+			m_Info.move.z = 0.0f;
+		}
+		else
+		{
+			if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+			{
+				m_Info.state = STATE_DASH;
+				GetMotion()->Set(TYPE_DASH);
+			}
+		}
+
+		if (GetMotion()->IsFinish() == true)
 		{
 			m_Info.state = STATE_NEUTRAL;
 			GetMotion()->Set(TYPE_NEUTRAL);
 		}
-
-		Attack();
-
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
 	}
 	else
 	{
-		if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+		if (m_Info.state != STATE_DASH)
 		{
 			m_Info.state = STATE_DASH;
 			GetMotion()->Set(TYPE_DASH);
 		}
-	}
-
-	if (GetMotion()->IsFinish() == true)
-	{
-		m_Info.state = STATE_NEUTRAL;
-		GetMotion()->Set(TYPE_NEUTRAL);
 	}
 }
 

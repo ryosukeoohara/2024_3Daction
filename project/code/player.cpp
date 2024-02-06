@@ -24,6 +24,7 @@
 #include "gage.h"
 #include "billboard.h"
 #include "enemymanager.h"
+#include "utility.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -78,6 +79,9 @@ CPlayer::CPlayer()
 	m_ppCharacter = nullptr;
 	m_pLife = nullptr;
 	m_pStamina = nullptr;
+	m_pEnemy = nullptr;
+	m_pObj = nullptr;
+	m_nIdxEne = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
 	m_fDiff = 0.0f;
@@ -125,6 +129,9 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_ppCharacter = nullptr;
 	m_pLife = nullptr;
 	m_pStamina = nullptr;
+	m_pEnemy = nullptr;
+	m_pObj = nullptr;
+	m_nIdxEne = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
 	m_fDiff = 0.0f;
@@ -608,6 +615,8 @@ void CPlayer::Action(void)
 	// 回避
 	Avoid();
 
+	Heat();
+
 	CManager::Getinstance()->GetDebugProc()->Print("回転量:%f", m_fGrapRot);
 }
 
@@ -765,7 +774,7 @@ void CPlayer::Grap(void)
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
 	// ジャイアントスイング
-	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
+	/*if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
 	{
 		if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID)
 		{
@@ -778,7 +787,7 @@ void CPlayer::Grap(void)
 				m_bGrap = false;
 			}
 		}
-	}
+	}*/
 
 	// アイテム持つ
 	if (InputKeyboard->GetTrigger(DIK_F) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_LB, 0) == true)
@@ -1011,6 +1020,12 @@ void CPlayer::State(void)
 			m_pMotion->Set(TYPE_LIFT);
 			m_bLift = true;
 		}
+
+		if (m_pEnemy != nullptr)
+		{
+			m_pEnemy->SetChase(CEnemy::CHASE_ON);
+			m_pEnemy = nullptr;
+		}
 	}
 }
 
@@ -1027,6 +1042,99 @@ void CPlayer::Damege(void)
 	}
 
 	m_nDamegeCounter--;
+}
+
+//================================================================
+// ヒートアクション
+//================================================================
+void CPlayer::Heat(void)
+{
+	CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+
+	if (m_Info.state == STATE_LIFT || m_Info.state == STATE_GRAPDASH)
+	{
+		int nNum = 0;
+
+		if (CGame::GetEnemyManager() != nullptr)
+		{
+			nNum = CGame::GetEnemyManager()->GetNum();
+		}
+		
+		for (int nCount = 0; nCount < nNum; nCount++)
+		{
+			if (ppEnemy[nCount] != nullptr)
+			{
+				if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[nCount]->GetPosition(), 50.0f, 50.0f) == true)
+				{
+					if (m_pObj == nullptr)
+					{
+						m_pObj = CObject2D::Create();
+						m_pObj->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.8f, 0.0f));
+						m_pObj->SetSize(25.0f, 25.0f);
+						m_pObj->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Ybutton.png"));
+						m_pObj->SetDraw(true);
+					}
+
+					if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
+					{
+						m_nIdxEne = nCount;
+						//ppEnemy[m_nIdxEne]->SetState(CEnemy::STATE_DAMEGE);
+						ppEnemy[m_nIdxEne]->SetChase(CEnemy::CHASE_OFF);
+						ppEnemy[m_nIdxEne]->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+						if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
+						{
+							if (m_pObj != nullptr)
+							{
+								m_pObj->Uninit();
+								m_pObj = nullptr;
+							}
+
+							CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
+							CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
+							m_Info.state = STATE_HEAT;
+							m_pMotion->Set(TYPE_THROW);
+						}
+					}
+				}
+				else
+				{
+					if (m_pObj != nullptr)
+					{
+						m_pObj->Uninit();
+						m_pObj = nullptr;
+					}
+				}
+			}
+		}
+	}
+
+	if (m_Info.state == STATE_HEAT)
+	{
+		if (ppEnemy[m_nIdxEne] != nullptr)
+		{
+			m_fDest = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, ppEnemy[m_nIdxEne]->GetPosition(), m_Info.rot.y);
+			m_Info.rot.y += m_fDest;
+			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+
+			if (m_Obj != nullptr)
+			{
+				D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
+
+				D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+				Objpos.x = mtx->_41;
+				Objpos.y = mtx->_42;
+				Objpos.z = mtx->_43;
+
+				if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
+				{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+					CGame::GetCollision()->AttackCircle(&Objpos, 50.0f, 50.0f, 100.0f);
+				}
+			}
+		}
+	}
 }
 
 //================================================================

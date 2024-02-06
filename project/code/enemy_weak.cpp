@@ -23,7 +23,8 @@
 #include "character.h"
 #include "collision.h"
 #include "enemymanager.h"
-#include <assert.h>
+#include "utility.h"
+#include  <assert.h>
 
 //*=============================================================================
 // マクロ定義
@@ -250,45 +251,32 @@ void CEnemyWeak::Move(void)
 	if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
 	{//円の中にプレイヤーが入った
 
-		D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
+		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
-		float fDiffmove, fDestmove;
+		float fDiffmove = 0.0f;
 
 		if (m_Info.state != STATE_DAMEGE)
 		{
-			fDest = m_Info.pos - PlayerPos;
+			// 追尾
+			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
 
-			fDestmove = atan2f(fDest.x, fDest.z);
-			fDiffmove = fDestmove - m_Info.rot.y;
-
-			//角度の値を修正する--------------------------------------------------
-			if (fDiffmove >= D3DX_PI)
-			{
-				fDiffmove = -D3DX_PI;
-			}
-			else if (fDiffmove <= -D3DX_PI)
-			{
-				fDiffmove = D3DX_PI;
-			}
+			// 角度補正
+			fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
 
 			m_Info.rot.y += fDiffmove * 0.05f;
 
-			//角度の値を修正する--------------------------------------------------
-			if (m_Info.rot.y > D3DX_PI)
-			{
-				m_Info.rot.y = -D3DX_PI;
-			}
-			else if (m_Info.rot.y < -D3DX_PI)
-			{
-				m_Info.rot.y = D3DX_PI;
-			}
+			// 角度補正
+			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
 			//移動量を更新(減衰させる)
 			m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
 			m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
 		}
+
+		// プレイヤーとの距離
+		D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
 		
-		if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
+		if (Dest.x <= 60.0f && Dest.x >= -60.0f && Dest.z <= 60.0f && Dest.z >= -60.0f)
 		{
 			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
 			{

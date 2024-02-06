@@ -21,6 +21,8 @@ class CObjectX;
 class CGage2D;
 class CGage3D;
 class CBillBoard;
+class CEnemy;
+class CObject2D;
 
 //*==========================================================
 // プレイヤークラス
@@ -145,6 +147,7 @@ private:
 	void Avoid(void);
 	void State(void);
 	void Damege(void);
+	void Heat(void);
 	void ReadText(const char *fliename);  // テキストファイル読み込み
 
 	int m_nNumModel;                    //モデル(パーツ)の総数
@@ -164,6 +167,9 @@ private:
 	CObjectX *m_Obj;                      // 掴んでるオブジェクトのポインタ
 	CGage2D *m_pLife;                     // ゲージのポインタ
 	CGage3D *m_pStamina;                  // ゲージのポインタ
+	CEnemy *m_pEnemy;
+	CObject2D *m_pObj;
+	int m_nIdxEne;
 	float m_fDest;
 	float m_fDestOld;
 	float m_fDiff;

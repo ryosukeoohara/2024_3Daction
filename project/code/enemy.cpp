@@ -513,3 +513,7 @@ void CEnemy::ReadText(char *fliename)
 		m_pMotion->Set(TYPE_NEUTRAL);
 	}
 }
+
+void CEnemy::SetChase(CHASE cha)
+{
+}

@@ -22,6 +22,7 @@
 #include "light.h"
 #include "result.h"
 #include "tutorial.h"
+#include "utility.h"
 
 //================================================================
 //静的メンバ変数
@@ -94,6 +95,7 @@ CManager::CManager()
 {
 	m_ResetCounter = 0;
 	m_bPause = false;
+	m_pUtility = nullptr;
 }
 
 //================================================================
@@ -217,6 +219,11 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 		//初期化処理
 		m_Fade->Init();
+	}
+
+	if (m_pUtility == nullptr)
+	{
+		m_pUtility = CUtility::Create();
 	}
 
 	return S_OK;
@@ -371,6 +378,12 @@ void CManager::Uninit(void)
 
 		//使用していない状態にする
 		m_Fade = NULL;
+	}
+
+	if (m_pUtility != nullptr)
+	{
+		delete m_pUtility;
+		m_pUtility = nullptr;
 	}
 }
 
@@ -841,6 +854,14 @@ CFade *CManager::GetFade(void)
 CPause *CManager::GetPause(void)
 {
 	return m_Pause;
+}
+
+//================================================================
+//便利関数の取得
+//================================================================
+CUtility * CManager::GetUtility(void)
+{
+	return m_pUtility;
 }
 
 //================================================================

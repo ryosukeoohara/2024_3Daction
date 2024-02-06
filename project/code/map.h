@@ -31,7 +31,6 @@ public:
 
 	// İ’èŒn
 
-
 	// æ“¾Œn
 	CObjectX **GetObjectX(void) { return m_appObjectX; }
 	int GetNum(void) { return m_nNumModel; }

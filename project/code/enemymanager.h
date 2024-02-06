@@ -41,12 +41,11 @@ public:
 	void ReadText(const char *text);           //テキストファイル読み込み
 
 	// 設定系
-	CEnemy **GetEnemy(void) { return m_appEnemy; }
-	int GetNum(void) { return m_nEnemyAll; }
+	void SetNum(int num) { m_nEnemyAll = num; }
 
 	// 取得系
-	void SetNum(int num) { m_nEnemyAll = num; }
-	
+	CEnemy **GetEnemy(void) { return m_appEnemy; }
+	int GetNum(void) { return m_nEnemyAll; }
 							       
 private:
 	void ListOut(void);

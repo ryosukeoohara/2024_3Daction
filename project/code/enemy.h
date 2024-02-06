@@ -54,6 +54,14 @@ public:
 		TYPE_BOSS,      // ボス
 	};
 
+	enum CHASE
+	{
+		CHASE_OFF = 0,
+		CHASE_ON,
+		CHASE_MAX
+	};
+	CHASE m_Chase;
+
 public:
 
 	CEnemy();                                  //コンストラクタ
@@ -77,9 +85,13 @@ public:
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }  // 親のマトリックス
 	void SetIdx(int idx) { m_Info.nIdxID = idx; }
 	void SetType(TYPE type) { m_Type = type; }
+	virtual void SetChase(CHASE cha);
 
 	// 取得系
-	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置
+	D3DXVECTOR3 GetPosition(void) 
+	{ 
+		return m_Info.pos; 
+	}       // 位置
 	D3DXVECTOR3 GetRotition(void) { return m_Info.rot; }       // 向き
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }          // 移動量
 	STATE GetState(void) { return m_Info.state; }              // 状態
@@ -94,6 +106,8 @@ public:
 	virtual void Damege(int damege, float blowaway);
 
 protected:
+
+	
 
 	// 制御処理
 	void Controll(void);
