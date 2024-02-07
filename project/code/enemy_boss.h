@@ -29,6 +29,7 @@ public:
 		TYPE_DASH,                     // 移動
 		TYPE_ATTACK,                   // 攻撃
 		TYPE_DAMEGE,                   // ダメージ
+		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
 		TYPE_GURUGURUPUNCH,            // ぐるぐるパンチ
 		TYPE_PUNCH,                    // パンチ
 		TYPE_MAX
@@ -41,8 +42,6 @@ public:
 		ATTACKTYPE_FLY,
 		ATTACKTYPE_MAX
 	};
-
-
 
 public:
 
@@ -66,7 +65,7 @@ private:
 	//void Controll(void) override;
 	void Attack(void) override;
 	void Move(void) override;
-	//void Damege(int damege) override;
+	void Damege(int damege, float blowaway) override;
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル

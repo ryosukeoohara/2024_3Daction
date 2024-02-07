@@ -271,11 +271,7 @@ void CEnemy::Controll(void)
 //==============================================================================
 void CEnemy::Attack(void)
 {
-	/*if (m_Info.state != STATE_ATTACK)
-	{
-		m_Info.state = STATE_ATTACK;
-		m_pMotion->Set(TYPE_ATTACK);
-	}*/
+	
 }
 
 //==============================================================================
@@ -283,78 +279,7 @@ void CEnemy::Attack(void)
 //==============================================================================
 void CEnemy::Move(void)
 {
-	////プレイヤーの情報取得
-	//CPlayer *pPlayer = CGame::GetPlayer();
-
-	//if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
-	//{//円の中にプレイヤーが入った
-
-	//	D3DXVECTOR3 fDest, PlayerPos = pPlayer->GetPosition();
-
-	//	float fDiffmove, fDestmove;
-
-	//	fDest = m_Info.pos - PlayerPos;
-
-	//	fDestmove = atan2f(fDest.x, fDest.z);
-	//	fDiffmove = fDestmove - m_Info.rot.y;
-
-	//	//角度の値を修正する--------------------------------------------------
-	//	if (fDiffmove >= D3DX_PI)
-	//	{
-	//		fDiffmove = -D3DX_PI;
-	//	}
-	//	else if (fDiffmove <= -D3DX_PI)
-	//	{
-	//		fDiffmove = D3DX_PI;
-	//	}
-
-	//	m_Info.rot.y += fDiffmove * 0.05f;
-
-	//	//角度の値を修正する--------------------------------------------------
-	//	if (m_Info.rot.y > D3DX_PI)
-	//	{
-	//		m_Info.rot.y = -D3DX_PI;
-	//	}
-	//	else if (m_Info.rot.y < -D3DX_PI)
-	//	{
-	//		m_Info.rot.y = D3DX_PI;
-	//	}
-
-	//	//移動量を更新(減衰させる)
-	//	m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
-	//	m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * ENEMYMOVE;
-
-	//	if (fDest.x <= 60.0f && fDest.x >= -60.0f && fDest.z <= 60.0f && fDest.z >= -60.0f)
-	//	{
-	//		Attack();
-	//		m_Info.move.x = 0.0f;
-	//		m_Info.move.z = 0.0f;
-
-	//		
-	//	}
-	//	else
-	//	{
-	//		if (m_Info.state != STATE_DASH)
-	//		{
-	//			m_Info.state = STATE_DASH;
-	//			m_pMotion->Set(TYPE_DASH);
-	//		}
-	//	}
-
-	//	m_Info.pos.x += m_Info.move.x * 0.5f;
-	//	m_Info.pos.z += m_Info.move.z * 0.5f;
-	//}
-	//else
-	//{
-	//	m_Info.move.x = 0.0f;
-	//	m_Info.move.z = 0.0f;
-
-	//	if (m_Info.state != STATE_NEUTRAL)
-	//	{
-	//		m_Info.state = STATE_NEUTRAL;
-	//		m_pMotion->Set(TYPE_NEUTRAL);
-	//	}
-	//}
+	
 }
 
 //==============================================================================
@@ -362,14 +287,14 @@ void CEnemy::Move(void)
 //==============================================================================
 void CEnemy::Damege(int damege, float blowaway)
 {
-	m_Info.nLife -= damege;
+	/*m_Info.nLife -= damege;
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	if (m_Info.state != STATE_DAMEGE)
+	if (m_Info.state != STATE_HEATDAMEGE)
 	{
-		m_Info.state = STATE_DAMEGE;
-		m_pMotion->Set(TYPE_DAMEGE);
-	}
+		m_Info.state = STATE_HEATDAMEGE;
+		m_pMotion->Set(TYPE_HEATDAMEGE);
+	}*/
 }
 
 //==============================================================================

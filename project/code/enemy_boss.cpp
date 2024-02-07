@@ -166,7 +166,7 @@ CEnemyBoss * CEnemyBoss::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 //==============================================================================
 void CEnemyBoss::Attack(void)
 {
-	if (m_Info.state != STATE_ATTACK)
+	if (m_Info.state != STATE_ATTACK && m_Info.state != STATE_HEATDAMEGE)
 	{
 		m_nAtcCounter++;
 
@@ -237,7 +237,7 @@ void CEnemyBoss::Move(void)
 
 	if (m_Chase == CHASE_ON)
 	{
-		if (m_Info.state != STATE_DAMEGE)
+		if (m_Info.state != STATE_HEATDAMEGE)
 		{
 			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
 
@@ -275,19 +275,16 @@ void CEnemyBoss::Move(void)
 				GetMotion()->Set(TYPE_DASH);
 			}
 		}
-
-		if (GetMotion()->IsFinish() == true)
-		{
-			m_Info.state = STATE_NEUTRAL;
-			GetMotion()->Set(TYPE_NEUTRAL);
-		}
 	}
-	else
+
+	if (GetMotion()->IsFinish() == true)
 	{
-		if (m_Info.state != STATE_DASH)
+		m_Info.state = STATE_NEUTRAL;
+		GetMotion()->Set(TYPE_NEUTRAL);
+
+		if (m_Chase != CHASE_ON)
 		{
-			m_Info.state = STATE_DASH;
-			GetMotion()->Set(TYPE_DASH);
+			m_Chase = CHASE_ON;
 		}
 	}
 }
@@ -295,16 +292,17 @@ void CEnemyBoss::Move(void)
 //==============================================================================
 // §Œäˆ—
 //==============================================================================
-//void CEnemyBoss::Damege(int damege)
-//{
-//	m_Info.nLife -= damege;
-//
-//	if (m_Info.state != STATE_DAMEGE)
-//	{
-//		m_Info.state = STATE_DAMEGE;
-//		GetMotion()->Set(TYPE_DAMEGE);
-//	}
-//}
+void CEnemyBoss::Damege(int damege, float blowaway)
+{
+	m_Info.nLife -= damege;
+	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
+
+	if (m_Info.state != STATE_HEATDAMEGE)
+	{
+		m_Info.state = STATE_HEATDAMEGE;
+		GetMotion()->Set(TYPE_HEATDAMEGE);
+	}
+}
 
 //==============================================================================
 // ‰Šú‰»ˆ—

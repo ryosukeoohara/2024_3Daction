@@ -32,6 +32,7 @@ public:
 		STATE_ATTACK,      // 攻撃
 		STATE_GRAP,        // 投げられ待ち
 		STATE_DAMEGE,      // 攻撃受けた
+		STATE_HEATDAMEGE,  // 攻撃受けた
 		STATE_MAX
 	};
 
@@ -42,6 +43,7 @@ public:
 		TYPE_DASH,                     // 移動
 		TYPE_ATTACK,                   // 攻撃
 		TYPE_DAMEGE,                   // ダメージ
+		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
 		TYPE_PUNCH,                    // パンチ
 		TYPE_GURUGURU,                 // ぐるぐるパンチ
 		TYPE_MAX

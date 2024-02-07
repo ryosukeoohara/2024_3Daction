@@ -1020,12 +1020,6 @@ void CPlayer::State(void)
 			m_pMotion->Set(TYPE_LIFT);
 			m_bLift = true;
 		}
-
-		if (m_pEnemy != nullptr)
-		{
-			m_pEnemy->SetChase(CEnemy::CHASE_ON);
-			m_pEnemy = nullptr;
-		}
 	}
 }
 

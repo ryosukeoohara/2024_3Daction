@@ -51,7 +51,7 @@ private:
 	//void Controll(void) override;
 	void Attack(void) override;
 	void Move(void) override;
-	//void Damege(int damege) override;
+	void Damege(int damege, float blowaway) override;
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル

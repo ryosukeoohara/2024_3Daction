@@ -319,13 +319,14 @@ void CEnemyWeak::Move(void)
 //==============================================================================
 // §Œäˆ—
 //==============================================================================
-//void CEnemyWeak::Damege(int damege)
-//{
-//	m_Info.nLife -= damege;
-//
-//	if (m_Info.state != STATE_DAMEGE)
-//	{
-//		m_Info.state = STATE_DAMEGE;
-//		GetMotion()->Set(TYPE_DAMEGE);
-//	}
-//}
+void CEnemyWeak::Damege(int damege, float blowaway)
+{
+	m_Info.nLife -= damege;
+	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
+
+	if (m_Info.state != STATE_DAMEGE)
+	{
+		m_Info.state = STATE_DAMEGE;
+		GetMotion()->Set(TYPE_DAMEGE);
+	}
+}
