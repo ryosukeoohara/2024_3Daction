@@ -8,6 +8,7 @@
 #define _ENEMY_BOSS_H_
 
 #include "enemy.h"
+#include "player.h"
 
 //*=============================================================================
 //クラス定義
@@ -32,6 +33,7 @@ public:
 		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
 		TYPE_GURUGURUPUNCH,            // ぐるぐるパンチ
 		TYPE_PUNCH,                    // パンチ
+		TYPE_GETUP,                    // 起き上がり
 		TYPE_MAX
 	};
 
@@ -65,7 +67,7 @@ private:
 	//void Controll(void) override;
 	void Attack(void) override;
 	void Move(void) override;
-	void Damege(int damege, float blowaway) override;
+	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル

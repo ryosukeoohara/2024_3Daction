@@ -166,7 +166,7 @@ CEnemyBoss * CEnemyBoss::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 //==============================================================================
 void CEnemyBoss::Attack(void)
 {
-	if (m_Info.state != STATE_ATTACK && m_Info.state != STATE_HEATDAMEGE)
+	if (m_Info.state != STATE_ATTACK)
 	{
 		m_nAtcCounter++;
 
@@ -237,21 +237,18 @@ void CEnemyBoss::Move(void)
 
 	if (m_Chase == CHASE_ON)
 	{
-		if (m_Info.state != STATE_HEATDAMEGE)
-		{
-			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
+		fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
 
-			fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
-			
-			m_Info.rot.y += fDiffmove * 0.05f;
+		fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
 
-			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+		m_Info.rot.y += fDiffmove * 0.05f;
 
-			//移動量を更新(減衰させる)
-			m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
-			m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
-		}
+		m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
+		//移動量を更新(減衰させる)
+		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
+		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
+		
 		D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
 
 		if (Dest.x <= 80.0f && Dest.x >= -80.0f && Dest.z <= 80.0f && Dest.z >= -80.0f)
@@ -277,6 +274,12 @@ void CEnemyBoss::Move(void)
 		}
 	}
 
+	if (GetMotion()->IsFinish() == true && m_Info.state == STATE_HEATDAMEGE && m_Info.state != STATE_GETUP)
+	{
+		m_Info.state = STATE_GETUP;
+		GetMotion()->Set(TYPE_GETUP);
+	}
+
 	if (GetMotion()->IsFinish() == true)
 	{
 		m_Info.state = STATE_NEUTRAL;
@@ -285,6 +288,11 @@ void CEnemyBoss::Move(void)
 		if (m_Chase != CHASE_ON)
 		{
 			m_Chase = CHASE_ON;
+
+			if (m_nAtcCounter >= 20)
+			{
+				m_nAtcCounter = 20;
+			}
 		}
 	}
 }
@@ -292,15 +300,26 @@ void CEnemyBoss::Move(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyBoss::Damege(int damege, float blowaway)
+void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
 	m_Info.nLife -= damege;
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	if (m_Info.state != STATE_HEATDAMEGE)
+	if (act == CPlayer::ATTACKTYPE::TYPE04_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE05_HEATACTREF)
 	{
-		m_Info.state = STATE_HEATDAMEGE;
-		GetMotion()->Set(TYPE_HEATDAMEGE);
+		if (m_Info.state != STATE_HEATDAMEGE)
+		{
+			m_Info.state = STATE_HEATDAMEGE;
+			GetMotion()->Set(TYPE_HEATDAMEGE);
+		}
+	}
+	else
+	{
+		if (m_Info.state != STATE_DAMEGE)
+		{
+			m_Info.state = STATE_DAMEGE;
+			GetMotion()->Set(TYPE_DAMEGE);
+		}
 	}
 }
 

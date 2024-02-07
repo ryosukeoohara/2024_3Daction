@@ -2294,7 +2294,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 1 / 7 >> ---
-		FRAME = 7
+		FRAME = 5
 		PARTS	# ----- [ 0 ] -----
 			POS = 0.00 12.00 0.00
 			ROT = -1.16 0.00 0.00
@@ -2377,7 +2377,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 2 / 7 >> ---
-		FRAME = 7
+		FRAME = 5
 		PARTS	# ----- [ 0 ] -----
 			POS = 0.00 2.40 0.00
 			ROT = -2.17 0.00 0.00
@@ -2972,12 +2972,12 @@ END_MOTIONSET
 MOTIONSET
 	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
 	NUM_KEY = 5		# キー数
-	STRAT_COLLI = 8 # 攻撃判定発生フレーム
-	END_COLLI = 15  # 攻撃判定終了フレーム
+	STRAT_COLLI = 25 # 攻撃判定発生フレーム
+	END_COLLI = 35  # 攻撃判定終了フレーム
 	ATTACK = 250     # ダメージ
 
 	KEYSET			# --- << 0 / 5 >> ---
-		FRAME = 5
+		FRAME = 20
 		PARTS	# ----- [ 0 ] -----
 			POS = 0.00 -14.00 0.00
 			ROT = 0.25 0.00 0.00
@@ -3060,7 +3060,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 1 / 5 >> ---
-		FRAME = 5
+		FRAME = 10
 		PARTS	# ----- [ 0 ] -----
 			POS = 0.10 -8.30 -7.60
 			ROT = 0.25 0.00 0.00
@@ -3143,7 +3143,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 2 / 5 >> ---
-		FRAME = 5
+		FRAME = 8
 		PARTS	# ----- [ 0 ] -----
 			POS = 0.10 -8.30 -7.60
 			ROT = -0.25 0.00 0.00

@@ -319,14 +319,26 @@ void CEnemyWeak::Move(void)
 //==============================================================================
 // §Œäˆ—
 //==============================================================================
-void CEnemyWeak::Damege(int damege, float blowaway)
+void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
 	m_Info.nLife -= damege;
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	if (m_Info.state != STATE_DAMEGE)
+	if (act == CPlayer::ATTACKTYPE::TYPE04_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE05_HEATACTREF)
 	{
-		m_Info.state = STATE_DAMEGE;
-		GetMotion()->Set(TYPE_DAMEGE);
+		if (m_Info.state != STATE_HEATDAMEGE)
+		{
+			m_Info.state = STATE_HEATDAMEGE;
+			GetMotion()->Set(TYPE_HEATDAMEGE);
+		}
 	}
+	else
+	{
+		if (m_Info.state != STATE_DAMEGE)
+		{
+			m_Info.state = STATE_DAMEGE;
+			GetMotion()->Set(TYPE_DAMEGE);
+		}
+	}
+	
 }

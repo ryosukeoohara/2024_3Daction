@@ -210,12 +210,6 @@ void CCamera::Mode(void)
 //================================================================
 void CCamera::Heat(void)
 {
-	//// ƒJƒƒ‰‚ğ–Ú•W‚ÌŒü‚«‚Ü‚Å‰ñ“]‚³‚¹‚é
-	//D3DXVECTOR3 rotDest = m_Oldrot - m_rot;
-	//SetRotation(m_rot + rotDest * 0.1f);
-
-	//m_rot = HEAT_CAMERAROT;
-
 	m_posV.x = m_posR.x - sinf(m_rot.y) * -CAMERA_DISTNCE;
 	m_posV.z = m_posR.z - cosf(m_rot.y) * -CAMERA_DISTNCE;
 

@@ -25,13 +25,19 @@ public:
 	 
 	static CBillBoard *Create(void);  //生成
 
+	// 設定系
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }        // 親のマトリックス
 	void SetSize(float fHeight, float fWidth);                            // サイズ
 	void SetTex(float fTex);
+	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }                      // テクスチャのインデックス番号
 	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }                    // 位置
 	void SetRotition(D3DXVECTOR3 rot) { m_rot = rot; }                    // 向き
 	void SetColor(D3DXCOLOR col);                                         // 色
 	void SetDraw(bool bDraw = true) { m_bDraw = bDraw; }                  // 描画するかどうか
+
+	// 取得系
+	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+	D3DXVECTOR3 GetRotition(void) { return m_rot; }
 
 private:
 	LPDIRECT3DTEXTURE9 m_pTexture;       //テクスチャへのポインタ
@@ -47,6 +53,5 @@ private:
 	float m_fWidth;                            // 幅
 	bool m_bDraw;                              // 描画するかどうか
 };
-
 
 #endif

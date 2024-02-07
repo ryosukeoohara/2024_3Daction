@@ -24,7 +24,7 @@
 #include "enemy.h"
 #include "enemymanager.h"
 #include "collision.h"
-#include "item.h"
+#include "itemmanager.h"
 #include "map.h"
 
 //================================================================
@@ -35,7 +35,7 @@ CPlayer *CGame::m_pPlayer = nullptr;
 CEnemy *CGame::m_pEnemy = nullptr;
 CEnemyManager *CGame::m_pEnemyManager = nullptr;
 CCollision *CGame::m_Collision = nullptr;
-CItem *CGame::m_pItem = nullptr;
+CItemManager *CGame::m_pItemManager = nullptr;
 CMap *CGame::m_pMap = nullptr;
 CGame::WAVE CGame::m_Wave = WAVE_00;
 
@@ -119,7 +119,7 @@ HRESULT CGame::Init(void)
 
 	if (m_pEnemyManager == nullptr)
 	{
-		m_pEnemyManager = CEnemyManager::Create();
+		//m_pEnemyManager = CEnemyManager::Create();
 	}
 
 	// “G‚Ì¶¬
@@ -134,9 +134,9 @@ HRESULT CGame::Init(void)
 		m_Collision = CCollision::Create();
 	}
 
-	if (m_pItem == nullptr)
+	if (m_pItemManager == nullptr)
 	{
-		m_pItem = CItem::Create();
+		m_pItemManager = CItemManager::Create();
 	}
 
 	if (m_pMap == nullptr)
@@ -167,10 +167,10 @@ void CGame::Uninit(void)
 	}
 
 	// ƒAƒCƒeƒ€‚Ì”jŠü
-	if (m_pItem != nullptr)
+	if (m_pItemManager != nullptr)
 	{
-		m_pItem->Uninit();
-		m_pItem = nullptr;
+		m_pItemManager->Uninit();
+		m_pItemManager = nullptr;
 	}
 
 	// “G‚Ì”jŠü

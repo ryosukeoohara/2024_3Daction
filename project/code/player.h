@@ -23,6 +23,7 @@ class CGage3D;
 class CBillBoard;
 class CEnemy;
 class CObject2D;
+class CItem;
 
 //*==========================================================
 // プレイヤークラス
@@ -52,6 +53,18 @@ public:
 		HEATACT_BIKE = 0,
 	};
 
+	// 連撃
+	enum ATTACKTYPE
+	{
+		TYPE00_NONE = 0,       // なんもない
+		TYPE01_ATTACK,         // 一段目
+		TYPE02_ATTACK,         // 二段目
+		TYPE03_ATTACK,         // 三段目
+		TYPE04_HEATACTBIKE,    // ヒートアクション・バイク
+		TYPE05_HEATACTREF,     // ヒートアクション・冷蔵庫
+		TYPEMAX_ATTACK
+	};
+
 private:
 
 	//モーション
@@ -68,16 +81,6 @@ private:
 		TYPE_GRAPDASH,                   // 持って走る
 		TYPE_MAX
 	} ;
-
-	// 連撃
-	enum ATTACKTYPE
-	{
-		TYPE00_NONE = 0,
-		TYPE01_ATTACK,
-		TYPE02_ATTACK,
-		TYPE03_ATTACK,
-		TYPEMAX_ATTACK
-	};
 
 	enum DAMEGESTATE
 	{
@@ -123,7 +126,7 @@ public:
 	void SetRotition(D3DXVECTOR3 rot) { m_Info.rot = rot; }         // 向き設定
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }           // 移動量設定
 	void SetState(STATE state) { m_Info.state = state; }             // 状態
-	void SetGrapItem(CObjectX *obj) { m_Obj = obj; }
+	void SetGrapItem(CItem *obj) { m_pItem = obj; }
 	void SetLife(int nlife) { m_Info.nLife = nlife; }                // 体力
 
 	// 取得系
@@ -136,6 +139,7 @@ public:
 	CCharacter **GetChar(void) { return m_ppCharacter; }
 	bool GetbAttack(void) { return m_bAttack; }                // 攻撃中かどうか
 	CMotion *GetMotion(void) { return m_pMotion; }
+	ATTACKTYPE GetActType(void) { return m_Info.Atc; }
 
 private:
 
@@ -164,11 +168,11 @@ private:
 	D3DXVECTOR3 m_posOrigin;             
 	CMotion *m_pMotion;                   // モーションへのポインタ
 	CCharacter **m_ppCharacter;           // キャラクターへのポインタ
-	CObjectX *m_Obj;                      // 掴んでるオブジェクトのポインタ
+	CItem *m_pItem;                      // 掴んでるオブジェクトのポインタ
 	CGage2D *m_pLife;                     // ゲージのポインタ
 	CGage3D *m_pStamina;                  // ゲージのポインタ
 	CEnemy *m_pEnemy;
-	CObject2D *m_pObj;
+	CObject2D *m_pBotton;
 	int m_nIdxEne;
 	float m_fDest;
 	float m_fDestOld;

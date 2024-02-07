@@ -8,6 +8,7 @@
 #define _ENEMY_H_
 
 #include "object.h"
+#include "player.h"
 
 //*=============================================================================
 //クラス定義
@@ -33,6 +34,7 @@ public:
 		STATE_GRAP,        // 投げられ待ち
 		STATE_DAMEGE,      // 攻撃受けた
 		STATE_HEATDAMEGE,  // 攻撃受けた
+		STATE_GETUP,       // 起き上がり
 		STATE_MAX
 	};
 
@@ -105,7 +107,7 @@ public:
 	static int GetNumAll(void) { return m_nNumAll; }
 	CMotion *GetMotion(void) { return m_pMotion; }
 
-	virtual void Damege(int damege, float blowaway);
+	virtual void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act);
 
 protected:
 

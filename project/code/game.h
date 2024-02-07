@@ -12,7 +12,7 @@
 // 前方宣言
 class CPause;
 class CEnemyManager;
-class CItem;
+class CItemManager;
 class CMap;
 
 //ゲームクラス
@@ -50,7 +50,7 @@ public:
 	static CEnemy *GetEnemy(void) { return m_pEnemy; }
 	static CEnemyManager *GetEnemyManager(void) { return m_pEnemyManager; }
 	static CCollision *GetCollision(void) { return m_Collision; }
-	static CItem *GetItem(void) { return m_pItem; }
+	static CItemManager *GetItemManager(void) { return m_pItemManager; }
 	static CMap *GetMap(void) { return m_pMap; }
 	static WAVE GetWave(void) { return m_Wave; }
 
@@ -63,7 +63,7 @@ private:
 	static CEnemy *m_pEnemy;
 	static CEnemyManager *m_pEnemyManager;
 	static CCollision *m_Collision;
-	static CItem *m_pItem;
+	static CItemManager *m_pItemManager;
 	static CMap *m_pMap;
 	bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか

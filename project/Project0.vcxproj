@@ -159,6 +159,7 @@
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
+    <ClCompile Include="code\effect.cpp" />
     <ClCompile Include="code\enemy.cpp" />
     <ClCompile Include="code\enemymanager.cpp" />
     <ClCompile Include="code\enemy_boss.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\input.cpp" />
     <ClCompile Include="code\item.cpp" />
+    <ClCompile Include="code\itemmanager.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
@@ -180,6 +182,7 @@
     <ClCompile Include="code\object3D.cpp" />
     <ClCompile Include="code\objectMesh.cpp" />
     <ClCompile Include="code\objectX.cpp" />
+    <ClCompile Include="code\particle.cpp" />
     <ClCompile Include="code\pause.cpp" />
     <ClCompile Include="code\player.cpp" />
     <ClCompile Include="code\renderer.cpp" />
@@ -198,6 +201,7 @@
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\debugproc.h" />
+    <ClInclude Include="code\effect.h" />
     <ClInclude Include="code\enemy.h" />
     <ClInclude Include="code\enemymanager.h" />
     <ClInclude Include="code\enemy_boss.h" />
@@ -208,6 +212,7 @@
     <ClInclude Include="code\game.h" />
     <ClInclude Include="code\input.h" />
     <ClInclude Include="code\item.h" />
+    <ClInclude Include="code\itemmanager.h" />
     <ClInclude Include="code\light.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
@@ -219,6 +224,7 @@
     <ClInclude Include="code\object3D.h" />
     <ClInclude Include="code\objectMesh.h" />
     <ClInclude Include="code\objectX.h" />
+    <ClInclude Include="code\particle.h" />
     <ClInclude Include="code\pause.h" />
     <ClInclude Include="code\player.h" />
     <ClInclude Include="code\renderer.h" />

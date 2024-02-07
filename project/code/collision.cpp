@@ -20,11 +20,12 @@
 #include "game.h"
 #include "enemy.h"
 #include "enemymanager.h"
-#include "item.h"
+#include "itemmanager.h"
 #include "character.h"
 #include "motion.h"
 #include "map.h"
 #include "motion.h"
+#include "particle.h"
 
 //=============================================================================
 //コンストラクタ
@@ -108,9 +109,16 @@ bool CCollision::Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyR
 void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTargetRadius, float fHeight)
 {
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
-	CEnemy **ppEnemy = pEnemyManager->GetEnemy();
+	CEnemy **ppEnemy = nullptr;
+	int nNum = 0;
 
-	for (int nCount = 0; nCount < CGame::GetEnemyManager()->GetNum(); nCount++)
+	if (pEnemyManager != nullptr)
+	{
+		ppEnemy = pEnemyManager->GetEnemy();
+		nNum = CGame::GetEnemyManager()->GetNum();
+	}
+
+	for (int nCount = 0; nCount < nNum; nCount++)
 	{
 		if (ppEnemy[nCount] != nullptr)
 		{
@@ -120,9 +128,10 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 
 			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
 
-			if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE)
+			if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
 			{
-				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway());
+				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
+				CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_GROUND);
 			}
 		}
 	}
@@ -303,13 +312,13 @@ void CCollision::MapEnemy(D3DXVECTOR3 * pos, D3DXVECTOR3 * posOld, CObjectX ** p
 //=============================================================================
 bool CCollision::Item(D3DXVECTOR3 *pos)
 {
-	CItem *pItem = CGame::GetItem();
-	CObjectX **pObjectX = pItem->GetObjectX();
+	CItemManager *pItemManager = CGame::GetItemManager();
+	CItem **ppItem = pItemManager->GetItem();
 	int nNum = 0;
 
-	if (pItem != nullptr)
+	if (pItemManager != nullptr)
 	{
-		nNum = pItem->GetNum();
+		nNum = pItemManager->GetNum();
 	}
 
 	float PlayerfRadius = 50.0f;
@@ -317,12 +326,12 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 
 	for (int nCount = 0; nCount < nNum; nCount++)
 	{
-		if (pObjectX[nCount] != nullptr)
+		if (ppItem[nCount] != nullptr)
 		{
-			pObjectX[nCount]->GetPosition();
+			ppItem[nCount]->GetPosition();
 
-			float circleX = pObjectX[nCount]->GetPosition().x - pos->x;
-			float circleZ = pObjectX[nCount]->GetPosition().z - pos->z;
+			float circleX = ppItem[nCount]->GetPosition().x - pos->x;
+			float circleZ = ppItem[nCount]->GetPosition().z - pos->z;
 			float c = 0.0f;
 
 			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
@@ -330,10 +339,10 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 			if (c <= fRadius + PlayerfRadius)
 			{
 				CCharacter **pChar = CGame::GetPlayer()->GetChar();
-				pObjectX[nCount]->SetCurrent(pChar[9]->GetMtxWorld());
-				pObjectX[nCount]->SetPosition(D3DXVECTOR3(50.0f, 5.0f, -15.0f));
-				pObjectX[nCount]->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
-				CGame::GetPlayer()->SetGrapItem(pObjectX[nCount]);
+				ppItem[nCount]->SetCurrent(pChar[9]->GetMtxWorld());
+				ppItem[nCount]->SetPosition(D3DXVECTOR3(50.0f, 5.0f, -15.0f));
+				ppItem[nCount]->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
+				CGame::GetPlayer()->SetGrapItem(ppItem[nCount]);
 				return true;
 			}
 		}
@@ -347,13 +356,20 @@ bool CCollision::Item(D3DXVECTOR3 *pos)
 //=============================================================================
 void CCollision::ItemAttack(CObjectX * pobj)
 {
+	int nNum = 0;
 	float PlayerfRadius = 50.0f;
 	float fRadius = 75.0f;
-	CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+	CEnemy **ppEnemy = nullptr;
+
+	if (CGame::GetEnemyManager() != nullptr)
+	{
+		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+		nNum = CGame::GetEnemyManager()->GetNum();
+	}
 
 	if (pobj != nullptr)
 	{
-		for (int nCount = 0; nCount < CGame::GetEnemyManager()->GetNum(); nCount++)
+		for (int nCount = 0; nCount < nNum; nCount++)
 		{
 			if (ppEnemy[nCount] != nullptr)
 			{

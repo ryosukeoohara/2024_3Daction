@@ -285,7 +285,7 @@ void CEnemy::Move(void)
 //==============================================================================
 // §Œäˆ—
 //==============================================================================
-void CEnemy::Damege(int damege, float blowaway)
+void CEnemy::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
 	/*m_Info.nLife -= damege;
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);

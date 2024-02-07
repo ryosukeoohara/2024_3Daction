@@ -25,6 +25,7 @@
 #include "billboard.h"
 #include "enemymanager.h"
 #include "utility.h"
+#include "item.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -77,10 +78,11 @@ CPlayer::CPlayer()
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pMotion = nullptr;
 	m_ppCharacter = nullptr;
+	m_pItem = nullptr;
 	m_pLife = nullptr;
 	m_pStamina = nullptr;
 	m_pEnemy = nullptr;
-	m_pObj = nullptr;
+	m_pBotton = nullptr;
 	m_nIdxEne = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
@@ -127,10 +129,11 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pMotion = nullptr;
 	m_ppCharacter = nullptr;
+	m_pItem = nullptr;
 	m_pLife = nullptr;
 	m_pStamina = nullptr;
 	m_pEnemy = nullptr;
-	m_pObj = nullptr;
+	m_pBotton = nullptr;
 	m_nIdxEne = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
@@ -391,7 +394,11 @@ void CPlayer::Draw(void)
 //================================================================
 void CPlayer::Control(void)
 {
-	Move();     // 移動
+	if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
+	{
+		Move();     // 移動
+	}
+	
 	Action();   // アクション
 	State();    // 状態
 
@@ -597,24 +604,13 @@ void CPlayer::Action(void)
 		}
 	}
 
-	// ヒートアクション
-	if (InputKeyboard->GetTrigger(DIK_Q) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
-	{
-		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
-		{
-			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
-			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
-			m_Info.state = STATE_HEAT;
-			m_pMotion->Set(TYPE_THROW);
-		}
-	}
-
 	// 投げ
 	Grap();
 
 	// 回避
 	Avoid();
 
+	// ヒートアクション
 	Heat();
 
 	CManager::Getinstance()->GetDebugProc()->Print("回転量:%f", m_fGrapRot);
@@ -800,7 +796,7 @@ void CPlayer::Grap(void)
 				m_pMotion->Set(TYPE_THROW);
 			}
 
-			if (m_Obj == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
+			if (m_pItem == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
 			{
 				m_bLift = true;
 				CManager::Getinstance()->GetDebugProc()->Print("当たってる～");
@@ -893,9 +889,9 @@ void CPlayer::State(void)
 
 	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE && m_Info.state != STATE_HEAT)
 	{
-		if (m_Obj != nullptr)
+		if (m_pItem != nullptr)
 		{
-			D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
+			D3DXMATRIX *mtx = m_pItem->GetMtxWorld();
 
 			D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
@@ -953,19 +949,19 @@ void CPlayer::State(void)
 		//m_Info.pos.z += m_Info.move.z * 0.0005f;
 	}
 
-	if (m_Info.state == STATE_THROW && m_Obj != nullptr)
+	if (m_Info.state == STATE_THROW && m_pItem != nullptr)
 	{
-		m_Obj->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
-		m_Obj->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, -D3DX_PI, -D3DX_PI * 0.5f));
-		CGame::GetCollision()->ItemAttack(m_Obj);
+		m_pItem->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
+		m_pItem->SetRotition(D3DXVECTOR3(D3DX_PI * 0.5f, -D3DX_PI, -D3DX_PI * 0.5f));
+		CGame::GetCollision()->ItemAttack(m_pItem);
 	}
 
-	if (m_pMotion->GetNumFrame() >= 15 && m_Obj != nullptr && (m_Info.state == STATE_THROW || m_Info.state == STATE_HEAT))
+	if (m_pMotion->GetNumFrame() >= m_pMotion->GetAttackEnd() && m_pItem != nullptr && (m_Info.state == STATE_THROW || m_Info.state == STATE_HEAT))
 	{
-		m_Obj->SetCurrent(nullptr);
-		m_Obj->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -60.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -60.0f));
-		m_Obj->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
-		m_Obj = nullptr;
+		m_pItem->SetCurrent(nullptr);
+		m_pItem->SetPosition(D3DXVECTOR3(m_Info.pos.x + sinf(m_Info.rot.y) * -60.0f, m_Info.pos.y, m_Info.pos.z + cosf(m_Info.rot.y) * -60.0f));
+		m_pItem->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
+		m_pItem = nullptr;
 	}
 
 	/*if (m_Info.state == STATE_GRAP && m_bGrap == false)
@@ -1014,7 +1010,7 @@ void CPlayer::State(void)
 		m_nCntColi = 0;
 		CGame::GetCollision()->SetbColli(false);
 
-		if (m_Obj != nullptr)
+		if (m_pItem != nullptr)
 		{
 			m_Info.state = STATE_LIFT;
 			m_pMotion->Set(TYPE_LIFT);
@@ -1043,7 +1039,7 @@ void CPlayer::Damege(void)
 //================================================================
 void CPlayer::Heat(void)
 {
-	CEnemy **ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+	CEnemy **ppEnemy = nullptr;
 
 	if (m_Info.state == STATE_LIFT || m_Info.state == STATE_GRAPDASH)
 	{
@@ -1052,6 +1048,7 @@ void CPlayer::Heat(void)
 		if (CGame::GetEnemyManager() != nullptr)
 		{
 			nNum = CGame::GetEnemyManager()->GetNum();
+			ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 		}
 		
 		for (int nCount = 0; nCount < nNum; nCount++)
@@ -1060,13 +1057,17 @@ void CPlayer::Heat(void)
 			{
 				if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[nCount]->GetPosition(), 50.0f, 50.0f) == true)
 				{
-					if (m_pObj == nullptr)
+					if (m_pBotton == nullptr)
 					{
-						m_pObj = CObject2D::Create();
-						m_pObj->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.8f, 0.0f));
-						m_pObj->SetSize(25.0f, 25.0f);
-						m_pObj->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Ybutton.png"));
-						m_pObj->SetDraw(true);
+						m_pBotton = CObject2D::Create();
+					}
+
+					if (m_pBotton != nullptr)
+					{
+						m_pBotton->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.8f, 0.0f));
+						m_pBotton->SetSize(25.0f, 25.0f);
+						m_pBotton->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Ybutton.png"));
+						m_pBotton->SetDraw(true);
 					}
 
 					if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
@@ -1078,25 +1079,38 @@ void CPlayer::Heat(void)
 
 						if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
 						{
-							if (m_pObj != nullptr)
+							if (m_pBotton != nullptr)
 							{
-								m_pObj->Uninit();
-								m_pObj = nullptr;
+								m_pBotton->Uninit();
+								m_pBotton = nullptr;
 							}
 
 							CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
 							CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
 							m_Info.state = STATE_HEAT;
 							m_pMotion->Set(TYPE_THROW);
+
+							if (m_pItem != nullptr)
+							{
+								if (m_pItem->GetType() == CItem::TYPE_BIKE)
+								{
+									m_Info.Atc = TYPE04_HEATACTBIKE;
+								}
+
+								if (m_pItem->GetType() == CItem::TYPE_REF)
+								{
+									m_Info.Atc = TYPE05_HEATACTREF;
+								}
+							}
 						}
 					}
 				}
 				else
 				{
-					if (m_pObj != nullptr)
+					if (m_pBotton != nullptr)
 					{
-						m_pObj->Uninit();
-						m_pObj = nullptr;
+						m_pBotton->Uninit();
+						m_pBotton = nullptr;
 					}
 				}
 			}
@@ -1111,9 +1125,9 @@ void CPlayer::Heat(void)
 			m_Info.rot.y += m_fDest;
 			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
-			if (m_Obj != nullptr)
+			if (m_pItem != nullptr)
 			{
-				D3DXMATRIX *mtx = m_Obj->GetMtxWorld();
+				D3DXMATRIX *mtx = m_pItem->GetMtxWorld();
 
 				D3DXVECTOR3 Objpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
