@@ -13,7 +13,7 @@
 #define EFFECTMOVE   (5.0f)    //エフェクトの最大数
 
 //パーティクルクラス
-class CParticle : public CBillBoard
+class CParticle
 {
 public:
 
@@ -32,8 +32,6 @@ public:
 	CParticle(D3DXVECTOR3 pos, TYPEPAR type);  //コンストラクタ
 	~CParticle();  //デストラクタ
 
-
-
 	HRESULT Init(void); //Bgの初期化処理    
 	void Uninit(void);  //Bgの終了処理
 	void Update(void);  //Bgの更新処理
@@ -42,7 +40,7 @@ public:
 	static HRESULT Load(void);  //テクスチャの生成(読み込み)
 	static void UnLoad(void);   //テクスチャの破棄
 
-	void ParticlMove(void);
+	void Move(void);
 	void Blood(void);
 	void Ground(void);
 	void Smook(void);
@@ -52,6 +50,7 @@ public:
 	D3DXCOLOR m_col;          //色
 	float m_fRadius;          //半径(大きさ)
 	int m_nLife;              //寿命(表示時間)
+	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_move;
 
 private:

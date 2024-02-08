@@ -160,6 +160,7 @@
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
     <ClCompile Include="code\effect.cpp" />
+    <ClCompile Include="code\effect3D.cpp" />
     <ClCompile Include="code\enemy.cpp" />
     <ClCompile Include="code\enemymanager.cpp" />
     <ClCompile Include="code\enemy_boss.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\debugproc.h" />
     <ClInclude Include="code\effect.h" />
+    <ClInclude Include="code\effect3D.h" />
     <ClInclude Include="code\enemy.h" />
     <ClInclude Include="code\enemymanager.h" />
     <ClInclude Include="code\enemy_boss.h" />

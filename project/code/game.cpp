@@ -119,7 +119,7 @@ HRESULT CGame::Init(void)
 
 	if (m_pEnemyManager == nullptr)
 	{
-		//m_pEnemyManager = CEnemyManager::Create();
+		m_pEnemyManager = CEnemyManager::Create();
 	}
 
 	// “G‚Ì¶¬

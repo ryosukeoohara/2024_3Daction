@@ -15,7 +15,7 @@ class CPlayer;
 class CEnemy;
 class CBullet;
 class CObjectX;
-
+class CItem;
 
 //コリジョンクラス
 class CCollision
@@ -39,6 +39,7 @@ public:
 	void MapEnemy(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, CObjectX **pObjectX, CEnemy *enemy);  //マップにある建物との当たり判定
 	bool Item(D3DXVECTOR3 *pos);
 	void ItemAttack(CObjectX *pobj);
+	bool ItemEnemy(CItem *pItem, float fMyRadius, float fTargetRadius, float fHeight);   // アイテムと敵の判定
 
 	void SetbColli(bool bValue) { m_bColli = bValue; }
 	bool GetbColli(void) { return m_bColli; }

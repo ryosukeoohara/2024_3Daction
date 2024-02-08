@@ -26,6 +26,7 @@
 #include "enemymanager.h"
 #include "utility.h"
 #include "item.h"
+#include "itemmanager.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -515,7 +516,7 @@ void CPlayer::Move(void)
 		else if (InputKeyboard->GetPress(DIK_D) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
 		{//Dキーだけ押した
 
-		 // 移動量
+			// 移動量
 			m_Info.move.x -= sinf(CameraRot.y + (D3DX_PI * 0.5f)) * SPEED;
 			m_Info.move.z -= cosf(CameraRot.y + (D3DX_PI * 0.5f)) * SPEED;
 
@@ -997,8 +998,8 @@ void CPlayer::State(void)
 	}
 
 	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
-		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false &&
-			m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID
+		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false 
+			&& m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID
 			&& m_Info.state != STATE_LIFT && m_Info.state != STATE_HEAT && m_Info.state != STATE_THROW))
 	{
 		//モーションをセット(待機)
@@ -1041,16 +1042,16 @@ void CPlayer::Heat(void)
 {
 	CEnemy **ppEnemy = nullptr;
 
+	int nNum = 0;
+
+	if (CGame::GetEnemyManager() != nullptr)
+	{
+		nNum = CGame::GetEnemyManager()->GetNum();
+		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+	}
+
 	if (m_Info.state == STATE_LIFT || m_Info.state == STATE_GRAPDASH)
 	{
-		int nNum = 0;
-
-		if (CGame::GetEnemyManager() != nullptr)
-		{
-			nNum = CGame::GetEnemyManager()->GetNum();
-			ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-		}
-		
 		for (int nCount = 0; nCount < nNum; nCount++)
 		{
 			if (ppEnemy[nCount] != nullptr)
@@ -1073,7 +1074,6 @@ void CPlayer::Heat(void)
 					if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
 					{
 						m_nIdxEne = nCount;
-						//ppEnemy[m_nIdxEne]->SetState(CEnemy::STATE_DAMEGE);
 						ppEnemy[m_nIdxEne]->SetChase(CEnemy::CHASE_OFF);
 						ppEnemy[m_nIdxEne]->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
@@ -1138,7 +1138,11 @@ void CPlayer::Heat(void)
 				if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
 				{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
 
-					CGame::GetCollision()->AttackCircle(&Objpos, 50.0f, 50.0f, 100.0f);
+					if (CGame::GetCollision()->ItemEnemy(m_pItem, 50.0f, 50.0f, 100.0f) == true)
+					{
+						CGame::GetItemManager()->Release(m_pItem->GetID());
+						m_pItem = nullptr;
+					}
 				}
 			}
 		}

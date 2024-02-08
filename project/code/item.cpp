@@ -10,7 +10,8 @@
 #include "objectX.h"
 #include "debugproc.h"
 #include "object.h"
-
+#include "itemmanager.h"
+#include "game.h"
 
 
 // ƒ}ƒNƒ’è‹`
@@ -81,6 +82,8 @@ HRESULT CItem::Init(void)
 void CItem::Uninit(void)
 {
 	CObjectX::Uninit();
+
+	//CGame::GetItemManager()->Release(m_nID);
 }
 
 //================================================================

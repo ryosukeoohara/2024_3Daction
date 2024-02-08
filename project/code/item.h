@@ -38,14 +38,17 @@ public:
 
 	// İ’èŒn
 	void SetType(TYPE type) { m_Type = type; }
+	void SetID(int id) { m_nID = id; }
 	
 	// æ“¾Œn
 	CObjectX **GetObjectX(void) { return m_appObjectX; }
 	TYPE GetType(void) { return m_Type; }
+	int GetID(void) { return m_nID; }
 
 private:
 	CObjectX **m_appObjectX;
 	TYPE m_Type;
+	int m_nID;
 	static const char *m_apTexName[MAX_ITEM];
 };
 

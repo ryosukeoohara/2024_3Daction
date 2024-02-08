@@ -131,7 +131,6 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 			if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
 			{
 				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
-				CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_GROUND);
 			}
 		}
 	}
@@ -391,4 +390,43 @@ void CCollision::ItemAttack(CObjectX * pobj)
 			}
 		}
 	}
+}
+
+bool CCollision::ItemEnemy(CItem *pItem, float fMyRadius, float fTargetRadius, float fHeight)
+{
+	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
+	CEnemy **ppEnemy = nullptr;
+	int nNum = 0;
+
+	if (pEnemyManager != nullptr)
+	{
+		ppEnemy = pEnemyManager->GetEnemy();
+		nNum = CGame::GetEnemyManager()->GetNum();
+	}
+
+	for (int nCount = 0; nCount < nNum; nCount++)
+	{
+		if (ppEnemy[nCount] != nullptr)
+		{
+			float circleX = pItem->GetMtxWorld()->_41 - ppEnemy[nCount]->GetPosition().x;
+			float circleZ = pItem->GetMtxWorld()->_43 - ppEnemy[nCount]->GetPosition().z;
+			float c = 0.0f;
+
+			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+			if (c <= fMyRadius + fTargetRadius && (pItem->GetPosition().y >= ppEnemy[nCount]->GetPosition().y && pItem->GetPosition().y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
+			{
+				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
+				CParticle *pPar = CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_BLOOD);
+				pPar->Blood();
+				pPar->Uninit();
+				delete pPar;
+				pPar = nullptr;
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

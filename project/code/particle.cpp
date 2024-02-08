@@ -9,14 +9,15 @@
 #include "object.h"
 #include "manager.h"
 #include "effect.h"
+#include "effect3D.h"
 #include "particle.h"
 
 #include <time.h>
 
 //マクロ定義
-#define TYPE_BLOOD    (20)   //血のパーティクル
-#define TYPE_GROUND   (10)   //土埃のパーティクル
-#define TYPE_CIRCLE   (314)   //円形のパーティクル
+#define BLOOD    (1)   //血のパーティクル
+#define GROUND   (10)   //土埃のパーティクル
+#define CIRCLE   (314)   //円形のパーティクル
 #define SPEED    (2.0f)  //移動量
 
 //================================================================
@@ -29,6 +30,7 @@ LPDIRECT3DTEXTURE9 CParticle::m_pTexture = NULL;
 //================================================================
 CParticle::CParticle()
 {
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_fRadius = 0;
 	m_nLife = 0;
 	m_type = TYPEPAR_NONE;
@@ -39,7 +41,7 @@ CParticle::CParticle()
 //================================================================
 CParticle::CParticle(D3DXVECTOR3 pos, TYPEPAR type)
 {
-	SetPosition(pos);
+	m_pos = pos;
 	m_fRadius = 0;
 	m_nLife = 0;
 	m_type = type;
@@ -91,8 +93,6 @@ void CParticle::Uninit(void)
 		m_pTexture->Release();
 		m_pTexture = NULL;
 	}
-
-	CObject::Release();
 }
 
 //================================================================
@@ -106,7 +106,7 @@ void CParticle::Update(void)
 		break;
 
 	case TYPEPAR_BULLET:
-		ParticlMove();
+		Move();
 		break;
 
 	case TYPEPAR_BLOOD:
@@ -140,26 +140,13 @@ void CParticle::Update(void)
 //================================================================
 void CParticle::Draw(void)
 {
-	CRenderer *pRenderer;
-	pRenderer = CManager::Getinstance()->GetRenderer();
-
-	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
-
-	//αブレンディングを加算合計に設定
-	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-
-	//αブレンディングを元に戻す
-	pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
-	pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-	pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	
 }
 
 //================================================================
 //ポリゴンの描画処理
 //================================================================
-void CParticle::ParticlMove(void)
+void CParticle::Move(void)
 {
 	//乱数の種を設定
 	srand((unsigned int)time(0));
@@ -184,14 +171,10 @@ void CParticle::ParticlMove(void)
 //================================================================
 void CParticle::Blood(void)
 {
-	D3DXVECTOR3 pos;
-
-	pos = GetPosition();
-
 	//乱数の種を設定
 	srand((unsigned int)time(0));
 
-	for (int nCnt = 0; nCnt < TYPE_BLOOD; nCnt++)
+	for (int nCnt = 0; nCnt < BLOOD; nCnt++)
 	{
 		float fMove, fRot;
 
@@ -202,10 +185,8 @@ void CParticle::Blood(void)
 		m_move.y = cosf(fRot) * fMove;
 		m_move.z = cosf(fRot) * fMove;
 
-		CEffect::Create(pos, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, m_fRadius, 30, CEffect::TYPEEFF_BLOOD);
+ 		CEffect3D::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 20.0f, m_pos.z), D3DXVECTOR3(m_move.x, m_move.y + 10.0f, m_move.z), D3DXVECTOR3(fRot, fRot, fRot), 60, CEffect3D::TYPE_BLOOD, "data\\MODEL\\bike\\tier.x");
 	}
-
-	SetPosition(pos);
 }
 
 //================================================================
@@ -213,14 +194,10 @@ void CParticle::Blood(void)
 //================================================================
 void CParticle::Ground(void)
 {
-	D3DXVECTOR3 pos;
-
-	pos = GetPosition();
-
 	//乱数の種を設定
 	srand((unsigned int)time(0));
 
-	for (int nCnt = 0; nCnt < TYPE_BLOOD; nCnt++)
+	for (int nCnt = 0; nCnt < BLOOD; nCnt++)
 	{
 		float fPosX, fPosZ, fMove, fRot, fRange;
 
@@ -234,10 +211,8 @@ void CParticle::Ground(void)
 		m_move.y = cosf(fRot * fRange) * fMove;
 		m_move.z = cosf(fRot * fRange) * fMove;
 
-		CEffect::Create({ pos.x, 0.0f, pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, m_fRadius, 30, CEffect::TYPEEFF_GROUND);
+		CEffect::Create({ m_pos.x, 0.0f, m_pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, m_fRadius, 30, CEffect::TYPEEFF_GROUND);
 	}
-
-	SetPosition(pos);
 }
 
 //================================================================
@@ -245,14 +220,10 @@ void CParticle::Ground(void)
 //================================================================
 void CParticle::Smook(void)
 {
-	D3DXVECTOR3 pos;
-
-	pos = GetPosition();
-
 	//乱数の種を設定
 	srand((unsigned int)time(0));
 
-	for (int nCnt = 0; nCnt < TYPE_BLOOD; nCnt++)
+	for (int nCnt = 0; nCnt < BLOOD; nCnt++)
 	{
 		float fPosX, fPosZ, fMove, fRot, fRange;
 
@@ -271,10 +242,8 @@ void CParticle::Smook(void)
 			m_move.y *= -1;
 		}
 
-		CEffect::Create({ pos.x, 0.0f, pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f, 30, CEffect::TYPEEFF_SMOOK);
+		CEffect::Create({ m_pos.x, 0.0f, m_pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f, 30, CEffect::TYPEEFF_SMOOK);
 	}
-
-	SetPosition(pos);
 }
 
 //================================================================
@@ -282,14 +251,9 @@ void CParticle::Smook(void)
 //================================================================
 void CParticle::Circle(void)
 {
-	//ローカル変数宣言
-	D3DXVECTOR3 pos;
 	float fRot;
 
-	//位置取得
-	pos = GetPosition();
-
-	for (int nCnt = 0; nCnt < TYPE_CIRCLE; nCnt++)
+	for (int nCnt = 0; nCnt < CIRCLE; nCnt++)
 	{
 		//向き設定
 		fRot = ((float)nCnt / (D3DX_PI * 1.0f));
@@ -299,9 +263,6 @@ void CParticle::Circle(void)
 		m_move.y = cosf(fRot) * SPEED;
 
 		//エフェクトの生成
-		CEffect::Create({ pos.x, pos.y + 50.0f, pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, 3.0f, 30, CEffect::TYPEEFF_CIRCLE);
+		CEffect::Create({ m_pos.x, m_pos.y + 50.0f, m_pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, 3.0f, 30, CEffect::TYPEEFF_CIRCLE);
 	}
-
-	//位置設定
-	SetPosition(pos);
 }

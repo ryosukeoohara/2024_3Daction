@@ -188,6 +188,7 @@ void CItemManager::ReadText(const char *text)
 					}
 
 					m_ppItem[nCntItem] = CItem::Create(pos, rot, (CItem::TYPE)nType, m_apTexName[nType]);
+					m_ppItem[nCntItem]->SetID(nCntItem);
 					nCntItem++;
 				}
 			}
