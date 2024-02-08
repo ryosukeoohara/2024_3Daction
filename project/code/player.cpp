@@ -888,8 +888,10 @@ void CPlayer::State(void)
 		m_Info.move.z -= cosf(m_Info.rot.y) * 8.0f;
 	}
 
+	// 通常攻撃・こぶしorアイテム
 	if (m_Info.state == STATE_ATTACK && m_Info.Atc != TYPE00_NONE && m_Info.state != STATE_HEAT)
 	{
+		// アイテム
 		if (m_pItem != nullptr)
 		{
 			D3DXMATRIX *mtx = m_pItem->GetMtxWorld();
@@ -906,7 +908,7 @@ void CPlayer::State(void)
 				CGame::GetCollision()->AttackCircle(&Objpos, 50.0f, 50.0f, 100.0f);
 			}
 		}
-		else
+		else // こぶし
 		{
 			D3DXMATRIX *mtx = m_ppCharacter[9]->GetMtxWorld();
 
@@ -924,12 +926,14 @@ void CPlayer::State(void)
 		}
 	}
 
+	// アイテムを持った
 	if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW &&m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_HEAT && m_bLift == true)
 	{
 		m_Info.state = STATE_LIFT;
 		m_pMotion->Set(TYPE_LIFT);
 	}
 
+	// 敵を掴んだ
 	if (m_Info.state != STATE_GRAP && m_Info.state != STATE_ATTACK &&m_bGrap == true)
 	{
 		m_bDesh = false;
@@ -940,6 +944,7 @@ void CPlayer::State(void)
 		//m_pMotion->Set(TYPE_GRAP);
 	}
 
+	// 回避
 	if (m_Info.state == STATE_AVOID)
 	{
 		m_bDesh = false;
@@ -950,6 +955,7 @@ void CPlayer::State(void)
 		//m_Info.pos.z += m_Info.move.z * 0.0005f;
 	}
 
+	// 持っているアイテムで攻撃した
 	if (m_Info.state == STATE_THROW && m_pItem != nullptr)
 	{
 		m_pItem->SetPosition(D3DXVECTOR3(50.0f, -30.0f, -15.0f));
@@ -957,6 +963,7 @@ void CPlayer::State(void)
 		CGame::GetCollision()->ItemAttack(m_pItem);
 	}
 
+	// 持っているアイテムとの親子関係を切る
 	if (m_pMotion->GetNumFrame() >= m_pMotion->GetAttackEnd() && m_pItem != nullptr && (m_Info.state == STATE_THROW || m_Info.state == STATE_HEAT))
 	{
 		m_pItem->SetCurrent(nullptr);
@@ -983,6 +990,7 @@ void CPlayer::State(void)
 		CGame::GetEnemy()->SetState(CEnemy::STATE_GRAP);
 	}*/
 
+	// モーションを移動モーションにする
 	if (m_Info.state != STATE_MOVE && m_Info.state != STATE_ATTACK && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW && m_Info.state != STATE_HEAT
 		&& m_bDesh == true && m_bAttack == false && m_bAvoi == false)
 	{
@@ -994,9 +1002,11 @@ void CPlayer::State(void)
 
 	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEAT)
 	{
+		// カメラをもとの位置に戻す
 		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
 	}
 
+	// 待機モーションにする
 	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
 		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false 
 			&& m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID
@@ -1041,11 +1051,11 @@ void CPlayer::Damege(void)
 void CPlayer::Heat(void)
 {
 	CEnemy **ppEnemy = nullptr;
-
 	int nNum = 0;
 
 	if (CGame::GetEnemyManager() != nullptr)
-	{
+	{// 敵の総数と敵の情報
+
 		nNum = CGame::GetEnemyManager()->GetNum();
 		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 	}
@@ -1057,7 +1067,8 @@ void CPlayer::Heat(void)
 			if (ppEnemy[nCount] != nullptr)
 			{
 				if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[nCount]->GetPosition(), 50.0f, 50.0f) == true)
-				{
+				{// 範囲内に入ったらYボタンが出てくる
+
 					if (m_pBotton == nullptr)
 					{
 						m_pBotton = CObject2D::Create();
@@ -1072,24 +1083,29 @@ void CPlayer::Heat(void)
 					}
 
 					if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
-					{
+					{// ヒートアクションする
+
+						// ヒートアクションをする敵の番号を覚える
 						m_nIdxEne = nCount;
 						ppEnemy[m_nIdxEne]->SetChase(CEnemy::CHASE_OFF);
 						ppEnemy[m_nIdxEne]->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 						if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
-						{
+						{// カメラのモードがゲームのときかつアイテムを手に持っているとき
+
 							if (m_pBotton != nullptr)
 							{
 								m_pBotton->Uninit();
 								m_pBotton = nullptr;
 							}
 
+							// ヒートアクションのカメラモードにする
 							CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
 							CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
 							m_Info.state = STATE_HEAT;
 							m_pMotion->Set(TYPE_THROW);
 
+							// 持っているアイテムの種類に応じた攻撃タイプ
 							if (m_pItem != nullptr)
 							{
 								if (m_pItem->GetType() == CItem::TYPE_BIKE)
@@ -1118,13 +1134,16 @@ void CPlayer::Heat(void)
 	}
 
 	if (m_Info.state == STATE_HEAT)
-	{
+	{// 状態がヒートアクションのとき　
+
 		if (ppEnemy[m_nIdxEne] != nullptr)
 		{
+			// 敵の方向に向かせる
 			m_fDest = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, ppEnemy[m_nIdxEne]->GetPosition(), m_Info.rot.y);
 			m_Info.rot.y += m_fDest;
 			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
+			// アイテムと敵の当たり判定
 			if (m_pItem != nullptr)
 			{
 				D3DXMATRIX *mtx = m_pItem->GetMtxWorld();
@@ -1140,6 +1159,7 @@ void CPlayer::Heat(void)
 
 					if (CGame::GetCollision()->ItemEnemy(m_pItem, 50.0f, 50.0f, 100.0f) == true)
 					{
+						// 持っていたアイテムを消す
 						CGame::GetItemManager()->Release(m_pItem->GetID());
 						m_pItem = nullptr;
 					}
