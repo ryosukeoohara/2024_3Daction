@@ -111,21 +111,10 @@ HRESULT CGame::Init(void)
 		m_pPause = CPause::Create();
 	}
 
-	// プレイヤーの生成
-	if (m_pPlayer == nullptr)
+	// マップの生成
+	if (m_pMap == nullptr)
 	{
-		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
-	}
-
-	if (m_pEnemyManager == nullptr)
-	{
-		m_pEnemyManager = CEnemyManager::Create();
-	}
-
-	// 敵の生成
-	if (m_pEnemy == nullptr)
-	{
-		//m_pEnemy = CEnemy::Create(D3DXVECTOR3(0.0f, 0.0f, 50.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1);
+		m_pMap = CMap::Create();
 	}
 
 	// 当たり判定
@@ -134,14 +123,22 @@ HRESULT CGame::Init(void)
 		m_Collision = CCollision::Create();
 	}
 
+	// アイテムマネージャの生成
 	if (m_pItemManager == nullptr)
 	{
 		m_pItemManager = CItemManager::Create();
 	}
 
-	if (m_pMap == nullptr)
+	// 敵マネージャの生成
+	if (m_pEnemyManager == nullptr)
 	{
-		m_pMap = CMap::Create();
+		m_pEnemyManager = CEnemyManager::Create();
+	}
+
+	// プレイヤーの生成
+	if (m_pPlayer == nullptr)
+	{
+		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
 	return S_OK;
@@ -171,13 +168,6 @@ void CGame::Uninit(void)
 	{
 		m_pItemManager->Uninit();
 		m_pItemManager = nullptr;
-	}
-
-	// 敵の破棄
-	if (m_pEnemy != nullptr)
-	{
-		m_pEnemy->Uninit();
-		m_pEnemy = nullptr;
 	}
 
 	// 敵の破棄
@@ -250,7 +240,7 @@ void CGame::Update(void)
 	{
 		m_pEnemyManager->Update();
 
-		if (m_pEnemyManager->GetNum() <= 0)
+		if (m_pEnemyManager->GetDefeatCounter() <= 0)
 		{
 			if (pFade->GetCol() >= 0.9f && pFade->FADE_IN)
 			{

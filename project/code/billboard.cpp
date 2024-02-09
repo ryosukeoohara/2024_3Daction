@@ -10,6 +10,7 @@
 #include "renderer.h"
 #include "manager.h"
 #include "object2D.h"
+#include "texture.h"
 
 //================================================================
 //コンストラクタ
@@ -71,16 +72,16 @@ void CBillBoard::SetSize(float fHeight, float fWidth)
 
 	//頂点座標の設定
 	pVtx[0].pos.x = m_pos.x;
-	pVtx[0].pos.y = m_pos.y + m_fWidth;
+	pVtx[0].pos.y = m_fWidth;
 	pVtx[0].pos.z = m_pos.z;
 	pVtx[1].pos.x = m_pos.x + m_fHeight;
-	pVtx[1].pos.y = m_pos.y + m_fWidth;
+	pVtx[1].pos.y = m_fWidth;
 	pVtx[1].pos.z = m_pos.z;
 	pVtx[2].pos.x = m_pos.x;
-	pVtx[2].pos.y = m_pos.y;
+	pVtx[2].pos.y = 0.0f;
 	pVtx[2].pos.z = m_pos.z;
 	pVtx[3].pos.x = m_pos.x + m_fHeight;
-	pVtx[3].pos.y = m_pos.y;
+	pVtx[3].pos.y = 0.0f;
 	pVtx[3].pos.z = m_pos.z;
 
 	//頂点バッファをアンロックする
@@ -276,7 +277,7 @@ void CBillBoard::Draw(void)
 		pDevice->SetFVF(FVF_VERTEX_3D);
 
 		//テクスチャの設定
-		//pDevice->SetTexture(0, m_pTexture);
+		pDevice->SetTexture(0, CManager::Getinstance()->GetTexture()->GetAddress(m_nIdxTexture));
 
 		//ポリゴンの描画
 		pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP,    //プリミティブの種類

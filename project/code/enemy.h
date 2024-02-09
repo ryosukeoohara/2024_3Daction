@@ -90,6 +90,7 @@ public:
 	void SetIdx(int idx) { m_Info.nIdxID = idx; }
 	void SetType(TYPE type) { m_Type = type; }
 	virtual void SetChase(CHASE cha);
+	void SetDraw(bool value) { m_Info.bDraw = value; }
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) 
@@ -128,6 +129,7 @@ protected:
 		STATE state;                             // 状態
 		int nIdxID;                              // インデックス番号
 		int nLife;                               // 体力
+		bool bDraw;                              // 描画するかどうか
 	};
 
 	INFO m_Info;                                 // 情報
@@ -140,7 +142,7 @@ private:
 	CCharacter **m_apModel;                    // モデル(パーツ)へのポインタ
 	static int m_nNumAll;                      // 敵の総数
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
-	int m_nIdx;
+	static int m_nIdx;
 	D3DXMATRIX *m_pCurrent;                    // 親のマトリックス
 	static CEnemy *m_pTop;  //先頭のオブジェクトへのポインタ
 	static CEnemy *m_pCur; //最後尾のオブジェクトへのポインタ

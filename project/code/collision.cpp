@@ -392,41 +392,37 @@ void CCollision::ItemAttack(CObjectX * pobj)
 	}
 }
 
-bool CCollision::ItemEnemy(CItem *pItem, float fMyRadius, float fTargetRadius, float fHeight)
+bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float fTargetRadius, float fHeight)
 {
-	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
-	CEnemy **ppEnemy = nullptr;
-	int nNum = 0;
-
-	if (pEnemyManager != nullptr)
+	if (pEnemy != nullptr)
 	{
-		ppEnemy = pEnemyManager->GetEnemy();
-		nNum = CGame::GetEnemyManager()->GetNum();
-	}
+		float circleX = pItem->GetMtxWorld()->_41 - pEnemy->GetPosition().x;
+		float circleZ = pItem->GetMtxWorld()->_43 - pEnemy->GetPosition().z;
+		float c = 0.0f;
 
-	for (int nCount = 0; nCount < nNum; nCount++)
-	{
-		if (ppEnemy[nCount] != nullptr)
+		c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+		if (c <= fMyRadius + fTargetRadius && (pItem->GetPosition().y >= pEnemy->GetPosition().y && pItem->GetPosition().y <= pEnemy->GetPosition().y + fHeight) && pEnemy->GetState() != CEnemy::STATE_DAMEGE && pEnemy->GetState() != CEnemy::STATE_HEATDAMEGE)
 		{
-			float circleX = pItem->GetMtxWorld()->_41 - ppEnemy[nCount]->GetPosition().x;
-			float circleZ = pItem->GetMtxWorld()->_43 - ppEnemy[nCount]->GetPosition().z;
-			float c = 0.0f;
+			// “G‚Ì”Ô†‚ð•Û‘¶
+			//CGame::GetEnemyManager()->SetTarget(nCount);
+			pEnemy->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
 
-			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+			CParticle *pPar = CParticle::Create(pEnemy->GetPosition(), CParticle::TYPEPAR_BLOOD);
+			pPar->Blood();
+			pPar->Uninit();
+			delete pPar;
+			pPar = nullptr;
 
-			if (c <= fMyRadius + fTargetRadius && (pItem->GetPosition().y >= ppEnemy[nCount]->GetPosition().y && pItem->GetPosition().y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
-			{
-				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
-				CParticle *pPar = CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_BLOOD);
-				pPar->Blood();
-				pPar->Uninit();
-				delete pPar;
-				pPar = nullptr;
+			/*CParticle *pParticle = CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_GROUND);
+			pParticle->Ground();
+			pParticle->Uninit();
+			delete pParticle;
+			pParticle = nullptr;*/
 
-				return true;
-			}
+			return true;
 		}
 	}
-
+	
 	return false;
 }

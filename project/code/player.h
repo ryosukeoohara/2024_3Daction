@@ -120,6 +120,7 @@ public:
 	static CPlayer *Create(D3DXVECTOR3 pos);  // ¶¬
 	static CPlayer *Create(void);
 	void Hit(void);			                  // UŒ‚‚ğ‚­‚ç‚Á‚½‚Ìˆ—
+	void TitleWalk(void);
 
 	//@İ’èŒn
 	void SetPosition(D3DXVECTOR3 pos) { m_Info.pos = pos; }         // ˆÊ’uİ’è

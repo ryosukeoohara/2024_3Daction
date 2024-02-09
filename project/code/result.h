@@ -9,6 +9,10 @@
 #include "manager.h"
 #include "object2D.h"
 
+// 前方宣言
+class CField;
+class CMap;
+
 //リザルトクラス
 class CResult : public CScene
 {
@@ -24,6 +28,8 @@ public:
 	static CResult *Create(void);
 
 private:
+	CMap *m_pMap;
+	CField *m_pField;
 };
 
 #endif // !_TITLE_H_

@@ -1,7 +1,7 @@
 //===========================================================
 //
-//ポリゴンを出すやつ[player.cpp]
-//Author 大原怜将
+// プレイヤー処理[player.cpp]
+// Author 大原怜将
 //
 //===========================================================
 #include "main.h"
@@ -33,7 +33,7 @@
 #include<string.h>
 
 //================================================================
-//マクロ定義
+// マクロ定義
 //================================================================
 #define MAX_LIFECHIBI (10)                                        // チビの体力
 #define MAX_LIFEFOOT  (6)                                         // デブの体力
@@ -51,12 +51,12 @@
 #define PLAYER02_TEXT ("data\\TEXT\\motion_set_player2.txt")      // プレイヤーのテキストファイル
 
 //================================================================
-//静的メンバ変数宣言
+// 静的メンバ変数宣言
 //================================================================
 //MODEL *CPlayer::m_Player = NULL;
 
 //================================================================
-//コンストラクタ
+// コンストラクタ
 //================================================================
 CPlayer::CPlayer()
 {
@@ -107,7 +107,7 @@ CPlayer::CPlayer()
 }
 
 //================================================================
-//コンストラクタ(オーバーロード)
+// コンストラクタ(オーバーロード)
 //================================================================
 CPlayer::CPlayer(D3DXVECTOR3 pos)
 {
@@ -158,7 +158,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 }
 
 //================================================================
-//デストラクタ
+// デストラクタ
 //================================================================
 CPlayer::~CPlayer()
 {
@@ -212,7 +212,47 @@ CPlayer * CPlayer::Create(void)
 }
 
 //================================================================
-//プレイヤーの初期化処理
+// タイトルで歩く
+//================================================================
+void CPlayer::TitleWalk(void)
+{
+	// パーツごとの更新
+	for (int nCount = 0; nCount < m_nNumModel; nCount++)
+	{
+		if (m_ppCharacter[nCount] != nullptr)
+		{
+			m_ppCharacter[nCount]->Update();
+		}
+	}
+
+	// モーションの更新
+	if (m_pMotion != nullptr)
+	{
+		m_pMotion->Update();
+	}
+
+	if (m_Info.state != STATE_MOVE)
+	{
+		m_Info.state = STATE_MOVE;
+		m_pMotion->Set(TYPE_MOVE);
+	}
+
+	//位置に移動量加算----------------------------------------------------
+	m_Info.pos.x += m_Info.move.x;
+	m_Info.pos.z += m_Info.move.z;
+
+	//m_pos.y = fHeight + 18.0f;
+
+	//移動量を更新(減衰させる)--------------------------------------------
+	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
+	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
+
+	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	CManager::Getinstance()->GetDebugProc()->Print("プレイヤーの向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+}
+
+//================================================================
+// 初期化処理
 //================================================================
 HRESULT CPlayer::Init(void)
 {
@@ -241,17 +281,20 @@ HRESULT CPlayer::Init(void)
 
 	ReadText(PLAYER01_TEXT);
 
-	m_pLife = CGage2D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), 40.0f, (float)(m_nLife * 20), CGage2D::TYPE_LIFE);
-	m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_Info.nLife * 20);
-	m_pStamina = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, m_fStamina, CGage3D::TYPE_STAMINA);
-	m_pStamina->SetPos(&m_Info.pos);
-	m_pStamina->GetBill()->SetTex(m_fStamina);
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	{
+		m_pLife = CGage2D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), 40.0f, (float)(m_nLife * 20), CGage2D::TYPE_LIFE);
+		m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_Info.nLife * 20);
+		m_pStamina = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, m_fStamina, CGage3D::TYPE_STAMINA);
+		m_pStamina->SetPos(&m_Info.pos);
+		m_pStamina->GetBill()->SetTex(m_fStamina);
+	}
 	
 	return S_OK;
 }
 
 //================================================================
-//プレイヤーの終了処理
+// 終了処理
 //================================================================
 void CPlayer::Uninit(void)
 {
@@ -300,7 +343,7 @@ void CPlayer::Uninit(void)
 }
 
 //================================================================
-//プレイヤーの更新処理
+// 更新処理
 //================================================================
 void CPlayer::Update(void)
 {
@@ -319,8 +362,10 @@ void CPlayer::Update(void)
 	//サウンドを取得
 	CSound *pSound = CManager::Getinstance()->GetSound();
 
+	// 制御処理
 	Control();
 
+	// パーツごとの更新
 	for (int nCount = 0; nCount < m_nNumModel; nCount++)
 	{
 		if (m_ppCharacter[nCount] != nullptr)
@@ -329,12 +374,13 @@ void CPlayer::Update(void)
 		}
 	}
 
-	if (m_pMotion != NULL)
+	// モーションの更新
+	if (m_pMotion != nullptr)
 	{
-		// 更新処理
 		m_pMotion->Update();
 	}
 
+	// スタミナ
 	if (m_fStamina < 40)
 	{
 		m_fStamina += 0.1f;
@@ -345,14 +391,27 @@ void CPlayer::Update(void)
 		}
 	}
 
+	// 体力
 	if (m_pLife != nullptr)
 	{
 		m_pLife->GetObj2D()->SetEdgeCenterTex((float)m_Info.nLife * 20);
 	}
+
+	if (m_Info.nLife <= 0)
+	{
+		//フェードの情報を取得
+		CFade *pFade = CManager::Getinstance()->GetFade();
+
+		if (pFade->Get() != pFade->FADE_OUT)
+		{
+			//シーンをゲームに遷移
+			pFade->Set(CScene::MODE_RESULT);
+		}
+	}
 }
 
 //================================================================
-//プレイヤーの描画処理
+// 描画処理
 //================================================================
 void CPlayer::Draw(void)
 {
@@ -791,12 +850,14 @@ void CPlayer::Grap(void)
 	{
 		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP)
 		{
+			// アイテムを投げる
 			if (m_bLift == true)
 			{
 				m_Info.state = STATE_THROW;
 				m_pMotion->Set(TYPE_THROW);
 			}
 
+			// アイテムを掴むよ
 			if (m_pItem == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
 			{
 				m_bLift = true;
@@ -846,6 +907,7 @@ void CPlayer::Avoid(void)
 //================================================================
 void CPlayer::State(void)
 {
+	// 敵を掴む
 	if (m_bLift == true && m_bDesh == true)
 	{
 		if (m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW)
@@ -855,6 +917,7 @@ void CPlayer::State(void)
 		}
 	}
 
+	// 攻撃一段目
 	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
 	{
 		m_Info.state = STATE_ATTACK;
@@ -867,6 +930,7 @@ void CPlayer::State(void)
 		m_Info.move.z -= cosf(m_Info.rot.y) * MOVE;
 	}
 
+	// 攻撃二段目
 	if (m_Info.Atc == TYPE01_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
 	{
 		m_Info.Atc = TYPE02_ATTACK;
@@ -877,6 +941,8 @@ void CPlayer::State(void)
 		m_Info.move.x -= sinf(m_Info.rot.y) * MOVE;
 		m_Info.move.z -= cosf(m_Info.rot.y) * MOVE;
 	}
+
+	// 攻撃三段目
 	if (m_Info.Atc == TYPE02_ATTACK && m_bAttack == true && m_pMotion->IsFinish() == true)
 	{
 		m_Info.Atc = TYPE03_ATTACK;
@@ -1000,6 +1066,7 @@ void CPlayer::State(void)
 		m_pMotion->Set(TYPE_MOVE);
 	}
 
+	// モーションが終了かつヒートアクション中
 	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEAT)
 	{
 		// カメラをもとの位置に戻す
@@ -1042,6 +1109,8 @@ void CPlayer::Damege(void)
 		m_nDamegeCounter = 10;
 	}
 
+	m_Info.nLife--;
+
 	m_nDamegeCounter--;
 }
 
@@ -1052,6 +1121,9 @@ void CPlayer::Heat(void)
 {
 	CEnemy **ppEnemy = nullptr;
 	int nNum = 0;
+	float fLength = 0.0f;
+	D3DXVECTOR3 OldDistance = D3DXVECTOR3(10000.0f, 100000.0f, 100000.0f);
+	D3DXVECTOR3 Distance = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (CGame::GetEnemyManager() != nullptr)
 	{// 敵の総数と敵の情報
@@ -1060,15 +1132,46 @@ void CPlayer::Heat(void)
 		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 	}
 
+	// アイテムを持っているときまたはアイテムを持って走っているとき
 	if (m_Info.state == STATE_LIFT || m_Info.state == STATE_GRAPDASH)
 	{
 		for (int nCount = 0; nCount < nNum; nCount++)
 		{
 			if (ppEnemy[nCount] != nullptr)
 			{
-				if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[nCount]->GetPosition(), 50.0f, 50.0f) == true)
-				{// 範囲内に入ったらYボタンが出てくる
+				Distance = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, ppEnemy[nCount]->GetPosition());
 
+				if (Distance.x < 0.0f)
+				{
+					Distance.x *= -1;
+				}
+
+				if (Distance.y < 0.0f)
+				{
+					Distance.y *= -1;
+				}
+
+				if (Distance.z < 0.0f)
+				{
+					Distance.z *= -1;
+				}
+
+				if (Distance.x <= OldDistance.x && Distance.y <= OldDistance.y && Distance.z <= OldDistance.z)
+				{
+					OldDistance = Distance;
+					// ヒートアクションをする敵の番号を覚える
+					m_nIdxEne = nCount;
+				}
+			}
+		}
+
+		if (ppEnemy[m_nIdxEne] != nullptr)
+		{
+			if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[m_nIdxEne]->GetPosition(), 50.0f, 50.0f) == true)
+			{// 範囲内に入ったらYボタンが出てくる
+
+			 // Yボタンが出てくる
+				{
 					if (m_pBotton == nullptr)
 					{
 						m_pBotton = CObject2D::Create();
@@ -1081,53 +1184,57 @@ void CPlayer::Heat(void)
 						m_pBotton->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Ybutton.png"));
 						m_pBotton->SetDraw(true);
 					}
+				}
 
-					if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
-					{// ヒートアクションする
+				if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
+				{// ヒートアクションする
 
-						// ヒートアクションをする敵の番号を覚える
-						m_nIdxEne = nCount;
-						ppEnemy[m_nIdxEne]->SetChase(CEnemy::CHASE_OFF);
-						ppEnemy[m_nIdxEne]->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					ppEnemy[m_nIdxEne]->SetChase(CEnemy::CHASE_OFF);
+					ppEnemy[m_nIdxEne]->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
-						if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
-						{// カメラのモードがゲームのときかつアイテムを手に持っているとき
+					if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME && m_bLift == true)
+					{// カメラのモードがゲームのときかつアイテムを手に持っているとき
 
-							if (m_pBotton != nullptr)
+						if (m_pBotton != nullptr)
+						{
+							m_pBotton->Uninit();
+							m_pBotton = nullptr;
+						}
+
+						// 走っていたら止めさせる
+						if (m_bDesh == true)
+						{
+							m_bDesh = false;
+						}
+
+						// ヒートアクションのカメラモードにする
+						CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
+						CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
+						m_Info.state = STATE_HEAT;
+						m_pMotion->Set(TYPE_THROW);
+
+						// 持っているアイテムの種類に応じた攻撃タイプ
+						if (m_pItem != nullptr)
+						{
+							if (m_pItem->GetType() == CItem::TYPE_BIKE)
 							{
-								m_pBotton->Uninit();
-								m_pBotton = nullptr;
+								m_Info.Atc = TYPE04_HEATACTBIKE;
 							}
 
-							// ヒートアクションのカメラモードにする
-							CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
-							CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, m_Info.rot.y - 2.35f, D3DX_PI * -0.38f));
-							m_Info.state = STATE_HEAT;
-							m_pMotion->Set(TYPE_THROW);
-
-							// 持っているアイテムの種類に応じた攻撃タイプ
-							if (m_pItem != nullptr)
+							if (m_pItem->GetType() == CItem::TYPE_REF)
 							{
-								if (m_pItem->GetType() == CItem::TYPE_BIKE)
-								{
-									m_Info.Atc = TYPE04_HEATACTBIKE;
-								}
-
-								if (m_pItem->GetType() == CItem::TYPE_REF)
-								{
-									m_Info.Atc = TYPE05_HEATACTREF;
-								}
+								m_Info.Atc = TYPE05_HEATACTREF;
 							}
 						}
 					}
 				}
-				else
+			}
+			else
+			{
+				if (m_pBotton != nullptr)
 				{
-					if (m_pBotton != nullptr)
-					{
-						m_pBotton->Uninit();
-						m_pBotton = nullptr;
-					}
+					m_pBotton->Uninit();
+					m_pBotton = nullptr;
 				}
 			}
 		}
@@ -1154,10 +1261,11 @@ void CPlayer::Heat(void)
 				Objpos.y = mtx->_42;
 				Objpos.z = mtx->_43;
 
+				// 当たり判定
 				if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
 				{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
 
-					if (CGame::GetCollision()->ItemEnemy(m_pItem, 50.0f, 50.0f, 100.0f) == true)
+					if (CGame::GetCollision()->ItemEnemy(m_pItem, ppEnemy[m_nIdxEne], 50.0f, 50.0f, 100.0f) == true)
 					{
 						// 持っていたアイテムを消す
 						CGame::GetItemManager()->Release(m_pItem->GetID());
@@ -1170,7 +1278,7 @@ void CPlayer::Heat(void)
 }
 
 //================================================================
-//外部ファイル読み込み
+// 外部ファイル読み込み
 //================================================================
 void CPlayer::ReadText(const char *fliename)
 {
@@ -1299,14 +1407,15 @@ void CPlayer::ReadText(const char *fliename)
 		return;
 	}
 
-	if (m_pMotion != NULL)
+	if (m_pMotion != nullptr)
 	{
-		//モデルの設定
+		// モデルの設定
 		m_pMotion->SetModel(m_ppCharacter, m_nNumModel);
 
-		//初期化処理
+		// 初期化処理
 		m_pMotion->ReadText(fliename);
 
+		// セット(待機)
 		m_pMotion->Set(TYPE_NEUTRAL);
 	}
 }

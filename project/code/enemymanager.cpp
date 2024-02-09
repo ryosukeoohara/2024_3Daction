@@ -35,6 +35,7 @@ CEnemyManager::CEnemyManager()
 	//初期化
 	m_appEnemy = nullptr;
 	m_nEnemyAll = 0;
+	m_nNum = 0;
 	m_Readpos = { 0.0f,0.0f,0.0f };
 	m_Readrot = { 0.0f,0.0f,0.0f };
 }
@@ -161,6 +162,7 @@ void CEnemyManager::ReadText(const char *text)
 
 				m_appEnemy = new CEnemy*[m_nEnemyAll];
 				SetNum(m_nEnemyAll);
+				m_nNum = m_nEnemyAll;
 
 			}  //NUM_MODELのかっこ
 
@@ -234,6 +236,27 @@ void CEnemyManager::ReadText(const char *text)
 	else
 	{
 		return;
+	}
+}
+
+//=============================================================================
+// ヒートアクションのターゲット
+//=============================================================================
+void CEnemyManager::SetTarget(int idx)
+{
+	if (m_appEnemy != nullptr)
+	{
+		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
+		{
+			if (nCount != idx)
+			{
+				if (m_appEnemy[nCount] != nullptr)
+				{// 使用されていたら
+
+					m_appEnemy[nCount]->SetDraw(false);
+				}
+			}
+		}
 	}
 }
 

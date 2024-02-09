@@ -15,10 +15,10 @@
 #include <time.h>
 
 //マクロ定義
-#define BLOOD    (1)   //血のパーティクル
-#define GROUND   (10)   //土埃のパーティクル
+#define BLOOD    (1)     //血のパーティクル
+#define GROUND   (20)    //土埃のパーティクル
 #define CIRCLE   (314)   //円形のパーティクル
-#define SPEED    (2.0f)  //移動量
+#define SPEED    (10.0f)  //移動量
 
 //================================================================
 //静的メンバ変数宣言
@@ -33,7 +33,6 @@ CParticle::CParticle()
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_fRadius = 0;
 	m_nLife = 0;
-	m_type = TYPEPAR_NONE;
 }
 
 //================================================================
@@ -102,19 +101,12 @@ void CParticle::Update(void)
 {
 	switch (m_type)
 	{
-	case TYPEPAR_NONE:
-		break;
-
-	case TYPEPAR_BULLET:
-		Move();
+	case TYPEPAR_GROUND:
+		Ground();
 		break;
 
 	case TYPEPAR_BLOOD:
 		Blood();
-		break;
-
-	case TYPEPAR_GROUND:
-		Ground();
 		break;
 
 	case TYPEPAR_SMOOK:
@@ -186,6 +178,10 @@ void CParticle::Blood(void)
 		m_move.z = cosf(fRot) * fMove;
 
  		CEffect3D::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 20.0f, m_pos.z), D3DXVECTOR3(m_move.x, m_move.y + 10.0f, m_move.z), D3DXVECTOR3(fRot, fRot, fRot), 60, CEffect3D::TYPE_BLOOD, "data\\MODEL\\bike\\tier.x");
+		CEffect3D::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 20.0f, m_pos.z), D3DXVECTOR3(m_move.x, m_move.y + 10.0f, m_move.z), D3DXVECTOR3(fRot, fRot, fRot), 60, CEffect3D::TYPE_BLOOD, "data\\MODEL\\bike\\basket.x");
+		CEffect3D::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 20.0f, m_pos.z), D3DXVECTOR3(m_move.x, m_move.y + 10.0f, m_move.z), D3DXVECTOR3(fRot, fRot, fRot), 60, CEffect3D::TYPE_BLOOD, "data\\MODEL\\bike\\handle.x");
+		CEffect3D::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 20.0f, m_pos.z), D3DXVECTOR3(m_move.x, m_move.y + 10.0f, m_move.z), D3DXVECTOR3(fRot, fRot, fRot), 60, CEffect3D::TYPE_BLOOD, "data\\MODEL\\bike\\pedal.x");
+		CEffect3D::Create(D3DXVECTOR3(m_pos.x, m_pos.y + 20.0f, m_pos.z), D3DXVECTOR3(m_move.x, m_move.y + 10.0f, m_move.z), D3DXVECTOR3(fRot, fRot, fRot), 60, CEffect3D::TYPE_BLOOD, "data\\MODEL\\bike\\tier.x");
 	}
 }
 
@@ -194,24 +190,18 @@ void CParticle::Blood(void)
 //================================================================
 void CParticle::Ground(void)
 {
-	//乱数の種を設定
-	srand((unsigned int)time(0));
+	float fRot = 0.0f;
 
-	for (int nCnt = 0; nCnt < BLOOD; nCnt++)
+	for (int nCnt = 0; nCnt < GROUND; nCnt++)
 	{
-		float fPosX, fPosZ, fMove, fRot, fRange;
+		// 向き設定
+		fRot = ((float)nCnt / (D3DX_PI * 1.0f));
 
-		fPosX = (float)(rand() % 100);
-		fPosZ = (float)(rand() % 100);
-		fMove = (float)(rand() % 50) / 100.0f * 8.0f;
-		fRot = (float)(rand() % 629 - 314) / 100.0f;
-		fRange = (float)(rand() % 10) - D3DX_PI * 2;
+		// 移動量設定
+		m_move.x = sinf(fRot) * SPEED;
+		m_move.z = cosf(fRot) * SPEED;
 
-		m_move.x = sinf(fRot * fRange) * fMove;
-		m_move.y = cosf(fRot * fRange) * fMove;
-		m_move.z = cosf(fRot * fRange) * fMove;
-
-		CEffect::Create({ m_pos.x, 0.0f, m_pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, m_fRadius, 30, CEffect::TYPEEFF_GROUND);
+		CEffect::Create({ m_pos.x, 0.0f, m_pos.z }, { m_move.x, 0.0f, m_move.z }, { 1.0f, 1.0f, 1.0f, 0.8f }, 50.0f, 30, CEffect::TYPE_GROUND);
 	}
 }
 
@@ -220,30 +210,7 @@ void CParticle::Ground(void)
 //================================================================
 void CParticle::Smook(void)
 {
-	//乱数の種を設定
-	srand((unsigned int)time(0));
-
-	for (int nCnt = 0; nCnt < BLOOD; nCnt++)
-	{
-		float fPosX, fPosZ, fMove, fRot, fRange;
-
-		fPosX = (float)(rand() % 100);
-		fPosZ = (float)(rand() % 100);
-		fMove = (float)(rand() % 50) / 100.0f * 8.0f;
-		fRot = (float)(rand() % 629 - 314) / 100.0f;
-		fRange = (float)(rand() % 10) - D3DX_PI * 2;
-
-		//m_move.x = sinf(fRot * fRange) * fMove;
-		m_move.y = cosf(fRot * fRange) * fMove * 2.0f;
-		//m_move.z = cosf(fRot * fRange) * fMove;
-
-		if (m_move.y < 0.0f)
-		{
-			m_move.y *= -1;
-		}
-
-		CEffect::Create({ m_pos.x, 0.0f, m_pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, 10.0f, 30, CEffect::TYPEEFF_SMOOK);
-	}
+	
 }
 
 //================================================================
@@ -251,18 +218,5 @@ void CParticle::Smook(void)
 //================================================================
 void CParticle::Circle(void)
 {
-	float fRot;
-
-	for (int nCnt = 0; nCnt < CIRCLE; nCnt++)
-	{
-		//向き設定
-		fRot = ((float)nCnt / (D3DX_PI * 1.0f));
-
-		//移動量設定
-		m_move.x = sinf(fRot) * SPEED;
-		m_move.y = cosf(fRot) * SPEED;
-
-		//エフェクトの生成
-		CEffect::Create({ m_pos.x, m_pos.y + 50.0f, m_pos.z }, { m_move.x, m_move.y, m_move.z }, { 1.0f, 0.0f, 0.0f, 1.0f }, 3.0f, 30, CEffect::TYPEEFF_CIRCLE);
-	}
+	
 }

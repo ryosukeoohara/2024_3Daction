@@ -230,11 +230,14 @@ void CEnemyWeak::Attack(void)
 
 			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
 			{
-				CGame::GetPlayer()->SetState(CPlayer::STATE_DAMEGE);
-				CGame::GetPlayer()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * -5.0f, 10.0f, cosf(m_Info.rot.y) * -5.0f));
-				int nLife = CGame::GetPlayer()->GetLife();
-				nLife--;
-				CGame::GetPlayer()->SetLife(nLife);
+				if (CGame::GetPlayer()->GetState() != CPlayer::STATE_DAMEGE)
+				{
+					CGame::GetPlayer()->SetState(CPlayer::STATE_DAMEGE);
+					CGame::GetPlayer()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * -5.0f, 10.0f, cosf(m_Info.rot.y) * -5.0f));
+					int nLife = CGame::GetPlayer()->GetLife();
+					nLife--;
+					CGame::GetPlayer()->SetLife(nLife);
+				}
 			}
 		}
 	}

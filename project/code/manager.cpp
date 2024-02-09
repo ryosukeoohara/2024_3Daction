@@ -205,7 +205,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{//使用されていなかったら
 
 		//シーンの生成
-		m_pScene = CScene::Create(CScene::MODE_TITLE);
+		m_pScene = CScene::Create(CScene::MODE_GAME);
 
 		//初期化処理
 		m_pScene->Init();
@@ -507,6 +507,7 @@ HRESULT CScene::Init(void)
 			m_Title->Init();
 
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_TITLE);
+			CManager::Getinstance()->GetCamera()->Reset();
 		}
 
 		break;
@@ -533,6 +534,7 @@ HRESULT CScene::Init(void)
 			m_Game->Init();
 
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_GAME);
+			CManager::Getinstance()->GetCamera()->Reset();
 		}
 
 		break;
@@ -546,6 +548,7 @@ HRESULT CScene::Init(void)
 			m_Result->Init();
 
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RESULT);
+			CManager::Getinstance()->GetCamera()->Reset();
 		}
 
 		break;

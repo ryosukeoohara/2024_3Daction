@@ -15,31 +15,35 @@
 //================================================================
 //静的メンバ変数宣言
 //================================================================
-LPDIRECT3DTEXTURE9 CEffect::m_pTexture = NULL;
-//struct CEffect::Effect CEffect::m_effect;
-//float CEffect::m_fRadius = 0.0f;
-//D3DXCOLOR CEffect::m_col = { 0.0f,0.0f,0.0f,0.0f };
+
+const char *CEffect::m_apTexName[TYPE_MAX] =
+{
+	"data\\TEXTURE\\smook.png",
+};
 
 //================================================================
 //コンストラクタ
 //================================================================
 CEffect::CEffect()
 {
-	m_fRadius = 0;
-	m_nLife = 0;
+	m_Info.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Info.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	m_Info.nLife = 0;
+	m_Info.fRadius = 0.0f;
 	m_nIdxTexture = -1;
-	m_type = TYPEEFF_NONE;
 }
 
 //================================================================
 //コンストラクタ
 //================================================================
-CEffect::CEffect(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, int nLife, TYPEEFF type)
+CEffect::CEffect(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, int nLife, TYPE type)
 {
-	m_col = col;
-	m_fRadius = fRadius;
-	m_nLife = nLife;
-	m_move = move;
+	m_Info.pos = pos;
+	m_Info.move = move;
+	m_Info.col = col;
+	m_Info.nLife = nLife;
+	m_Info.fRadius = fRadius;
 	m_type = type;
 	m_nIdxTexture = -1;
 }
@@ -55,7 +59,7 @@ CEffect::~CEffect()
 //================================================================
 //生成処理
 //================================================================
-CEffect *CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, int nLife, TYPEEFF type)
+CEffect *CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, int nLife, TYPE type)
 {
 	//オブジェクト2Dのポインタ
 	CEffect *pEffect = NULL;
@@ -67,14 +71,12 @@ CEffect *CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float
 			//オブジェクト2Dの生成
 			pEffect = new CEffect(pos, move, col, fRadius, nLife, type);
 
-			//テクスチャをバインド
-			//pEffect->BindTexture(m_pTexture);
-
 			//初期化処理
 			pEffect->Init();
 			pEffect->SetPosition(pos);
 			pEffect->SetSize(fRadius, fRadius);
 			pEffect->SetColor(col);
+			pEffect->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(m_apTexName[type]));
 			pEffect->SetDraw(true);
 		}
 	}
@@ -90,44 +92,6 @@ HRESULT CEffect::Init(void)
 	//種類の設定
 	SetType(TYPE_EFFECT);
 
-	//テクスチャの情報取得
-	CTexture *pTexture = CManager::Getinstance()->GetTexture();
-
-	switch (m_type)
-	{
-	case TYPEEFF_NONE:
-
-		break;
-
-	case TYPEEFF_GROUND:
-
-		m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\effect000.jpg");
-		break;
-
-	case TYPEEFF_BLOOD:
-
-		m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\effect000.jpg");
-		break;
-
-	case TYPEEFF_SMOOK:
-
-		m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\effect000.jpg");
-		break;
-
-	case TYPEEFF_CIRCLE:
-
-		m_nIdxTexture = pTexture->Regist("data\\TEXTURE\\effect000.jpg");
-		break;
-
-	case TYPEEFF_MAX:
-		break;
-
-	default:
-		break;
-	}
-
-	SetIdxTex(m_nIdxTexture);
-
 	//初期化処理
 	CBillBoard::Init();
 	//m_fRadius = 15.0f;
@@ -140,12 +104,6 @@ HRESULT CEffect::Init(void)
 //================================================================
 void CEffect::Uninit(void)
 {
-	if (m_pTexture != NULL)
-	{
-		m_pTexture->Release();
-		m_pTexture = NULL;
-	}
-
 	//終了処理
 	CBillBoard::Uninit();
 }
@@ -155,7 +113,7 @@ void CEffect::Uninit(void)
 //================================================================
 void CEffect::Update(void)
 {
-	m_nLife--;
+	m_Info.nLife--;
 
 	//m_fRadius -= 0.1f;
 
@@ -164,37 +122,26 @@ void CEffect::Update(void)
 
 	switch (m_type)
 	{
-	case CEffect::TYPEEFF_NONE:
-
-		break;
-
-	case CEffect::TYPEEFF_GROUND:
-
+	case CEffect::TYPE_GROUND:
 		Ground();
 		break;
 
-	case CEffect::TYPEEFF_BLOOD:
-
-		Blood();
-		break;
-
-	case CEffect::TYPEEFF_SMOOK:
-
-		Smook();
-		break;
-
-	case CEffect::TYPEEFF_CIRCLE:
-
-		Circle();
-
-		m_col.a -= 0.009f;
-		break;
-
-	case CEffect::TYPEEFF_MAX:
+	case CEffect::TYPE_MAX:
 		break;
 
 	default:
 		break;
+	}
+
+	m_Info.pos.x += m_Info.move.x;
+	m_Info.pos.y += m_Info.move.y;
+	m_Info.pos.z += m_Info.move.z;
+
+	SetPosition(m_Info.pos);
+
+	if (m_Info.nLife <= 0)
+	{
+		CEffect::Uninit();
 	}
 }
 
@@ -228,7 +175,13 @@ void CEffect::Draw(void)
 //================================================================
 void CEffect::Ground(void)
 {
-	
+	/*m_Info.fRadius += 5.0f;
+
+	SetSize(m_Info.fRadius, m_Info.fRadius);*/
+
+	//移動量を更新(減衰させる)--------------------------------------------
+	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
+	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
 }
 
 //================================================================
@@ -244,7 +197,7 @@ void CEffect::Blood(void)
 //================================================================
 void CEffect::Smook(void)
 {
-	m_fRadius += 1.0f;
+	
 }
 
 //================================================================

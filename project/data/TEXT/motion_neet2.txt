@@ -2120,7 +2120,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 5 / 6 >> ---
-		FRAME = 40
+		FRAME = 20
 		PARTS	# ----- [ 0 ] -----
 			POS = -4.60 -6.10 0.00
 			ROT = -0.03 0.53 0.00

@@ -18,6 +18,8 @@
 #include "camera.h"
 #include "input.h"
 #include "fade.h"
+#include "map.h"
+#include "field.h"
 
 //===========================================================
 //コンストラクタ
@@ -57,6 +59,34 @@ CResult *CResult::Create(void)
 //===========================================================
 HRESULT CResult::Init(void)
 {
+	CField *pField = new CField;
+
+	if (pField != nullptr)
+	{
+		pField->Init();
+		pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
+		pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		pField->SetSize(5000.0f, 5000.0f);
+		pField->SetDraw(true);
+	}
+
+	CObject2D *pBg = new CObject2D;
+
+	if (pBg != nullptr)
+	{
+		pBg->Init();
+		pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\res.jpg"));
+		pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+		pBg->SetSize(100.0f, 100.0f);
+		pBg->SetDraw(true);
+	}
+
+	// マップの生成
+	if (m_pMap == nullptr)
+	{
+		m_pMap = CMap::Create();
+	}
+
 	return S_OK;
 }
 
@@ -65,7 +95,20 @@ HRESULT CResult::Init(void)
 //===========================================================
 void CResult::Uninit(void)
 {
-	
+	if (m_pField != nullptr)
+	{
+		m_pField->Uninit();
+		m_pField = nullptr;
+	}
+
+	// マップの破棄
+	if (m_pMap != nullptr)
+	{
+		m_pMap->Uninit();
+		m_pMap = nullptr;
+	}
+
+	CObject::ReleaseAll();
 }
 
 //===========================================================

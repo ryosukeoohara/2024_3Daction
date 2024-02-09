@@ -29,6 +29,8 @@ CEnemy *CEnemy::m_pTop = nullptr;
 CEnemy *CEnemy::m_pCur = nullptr;
 CEnemy *CEnemy::m_pNext = nullptr;
 
+int CEnemy::m_nIdx = 0;
+
 //*=============================================================================
 // マクロ定義
 //*=============================================================================
@@ -60,6 +62,7 @@ CEnemy::CEnemy()
 	m_Info.state = STATE_NONE;
 	m_Info.nLife = 0;
 	m_Info.nIdxID = -1;
+	m_Info.bDraw = true;
 	m_nDamegeCounter = 0;
 	m_pCurrent = nullptr;
 	m_bDeath = false;
@@ -79,6 +82,7 @@ CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Info.state = STATE_NONE;
 	m_Info.nLife = nlife;
 	m_Info.nIdxID = -1;
+	m_Info.bDraw = true;
 	m_nDamegeCounter = 0;
 	m_bDeath = false;
 }
@@ -157,12 +161,15 @@ void CEnemy::Uninit(void)
 //==============================================================================
 void CEnemy::Update(void)
 {
-	Controll();
-
-	if (m_pMotion != NULL)
+	if (m_Info.bDraw == true)
 	{
-		// 更新処理
-		m_pMotion->Update();
+		Controll();
+
+		if (m_pMotion != NULL)
+		{
+			// 更新処理
+			m_pMotion->Update();
+		}
 	}
 }
 
@@ -175,45 +182,48 @@ void CEnemy::Draw(void)
 	CRenderer *pRenderer = CManager::Getinstance()->GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	//計算用マトリックス
-	D3DXMATRIX mtxRot, mtxTrans;
-
-	//ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_Info.mtxWorld);
-
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
-
-	D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxRot);
-	
-	if (m_pCurrent != nullptr)
+	if (m_Info.bDraw == true)
 	{
-		//位置を反映
-		D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, 46.0f, m_Info.pos.z);
+		//計算用マトリックス
+		D3DXMATRIX mtxRot, mtxTrans;
 
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxTrans);
+		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&m_Info.mtxWorld);
 
-		// マトリックスと親のマトリックスをかけ合わせる
-		D3DXMatrixMultiply(&m_Info.mtxWorld,
-			&m_Info.mtxWorld, m_pCurrent);
-	}
-	else
-	{
-		//位置を反映
-		D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
 
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxTrans);
-	}
+		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxRot);
 
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_Info.mtxWorld);
-
-	for (int nCount = 0; nCount < m_nNumModel; nCount++)
-	{
-		if (m_apModel[nCount] != nullptr)
+		if (m_pCurrent != nullptr)
 		{
-			//描画処理
-			m_apModel[nCount]->Draw();
+			//位置を反映
+			D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, 46.0f, m_Info.pos.z);
+
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxTrans);
+
+			// マトリックスと親のマトリックスをかけ合わせる
+			D3DXMatrixMultiply(&m_Info.mtxWorld,
+				&m_Info.mtxWorld, m_pCurrent);
+		}
+		else
+		{
+			//位置を反映
+			D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxTrans);
+		}
+
+		//ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_Info.mtxWorld);
+
+		for (int nCount = 0; nCount < m_nNumModel; nCount++)
+		{
+			if (m_apModel[nCount] != nullptr)
+			{
+				//描画処理
+				m_apModel[nCount]->Draw();
+			}
 		}
 	}
 }
@@ -239,8 +249,8 @@ void CEnemy::Controll(void)
 	if (m_Info.nLife <= 0)
 	{
 		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		int nNum = CGame::GetEnemyManager()->GetNum() - 1;
-		CGame::GetEnemyManager()->SetNum(nNum);
+		int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
+		CGame::GetEnemyManager()->SetDefeatCounter(nNum);
 		return;
 	}
 
@@ -264,6 +274,7 @@ void CEnemy::Controll(void)
 	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
 	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
 }
 
 //==============================================================================

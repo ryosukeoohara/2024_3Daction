@@ -10,6 +10,7 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "input.h"
+#include "title.h"
 #include "game.h"
 #include "player.h"
 
@@ -54,12 +55,13 @@ void CCamera::Init(void)
 {
 	CScene *pScene = CManager::Getinstance()->GetScene();
 
-	//if (pScene->GetMode() == CScene::MODE_TITLE)
-	//{
-	//	m_posV = D3DXVECTOR3(0.0f, 150.0f, -30.0f);
-	//	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	//	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
-	//}
+	if (pScene->GetMode() == CScene::MODE_TITLE)
+	{
+		m_posV = D3DXVECTOR3(0.0f, 200.0f, -500.0f);
+		m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+		m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	}
 }
 
 //================================================================
@@ -177,7 +179,7 @@ void CCamera::Mode(void)
 		break;
 	case CCamera::MODE_RESULT:
 
-		Title();
+		
 		break;
 	case CCamera::MODE_HEAT:
 
@@ -237,7 +239,7 @@ void CCamera::Heat(void)
 //================================================================
 void CCamera::Return(void)
 {
-	if (m_nCounter <= 120)
+	if (m_nCounter <= 80)
 	{
 		// ƒJƒƒ‰‚ð–Ú•W‚ÌŒü‚«‚Ü‚Å‰ñ“]‚³‚¹‚é
 		D3DXVECTOR3 rotDest = m_Oldrot - m_rot;
@@ -335,7 +337,8 @@ void CCamera::CameraR(void)
 //================================================================
 void CCamera::Title(void)
 {
-	m_posV = D3DXVECTOR3(-500.0f, 80.0f, -200.0f);
-	m_posR = D3DXVECTOR3(-875.0f, 70.0f, 50.0f);
-	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+	m_rot.y -= 0.002f;
+
+	m_posV.x = m_posR.x - sinf(m_rot.y) * -CAMERA_DISTNCE;
+	m_posV.z = m_posR.z - cosf(m_rot.y) * -CAMERA_DISTNCE;
 }

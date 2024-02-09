@@ -237,14 +237,17 @@ void CEnemyBoss::Move(void)
 
 	if (m_Chase == CHASE_ON)
 	{
-		fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
+		if (m_Info.state != STATE_ATTACK)
+		{
+			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
 
-		fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
+			fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
 
-		m_Info.rot.y += fDiffmove * 0.05f;
+			m_Info.rot.y += fDiffmove * 0.05f;
 
-		m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
-
+			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+		}
+		
 		//ˆÚ“®—Ê‚ðXV(Œ¸Š‚³‚¹‚é)
 		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
 		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
@@ -289,10 +292,7 @@ void CEnemyBoss::Move(void)
 		{
 			m_Chase = CHASE_ON;
 
-			if (m_nAtcCounter >= 20)
-			{
-				m_nAtcCounter = 20;
-			}
+			m_nAtcCounter = 0;
 		}
 	}
 }

@@ -12,6 +12,8 @@
 //前方宣言
 class CField;
 class CObject2D;
+class CMap;
+class CPlayer;
 
 //タイトルクラス
 class CTitle : public CScene
@@ -26,10 +28,15 @@ public:
 	void Draw(void);
 
 	static CTitle *Create(void);
+	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 
 private:
 	CField *m_pField;
 	CObject2D *m_pBg;
+	CMap *m_pMap;
+	static CPlayer *m_pPlayer;
+	int m_nCnt;
+	int m_nCntPos;
 
 };
 #endif // !_TITLE_H_

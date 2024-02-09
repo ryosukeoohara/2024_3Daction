@@ -19,12 +19,10 @@ public:
 
 	enum TYPEPAR
 	{
-		TYPEPAR_NONE = 0,  //‚È‚ñ‚à‚È‚¢
-		TYPEPAR_BULLET,    //’e
-		TYPEPAR_BLOOD,     //ŒŒ‰t
-		TYPEPAR_GROUND,    //“y‰Œ
-		TYPEPAR_SMOOK,     //‰Œ
-		TYPEPAR_CIRCLE,    //‰~Œ`
+		TYPEPAR_GROUND = 0,  // “y‰Œ
+		TYPEPAR_BLOOD,       // ŒŒ‰t
+		TYPEPAR_SMOOK,       // ‰Œ
+		TYPEPAR_CIRCLE,      // ‰~Œ`
 		TYPEPAR_MAX
 	};
 

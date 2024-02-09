@@ -42,15 +42,19 @@ public:
 
 	// İ’èŒn
 	void SetNum(int num) { m_nEnemyAll = num; }
-
+	void SetDefeatCounter(int num) { m_nNum = num; }
+	void SetTarget(int idx);
+	
 	// æ“¾Œn
 	CEnemy **GetEnemy(void) { return m_appEnemy; }
 	int GetNum(void) { return m_nEnemyAll; }
+	int GetDefeatCounter(void) { return m_nNum; }
 							       
 private:
 	void ListOut(void);
 
-	int m_nEnemyAll;               //“G‚Ì‘”
+	int m_nEnemyAll;               // “G‚Ì‘”
+	int m_nNum;
 	int m_nCntWave;
 	CEnemy **m_appEnemy;   //ƒGƒlƒ~[‚Ö‚Ìƒ|ƒCƒ“ƒ^
 
