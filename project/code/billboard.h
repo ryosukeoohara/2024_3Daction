@@ -28,6 +28,7 @@ public:
 	// 設定系
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }        // 親のマトリックス
 	void SetSize(float fHeight, float fWidth);                            // サイズ
+	void SetEdgeCenter(float fWidth, float fHeight);                      // サイズ
 	void SetTex(float fTex);
 	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }                      // テクスチャのインデックス番号
 	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }                    // 位置

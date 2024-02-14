@@ -15,6 +15,7 @@
 //*=============================================================================
 class CMotion;
 class CCharacter;
+class CGage3D;
 
 //*=============================================================================
 //クラス定義
@@ -53,6 +54,8 @@ private:
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
+
+	CGage3D *m_pLife3D;                          // ゲージのポインタ
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル

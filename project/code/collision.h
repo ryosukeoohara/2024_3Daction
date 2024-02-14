@@ -40,6 +40,7 @@ public:
 	bool Item(D3DXVECTOR3 *pos);
 	void ItemAttack(CObjectX *pobj);
 	bool ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float fTargetRadius, float fHeight);   // ƒAƒCƒeƒ€‚Æ“G‚Ì”»’è
+	D3DXVECTOR3 *CheckEnemy(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pMyOldPos, D3DXVECTOR3 *pTargetPos, float fMyRadius);                      // “G‚Æ‚Ì“–‚½‚è”»’è
 
 	void SetbColli(bool bValue) { m_bColli = bValue; }
 	bool GetbColli(void) { return m_bColli; }

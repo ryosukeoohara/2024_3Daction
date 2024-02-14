@@ -10,6 +10,7 @@
 #include "objectX.h"
 
 class CObjectX;
+class CBillBoard;
 
 // マクロ定義
 #define MAX_ITEM (2)
@@ -21,8 +22,9 @@ public:
 
 	enum TYPE
 	{
-		TYPE_REF = 0,  // 冷蔵庫
-		TYPE_BIKE,     // 自転車
+		TYPE_REF = 0,       // 冷蔵庫
+		TYPE_BIKE,          // 自転車
+		TYPE_MICROWAVE,     // 電子レンジ
 		TYPE_MAX
 	};
 
@@ -47,6 +49,7 @@ public:
 
 private:
 	CObjectX **m_appObjectX;
+	CBillBoard *m_pBill;
 	TYPE m_Type;
 	int m_nID;
 	static const char *m_apTexName[MAX_ITEM];

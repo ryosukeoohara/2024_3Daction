@@ -184,7 +184,7 @@ void CTitle::Update(void)
 		}
 	}
 
-	/*if (m_pPlayer != nullptr)
+	if (m_pPlayer != nullptr)
 	{
 		m_pPlayer->TitleWalk();
 	}
@@ -207,7 +207,7 @@ void CTitle::Update(void)
 			m_pPlayer->SetPosition(TEXPOS[m_nCntPos]);
 			CManager::Getinstance()->GetCamera()->SetPositionR(CAMERAPOS[m_nCntPos]);
 		}
-	}*/
+	}
 
 	CManager::Getinstance()->GetDebugProc()->Print("現在のシーン：タイトル");
 }

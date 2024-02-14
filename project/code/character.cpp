@@ -27,6 +27,7 @@ CCharacter::CCharacter()
 	m_pBuffMat = NULL;
 	m_pMesh = NULL;
 	m_pTexture = NULL;
+	m_pCurrent = nullptr;
 	m_dwNumMat = 0;
 	m_nNumModel = 0;
 	m_vtxMax = D3DXVECTOR3(-900000.0f, -900000.0f, -900000.0f);
@@ -47,6 +48,7 @@ CCharacter::CCharacter(const char *aModelFliename)
 	m_pBuffMat = NULL;
 	m_pMesh = NULL;
 	m_pTexture = NULL;
+	m_pCurrent = nullptr;
 	m_dwNumMat = 0;
 	m_nNumModel = 0;
 	m_rot = { 0.0f, 0.0f, 0.0f };
@@ -256,10 +258,25 @@ void CCharacter::Draw(void)
 
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxRot);
 
-	//位置を反映
-	D3DXMatrixTranslation(&m_mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	if (m_pCurrent != nullptr)
+	{
+		//位置を反映
+		D3DXMatrixTranslation(&m_mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxTrans);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxTrans);
+
+		// マトリックスと親のマトリックスをかけ合わせる
+		D3DXMatrixMultiply(&m_mtxWorld,
+			&m_mtxWorld, m_pCurrent);
+	}
+	else
+	{
+		//位置を反映
+		D3DXMatrixTranslation(&m_mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxTrans);
+	}
+	
 
 	//パーツの親のマトリックスを設定
 	if (m_pParent != NULL)

@@ -24,6 +24,7 @@
 #include "collision.h"
 #include "enemymanager.h"
 #include "utility.h"
+#include "gage.h"
 #include  <assert.h>
 
 //*=============================================================================
@@ -42,6 +43,7 @@ namespace
 //==============================================================================
 CEnemyWeak::CEnemyWeak()
 {
+	m_pLife3D = nullptr;
 	/*CEnemyWeak *pEnemy = m_pTop;
 
 	if (m_pTop == nullptr)
@@ -78,6 +80,7 @@ CEnemyWeak::CEnemyWeak(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	SetRotition(rot);
 	SetLife(nlife);
 	SetState(CEnemy::STATE_NONE);
+	m_pLife3D = nullptr;
 
 	/*CEnemyWeak *pEnemy = m_pTop;
 
@@ -129,6 +132,11 @@ HRESULT CEnemyWeak::Init(void)
 
 	ReadText(ENETEXT);
 
+	m_pLife3D = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, (float)((m_Info.nLife * 0.01f) * 20), CGage3D::TYPE_STAMINA);
+	m_pLife3D->SetPos(&m_Info.pos);
+	m_pLife3D->SetUpHeight(80.0f);
+	m_pLife3D->GetBill()->SetEdgeCenter((float)((m_Info.nLife * 0.01f) * 20), 5.0f);
+
 	return S_OK;
 }
 
@@ -138,6 +146,13 @@ HRESULT CEnemyWeak::Init(void)
 void CEnemyWeak::Uninit(void)
 {
 	CEnemy::Uninit();
+
+	if (m_pLife3D != nullptr)
+	{
+		m_pLife3D->Uninit();
+		m_pLife3D = nullptr;
+	}
+
 	CObject::Release();
 }
 
@@ -147,6 +162,11 @@ void CEnemyWeak::Uninit(void)
 void CEnemyWeak::Update(void)
 {
 	CEnemy::Update();
+
+	if (m_pLife3D != nullptr)
+	{
+		m_pLife3D->GetBill()->SetEdgeCenter((float)((m_Info.nLife * 0.01f) * 20), 5.0f);
+	}
 }
 
 //==============================================================================
@@ -254,6 +274,8 @@ void CEnemyWeak::Move(void)
 	if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
 	{//‰~‚Ì’†‚ÉƒvƒŒƒCƒ„[‚ª“ü‚Á‚½
 
+		m_Info.posOld = m_Info.pos;
+
 		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
 		float fDiffmove = 0.0f;
@@ -327,7 +349,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 	m_Info.nLife -= damege;
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	if (act == CPlayer::ATTACKTYPE::TYPE04_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE05_HEATACTREF)
+	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF)
 	{
 		if (m_Info.state != STATE_HEATDAMEGE)
 		{

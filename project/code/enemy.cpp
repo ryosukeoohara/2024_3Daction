@@ -22,6 +22,7 @@
 #include "character.h"
 #include "collision.h"
 #include "enemymanager.h"
+#include "gage.h"
 #include <assert.h>
 
 // 静的メンバ変数
@@ -65,6 +66,8 @@ CEnemy::CEnemy()
 	m_Info.bDraw = true;
 	m_nDamegeCounter = 0;
 	m_pCurrent = nullptr;
+	m_pLife2D = nullptr;
+	m_pLife3D = nullptr;
 	m_bDeath = false;
 }
 
@@ -84,6 +87,9 @@ CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Info.nIdxID = -1;
 	m_Info.bDraw = true;
 	m_nDamegeCounter = 0;
+	m_pCurrent = nullptr;
+	m_pLife2D = nullptr;
+	m_pLife3D = nullptr;
 	m_bDeath = false;
 }
 
@@ -129,6 +135,11 @@ HRESULT CEnemy::Init(void)
 
 	m_nDamegeCounter = DAMEGECOUNT;
 
+	if (m_Type == TYPE_WEAK)
+	{
+		
+	}
+
 	return S_OK;
 }
 
@@ -153,6 +164,10 @@ void CEnemy::Uninit(void)
 		m_pMotion = nullptr;
 	}
 
+	
+
+	
+
 	CObject::Release();
 }
 
@@ -163,9 +178,12 @@ void CEnemy::Update(void)
 {
 	if (m_Info.bDraw == true)
 	{
-		Controll();
+		if (m_Info.state != STATE_BIRIBIRI)
+		{
+			Controll();
+		}
 
-		if (m_pMotion != NULL)
+		if (m_pMotion != nullptr)
 		{
 			// 更新処理
 			m_pMotion->Update();
@@ -190,15 +208,15 @@ void CEnemy::Draw(void)
 		//ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&m_Info.mtxWorld);
 
-		//向きを反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
-
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxRot);
-
 		if (m_pCurrent != nullptr)
 		{
+			//向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
+
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxRot);
+
 			//位置を反映
-			D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, 46.0f, m_Info.pos.z);
+			D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
 			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxTrans);
 
@@ -208,6 +226,11 @@ void CEnemy::Draw(void)
 		}
 		else
 		{
+			//向きを反映
+			D3DXMatrixRotationYawPitchRoll(&mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
+
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &mtxRot);
+
 			//位置を反映
 			D3DXMatrixTranslation(&mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
@@ -233,7 +256,22 @@ void CEnemy::Draw(void)
 //==============================================================================
 void CEnemy::Controll(void)
 {
-	Move();
+	int nNum = 0;
+	CEnemy **ppEnemy = nullptr;
+
+	if (CGame::GetEnemyManager() != nullptr)
+	{
+		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+		nNum = CGame::GetEnemyManager()->GetNum();
+	}
+
+	for (int nCount = 0; nCount < nNum; nCount++)
+	{
+		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
+		{
+			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
+		}
+	}
 
 	if (m_Info.state == STATE_DAMEGE)
 	{
@@ -243,6 +281,13 @@ void CEnemy::Controll(void)
 		{
 			m_Info.state = STATE_NONE;
 			m_nDamegeCounter = DAMEGECOUNT;
+		}
+	}
+	else
+	{
+		if (m_Info.state != STATE_GRAP)
+		{
+			Move();
 		}
 	}
 
@@ -257,17 +302,20 @@ void CEnemy::Controll(void)
 	if (m_Info.state != STATE_GRAP)
 	{
 		m_Info.move.y -= 0.9f;
+
+		// 移動量
+		m_Info.pos.x += m_Info.move.x;
+		m_Info.pos.y += m_Info.move.y;
+		m_Info.pos.z += m_Info.move.z;
+
+		if (m_Info.pos.y <= 0.0f)
+		{
+			m_Info.pos.y = 0.0f;
+		}
 	}
 
-	// 移動量
-	m_Info.pos.x += m_Info.move.x;
-	m_Info.pos.y += m_Info.move.y;
-	m_Info.pos.z += m_Info.move.z;
-
-	if (m_Info.pos.y <= 0.0f)
-	{
-		m_Info.pos.y = 0.0f;
-	}
+	
+	
 
 	//デバッグプロックの情報を取得
 	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
@@ -445,8 +493,6 @@ void CEnemy::ReadText(char *fliename)
 
 		//初期化処理
 		m_pMotion->ReadText(fliename);
-
-		m_pMotion->Set(TYPE_NEUTRAL);
 	}
 }
 

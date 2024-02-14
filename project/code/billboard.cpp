@@ -6,11 +6,11 @@
 //=============================================================================
 #include "main.h"
 #include "billboard.h"
-#include "input.h"
 #include "renderer.h"
 #include "manager.h"
 #include "object2D.h"
 #include "texture.h"
+#include "debugproc.h"
 
 //================================================================
 //コンストラクタ
@@ -70,19 +70,56 @@ void CBillBoard::SetSize(float fHeight, float fWidth)
 	//頂点バッファをロックし頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
+	////頂点座標の設定
+	//pVtx[0].pos.x = m_pos.x;
+	//pVtx[0].pos.y = m_fWidth;
+	//pVtx[0].pos.z = m_pos.z;
+	//pVtx[1].pos.x = m_pos.x + m_fHeight;
+	//pVtx[1].pos.y = m_fWidth;
+	//pVtx[1].pos.z = m_pos.z;
+	//pVtx[2].pos.x = m_pos.x;
+	//pVtx[2].pos.y = 0.0f;
+	//pVtx[2].pos.z = m_pos.z;
+	//pVtx[3].pos.x = m_pos.x + m_fHeight;
+	//pVtx[3].pos.y = 0.0f;
+	//pVtx[3].pos.z = m_pos.z;
+
 	//頂点座標の設定
-	pVtx[0].pos.x = m_pos.x;
-	pVtx[0].pos.y = m_fWidth;
-	pVtx[0].pos.z = m_pos.z;
-	pVtx[1].pos.x = m_pos.x + m_fHeight;
-	pVtx[1].pos.y = m_fWidth;
-	pVtx[1].pos.z = m_pos.z;
-	pVtx[2].pos.x = m_pos.x;
-	pVtx[2].pos.y = 0.0f;
-	pVtx[2].pos.z = m_pos.z;
-	pVtx[3].pos.x = m_pos.x + m_fHeight;
-	pVtx[3].pos.y = 0.0f;
-	pVtx[3].pos.z = m_pos.z;
+	pVtx[0].pos = D3DXVECTOR3(-fWidth, fHeight, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(fWidth, fHeight, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(-fWidth, -fHeight, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(fWidth, -fHeight, 0.0f);
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//================================================================
+// サイズ設定処理:中心が左端
+//================================================================
+void CBillBoard::SetEdgeCenter(float fWidth, float fHeight)
+{
+	m_fHeight = fHeight;
+	m_fWidth = fWidth;
+
+	VERTEX_3D *pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点座標の設定
+	pVtx[0].pos.x = 0.0f;
+	pVtx[0].pos.y = 0.0f;
+	pVtx[0].pos.z = 0.0f;
+	pVtx[1].pos.x = m_fWidth;
+	pVtx[1].pos.y = 0.0f;
+	pVtx[1].pos.z = 0.0f;
+	pVtx[2].pos.x = 0.0f;
+	pVtx[2].pos.y = -m_fHeight;
+	pVtx[2].pos.z = 0.0f;
+	pVtx[3].pos.x = m_fWidth;
+	pVtx[3].pos.y = -m_fHeight;
+	pVtx[3].pos.z = 0.0f;
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
@@ -207,7 +244,8 @@ void CBillBoard::Uninit(void)
 //================================================================
 void CBillBoard::Update(void)
 {
-	
+	//デバッグプロックの情報を取得
+	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
 }
 
 //================================================================

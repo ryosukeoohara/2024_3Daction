@@ -201,6 +201,12 @@ HRESULT CGage3D::Init(void)
 //===========================================================
 void CGage3D::Uninit(void)
 {
+	if (m_pBillBoard != nullptr)
+	{
+		m_pBillBoard->Uninit();
+		m_pBillBoard = nullptr;
+	}
+
 	CObject::Release();
 }
 

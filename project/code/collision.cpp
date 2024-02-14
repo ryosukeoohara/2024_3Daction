@@ -152,6 +152,10 @@ void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius)
 	int nNum = 0;
 	CObjectX **pMap = nullptr;
 
+	D3DXVECTOR3 Mappos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 vtxMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 vtxMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
 	if (CGame::GetMap() != nullptr)
 	{
 		nNum = CGame::GetMap()->GetNum();
@@ -160,58 +164,57 @@ void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius)
 
 	for (int nCount = 0; nCount < nNum; nCount++)
 	{
-		if (pMap[nCount] != nullptr && pMap[nCount]->GetbColli() == true)
+		if (pMap[nCount] != nullptr)
 		{
-			D3DXVECTOR3 Mappos = pMap[nCount]->GetPosition();
+			Mappos = pMap[nCount]->GetPosition();
 
-			D3DXVECTOR3 vtxMin = pMap[nCount]->GetVtxMin();
+			vtxMin = pMap[nCount]->GetVtxMin();
 
-			D3DXVECTOR3 vtxMax = pMap[nCount]->GetVtxMax();
+			vtxMax = pMap[nCount]->GetVtxMax();
+		}
+
+		if (pMap[nCount]->GetbColli() == true)
+		{
+			if (pos->z + fRadius > Mappos.z + vtxMin.z
+				&& pos->z + -fRadius < Mappos.z + vtxMax.z)
+			{
+				//ブロックの右側面==================================
+				if (pos->x + -fRadius <= Mappos.x + vtxMax.x
+					&& posOld->x + -fRadius >= Mappos.x + vtxMax.x)
+				{
+					pos->x = (Mappos.x + vtxMax.x) - -fRadius;
+
+					//return true;
+				}
+				//ブロックの左側面==================================
+				if (pos->x + fRadius >= Mappos.x + vtxMin.x
+					&& posOld->x + fRadius <= Mappos.x + vtxMin.x)
+				{
+					pos->x = (Mappos.x + vtxMin.x) - fRadius;
+
+					//return true;
+				}
+			}
 
 			if (pos->x + fRadius > Mappos.x + vtxMin.x
-				&& pos->x + fRadius < Mappos.x + vtxMax.x
-				&& pos->z + fRadius > Mappos.z + vtxMin.z
-				&& pos->z + fRadius < Mappos.z + vtxMax.z)
+			 && pos->x + -fRadius < Mappos.x + vtxMax.x)
 			{
 				//ブロックの上======================================
-				if (pos->z + fRadius <= Mappos.z + vtxMax.z
-					&& posOld->z + fRadius >= Mappos.z + vtxMax.z)
+				if (pos->z + -fRadius <= Mappos.z + vtxMax.z
+				 && posOld->z + -fRadius >= Mappos.z + vtxMax.z)
 				{
-					pos->z = Mappos.z + vtxMax.z - fRadius;
+					pos->z = (Mappos.z + vtxMax.z) - -fRadius;
 
 					//return true;
 				}
 
 				//ブロックの下======================================
-				else if (pos->z + fRadius >= Mappos.z + vtxMin.z
-					&& posOld->z + fRadius <= Mappos.z + vtxMin.z)
+				if (pos->z + fRadius >= Mappos.z + vtxMin.z
+				 && posOld->z + fRadius <= Mappos.z + vtxMin.z)
 				{
-					pos->z = Mappos.z + vtxMin.z - fRadius;
+					pos->z = (Mappos.z + vtxMin.z) - fRadius;
 
 					//return true;
-				}
-
-				//横からめり込んだ
-				else if (pos->x + fRadius > Mappos.x + vtxMin.x
-					&& pos->x + fRadius < Mappos.x + vtxMax.x)
-				{
-					//ブロックの左側面==================================
-					if (pos->x + fRadius >= Mappos.x + vtxMin.x
-						&& posOld->x + fRadius <= Mappos.x + vtxMin.x)
-					{
-						pos->x = Mappos.x + vtxMin.x - fRadius;
-
-						//return true;
-					}
-
-					//ブロックの右側面==================================
-					else if (pos->x - fRadius <= Mappos.x + vtxMax.x
-						&& posOld->x - fRadius >= Mappos.x - vtxMax.x)
-					{
-						pos->x = Mappos.x + vtxMax.x - fRadius;
-
-						//return true;
-					}
 				}
 			}
 		}
@@ -392,6 +395,9 @@ void CCollision::ItemAttack(CObjectX * pobj)
 	}
 }
 
+//=============================================================================
+// アイテムと敵の判定
+//=============================================================================
 bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float fTargetRadius, float fHeight)
 {
 	if (pEnemy != nullptr)
@@ -425,4 +431,46 @@ bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float 
 	}
 	
 	return false;
+}
+
+//=============================================================================
+//剣の当たり判定
+//=============================================================================
+D3DXVECTOR3 *CCollision::CheckEnemy(D3DXVECTOR3 * pMyPos, D3DXVECTOR3 * pMyOldPos, D3DXVECTOR3 * pTargetPos, float fMyRadius)
+{
+	if (pMyPos->x + fMyRadius >= pTargetPos->x - fMyRadius
+	 && pMyPos->x - fMyRadius <= pTargetPos->x + fMyRadius
+	 && pMyPos->z + fMyRadius >= pTargetPos->z - fMyRadius
+	 && pMyPos->z - fMyRadius <= pTargetPos->z + fMyRadius)
+	{
+		// 正面======================================
+		if (pMyPos->z + fMyRadius >= pTargetPos->z - fMyRadius
+		 && pMyOldPos->z + fMyRadius <= pTargetPos->z - fMyRadius)
+		{
+			pMyPos->z = pTargetPos->z - fMyRadius - fMyRadius;
+		}
+
+		// 背面======================================
+		if (pMyPos->z - fMyRadius <= pTargetPos->z + fMyRadius
+			&& pMyOldPos->z - fMyRadius >= pTargetPos->z + fMyRadius)
+		{
+			pMyPos->z = pTargetPos->z + fMyRadius + fMyRadius;
+		}
+
+		// 左==================================
+		if (pMyPos->x + fMyRadius >= pTargetPos->x - fMyRadius
+		 && pMyOldPos->x + fMyRadius <= pTargetPos->x - fMyRadius)
+		{
+			pMyPos->x = pTargetPos->x - fMyRadius - fMyRadius;
+		}
+
+		// 右==================================
+		if (pMyPos->x - fMyRadius <= pTargetPos->x + fMyRadius
+			&& pMyOldPos->x - fMyRadius >= pTargetPos->x + fMyRadius)
+		{
+			pMyPos->x = pTargetPos->x + fMyRadius + fMyRadius;
+		}
+	}	
+
+	return pMyPos;
 }

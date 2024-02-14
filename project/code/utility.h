@@ -21,6 +21,7 @@ public:
 	float MoveToPosition(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos, float fMyRotY);
 	float CorrectAngle(float fAngle);
 	D3DXVECTOR3 Distance(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos);
+	int Nearest(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos);
 
 private:
 	

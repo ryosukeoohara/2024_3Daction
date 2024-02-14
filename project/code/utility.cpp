@@ -74,5 +74,28 @@ D3DXVECTOR3 CUtility::Distance(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos)
 	
 	Dest = MyPos - TargetPos;
 
+	if (Dest.x < 0.0f)
+	{
+		Dest.x *= -1;
+	}
+
+	if (Dest.y < 0.0f)
+	{
+		Dest.y *= -1;
+	}
+
+	if (Dest.z < 0.0f)
+	{
+		Dest.z *= -1;
+	}
+
 	return Dest;
+}
+
+//===========================================================
+// ‹——£‘ª’è
+//===========================================================
+int CUtility::Nearest(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos)
+{
+	return 0;
 }

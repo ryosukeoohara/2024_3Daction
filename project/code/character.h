@@ -47,6 +47,8 @@ public:
 	D3DXVECTOR3 GetVtxMin(void) { return m_vtxMini; }  //モデルの最小値取得
 	D3DXVECTOR3 GetVtxMax(void) { return m_vtxMax; }   //モデルの最大値取得
 
+	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }  // 親のマトリックス
+
 private:
 	LPDIRECT3DTEXTURE9 *m_pTexture;     //テクスチャへのポインタ
 	D3DXVECTOR3 m_pos;
@@ -59,6 +61,7 @@ private:
 	LPD3DXBUFFER m_pBuffMat;  //頂点バッファへのポインタ
 	DWORD m_dwNumMat;         //マテリアルの数
 	D3DXMATRIX m_mtxWorld;    //ワールドマトリックス
+	D3DXMATRIX *m_pCurrent;
 	int m_nNumModel;          //モデル(パーツ)の総数
 	const char *m_Fliename;   //モデルのXファイルの名前
 

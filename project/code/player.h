@@ -34,34 +34,42 @@ public:
 	// 状態
 	enum STATE
 	{
-		STATE_NONE = 0,
-		STATE_NEUTRAL,
-		STATE_MOVE,
-		STATE_ATTACK,
-		STATE_AVOID,
-		STATE_LIFT,
-		STATE_GRAP,
-		STATE_THROW,
-		STATE_HEAT,
-		STATE_GRAPDASH,
-		STATE_DAMEGE,
+		STATE_NONE = 0,     // なんもない
+		STATE_NEUTRAL,      // ニュートラル
+		STATE_GRAPNEUTRAL,  // 掴み状態のニュートラル
+		STATE_MOVE,         // 移動
+		STATE_ATTACK,       // 攻撃
+		STATE_AVOID,        // 回避
+		STATE_LIFT,         // アイテム掴んでる
+		STATE_GRAP,         // 掴み
+		STATE_THROW,        // 投げる
+		STATE_HEAT,         // ヒートアクション
+		STATE_GRAPDASH,     // 掴んで走る
+		STATE_ENEMYGRAP,    // 敵を投げる
+		STATE_GRAPWALK,     // 敵を掴んで歩く
+		STATE_DAMEGE,       // ダメージ
+		STATE_DEHT,         // 死Smash
 		STATE_MAX
 	};
 
-	enum HEATACT
+	enum HEAT
 	{
-		HEATACT_BIKE = 0,
+		HEAT_NONE = 0,  // なんもない
+		HEAT_SMASH,     // たたきつけ
+		HEAT_FIRE,      // 電子レンジ
+		HEAT_MAX
 	};
 
 	// 連撃
 	enum ATTACKTYPE
 	{
-		TYPE00_NONE = 0,       // なんもない
-		TYPE01_ATTACK,         // 一段目
-		TYPE02_ATTACK,         // 二段目
-		TYPE03_ATTACK,         // 三段目
-		TYPE04_HEATACTBIKE,    // ヒートアクション・バイク
-		TYPE05_HEATACTREF,     // ヒートアクション・冷蔵庫
+		TYPE_NONE = 0,          // なんもない
+		TYPE_ATTACK1,          // 一段目
+		TYPE_ATTACK2,          // 二段目
+		TYPE_ATTACK3,          // 三段目
+		TYPE_HEATACTBIKE,       // ヒートアクション・バイク
+		TYPE_HEATACTREF,        // ヒートアクション・冷蔵庫
+		TYPE_HEATACTMICROWAVE,  // ヒートアクション・電子レンジ
 		TYPEMAX_ATTACK
 	};
 
@@ -79,6 +87,10 @@ private:
 		TYPE_LIFT,                       // 持ち上げる
 		TYPE_THROW,                      // 投げる
 		TYPE_GRAPDASH,                   // 持って走る
+		TYPE_GRAP,                       // 掴み
+		TYPE_GRAPNEUTRAL,                // 掴みニュートラル
+		TYPE_ENEMYGRAP,                  // 敵を掴んで投げる
+		TYPE_GRAPWALK,                   // 掴んで歩く
 		TYPE_MAX
 	} ;
 
@@ -104,8 +116,15 @@ private:
 		int nLife;
 	};
 
+	struct GRAP
+	{
+		CItem *pItem;                     // アイテム
+		CEnemy *pEnemy;                   // 敵
+	};
+
 	INFO m_Info;                          // 情報
-	HEATACT m_HeatAct;
+	GRAP m_Grap;                          // 掴むでいるもの
+	HEAT m_HeatAct;
 	
 public:
 	CPlayer();  //コンストラクタ
@@ -119,15 +138,15 @@ public:
 
 	static CPlayer *Create(D3DXVECTOR3 pos);  // 生成
 	static CPlayer *Create(void);
-	void Hit(void);			                  // 攻撃をくらった時の処理
-	void TitleWalk(void);
+	void Damage(int nDamage, float fKnockBack);			              // 攻撃をくらった時の処理
+	void TitleWalk(void);                     // タイトル
 
 	//　設定系
 	void SetPosition(D3DXVECTOR3 pos) { m_Info.pos = pos; }         // 位置設定
 	void SetRotition(D3DXVECTOR3 rot) { m_Info.rot = rot; }         // 向き設定
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }           // 移動量設定
 	void SetState(STATE state) { m_Info.state = state; }             // 状態
-	void SetGrapItem(CItem *obj) { m_pItem = obj; }
+	void SetGrapItem(CItem *obj) { m_Grap.pItem = obj; }
 	void SetLife(int nlife) { m_Info.nLife = nlife; }                // 体力
 
 	// 取得系
@@ -148,12 +167,16 @@ private:
 	void Move(void);                      // 移動
 	void Action(void);                    // 攻撃
 	void GrapRotition(void);              // ジャイアントスイング
-	void Grap(void);
-	void Avoid(void);
-	void State(void);
-	void Damege(void);
-	void Heat(void);
+	void Grap(void);                      // 掴み
+	void Avoid(void);                     // 回避
+	void State(void);                     // 状態
+	void Damege(void);                    // ダメージ
+	void Heat(void);                      // ヒートアクション
+	void Smash(CEnemy *pEnemy);           // ヒートアクション・たたきつけ
+	void Fire(void);                      // ヒートアクション・電子レンジ
 	void ReadText(const char *fliename);  // テキストファイル読み込み
+	bool StartHeatAction(void);
+	int EnemyDistance(void);              // 敵との距離
 
 	int m_nNumModel;                    //モデル(パーツ)の総数
 	int m_nIdxTexture;
@@ -169,18 +192,18 @@ private:
 	D3DXVECTOR3 m_posOrigin;             
 	CMotion *m_pMotion;                   // モーションへのポインタ
 	CCharacter **m_ppCharacter;           // キャラクターへのポインタ
-	CItem *m_pItem;                      // 掴んでるオブジェクトのポインタ
+	CItem *m_pItem;                       // 掴んでるオブジェクトのポインタ
 	CGage2D *m_pLife;                     // ゲージのポインタ
 	CGage3D *m_pStamina;                  // ゲージのポインタ
 	CEnemy *m_pEnemy;
 	CObject2D *m_pBotton;
 	int m_nIdxEne;
+	int m_nDamageCounter;
 	float m_fDest;
 	float m_fDestOld;
 	float m_fDiff;
 	float m_fGrapRot;
 	float m_fStamina;                     // スタミナ
-	int m_nLife;                          // 体力
 	bool m_bDesh;                         // ダッシュ
 	bool m_bAttack;                       // 攻撃
 	bool m_bAvoid;                        // 回避

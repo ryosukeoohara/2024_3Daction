@@ -44,12 +44,12 @@ public:
 private:
 	void ListOut(void);
 
-	CItem **m_ppItem;   //エネミーへのポインタ
+	CItem **m_ppItem;
 
 	int m_nNumModel;
 	int m_nNumItem;
 
-	static const char *m_apTexName[MAX_ITEM];
+	static const char *m_apTexName[CItem::TYPE_MAX];
 };
 
 #endif // !_ENEMYMANAGER_H_

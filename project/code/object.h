@@ -47,7 +47,10 @@ public:		//誰でもアクセスできる
 
 	void BindTexture(LPDIRECT3DTEXTURE9 m_Texture);  //テクスチャをバインド
 	static CObject *Getobject(int nIdx);
-	int GetID(void) { return m_nID; }
+	int GetID(void) 
+	{ 
+		return m_nID;
+	}
 
 	void SetType(TYPE type) { m_ntype = type;  }   //種類設定
 	TYPE GetType(void) { return m_ntype; }         //種類取得

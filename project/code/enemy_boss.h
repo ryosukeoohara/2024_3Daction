@@ -15,6 +15,7 @@
 //*=============================================================================
 class CMotion;
 class CCharacter;
+class CGage2D;
 
 //*=============================================================================
 //クラス定義
@@ -34,6 +35,7 @@ public:
 		TYPE_GURUGURUPUNCH,            // ぐるぐるパンチ
 		TYPE_PUNCH,                    // パンチ
 		TYPE_GETUP,                    // 起き上がり
+		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_MAX
 	};
 
@@ -68,6 +70,8 @@ private:
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
+
+	CGage2D *m_pLife2D;                          // ゲージのポインタ
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル

@@ -20,10 +20,11 @@
 //*============================================================================
 #define ITEM_TEXT ("data\\TEXT\\item.txt")
 
-const char *CItemManager::m_apTexName[MAX_ITEM] =
+const char *CItemManager::m_apTexName[CItem::TYPE_MAX] =
 {
 	"data\\MODEL\\refrigerator.x",
 	"data\\MODEL\\bike.x",     // Ž©“]ŽÔ
+	"data\\MODEL\\microwave.x",     // Ž©“]ŽÔ
 };
 
 //=============================================================================

@@ -35,6 +35,7 @@ public:
 		STATE_DAMEGE,      // 攻撃受けた
 		STATE_HEATDAMEGE,  // 攻撃受けた
 		STATE_GETUP,       // 起き上がり
+		STATE_BIRIBIRI,    // 電子レンジ待機
 		STATE_MAX
 	};
 
@@ -48,6 +49,8 @@ public:
 		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
 		TYPE_PUNCH,                    // パンチ
 		TYPE_GURUGURU,                 // ぐるぐるパンチ
+		TYPE_GETUP,                    // 起き上がり
+		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_MAX
 	};
 
@@ -81,7 +84,10 @@ public:
 	void ReadText(char *fliename);             //テキストファイル読み込み
 
 	//　設定系
-	void SetPosition(D3DXVECTOR3 pos) { m_Info.pos = pos; }         // 位置
+	void SetPosition(D3DXVECTOR3 pos)
+	{ 
+		m_Info.pos = pos; 
+	}         // 位置
 	void SetRotition(D3DXVECTOR3 rot) { m_Info.rot = rot; }         // 向き
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }          // 移動量
 	void SetState(STATE state) { m_Info.state = state; }            // 状態
@@ -93,17 +99,12 @@ public:
 	void SetDraw(bool value) { m_Info.bDraw = value; }
 
 	// 取得系
-	D3DXVECTOR3 GetPosition(void) 
-	{ 
-		return m_Info.pos; 
-	}       // 位置
+	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置
 	D3DXVECTOR3 GetRotition(void) { return m_Info.rot; }       // 向き
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }          // 移動量
 	STATE GetState(void) { return m_Info.state; }              // 状態
-	int GetLife(void) 
-	{ 
-		return m_Info.nLife; 
-	}                 // 体力
+	int GetLife(void) { return m_Info.nLife; }                 // 体力
+	int GetIdxID(void) { return m_Info.nIdxID; }
 	CCharacter **GetCharcter(void) { return m_apModel; }
 	static int GetNumAll(void) { return m_nNumAll; }
 	CMotion *GetMotion(void) { return m_pMotion; }
@@ -111,8 +112,6 @@ public:
 	virtual void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act);
 
 protected:
-
-	
 
 	// 制御処理
 	void Controll(void);
@@ -140,6 +139,8 @@ private:
 	//CEnemy *m_apEnemy[]
 	CMotion *m_pMotion;                        // モーションへのポインタ
 	CCharacter **m_apModel;                    // モデル(パーツ)へのポインタ
+	CGage3D *m_pLife3D;                          // ゲージのポインタ
+	CGage2D *m_pLife2D;                          // ゲージのポインタ
 	static int m_nNumAll;                      // 敵の総数
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
 	static int m_nIdx;

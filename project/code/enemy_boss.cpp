@@ -25,6 +25,7 @@
 #include "enemymanager.h"
 #include "fade.h"
 #include "utility.h"
+#include "gage.h"
 #include <assert.h>
 
 //*=============================================================================
@@ -35,7 +36,7 @@
 // 無名名前空間を定義
 namespace
 {
-	const int DAMEGECOUNT = 25;  // ダメージ状態
+	const int DAMEGECOUNT = 10;  // ダメージ状態
 }
 
 //==============================================================================
@@ -44,6 +45,7 @@ namespace
 CEnemyBoss::CEnemyBoss()
 {
 	m_Chase = CHASE_ON;
+	m_pLife2D = nullptr;
 	/*CEnemyBoss *pEnemy = m_pTop;
 
 	if (m_pTop == nullptr)
@@ -82,6 +84,7 @@ CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	SetState(CEnemy::STATE_NONE);
 	m_nAtcCounter = 0;
 	m_Chase = CHASE_ON;
+	m_pLife2D = nullptr;
 
 	/*CEnemyBoss *pEnemy = m_pTop;
 
@@ -213,11 +216,7 @@ void CEnemyBoss::Attack(void)
 
 			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
 			{
-				CGame::GetPlayer()->SetState(CPlayer::STATE_DAMEGE);
-				CGame::GetPlayer()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * -5.0f, 10.0f, cosf(m_Info.rot.y) * -5.0f));
-				int nLife = CGame::GetPlayer()->GetLife();
-				nLife--;
-				CGame::GetPlayer()->SetLife(nLife);
+				CGame::GetPlayer()->Damage(20, 2.0f);
 			}
 		}
 	}
@@ -234,6 +233,8 @@ void CEnemyBoss::Move(void)
 	D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
 	float fDiffmove = 0.0f;
+
+	m_Info.posOld = m_Info.pos;
 
 	if (m_Chase == CHASE_ON)
 	{
@@ -254,7 +255,7 @@ void CEnemyBoss::Move(void)
 		
 		D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
 
-		if (Dest.x <= 80.0f && Dest.x >= -80.0f && Dest.z <= 80.0f && Dest.z >= -80.0f)
+		if (Dest.x <= 120.0f && Dest.x >= -120.0f && Dest.z <= 120.0f && Dest.z >= -120.0f)
 		{
 			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
 			{
@@ -282,8 +283,7 @@ void CEnemyBoss::Move(void)
 		m_Info.state = STATE_GETUP;
 		GetMotion()->Set(TYPE_GETUP);
 	}
-
-	if (GetMotion()->IsFinish() == true)
+	else if (GetMotion()->IsFinish() == true)
 	{
 		m_Info.state = STATE_NEUTRAL;
 		GetMotion()->Set(TYPE_NEUTRAL);
@@ -303,9 +303,10 @@ void CEnemyBoss::Move(void)
 void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
 	m_Info.nLife -= damege;
-	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	if (act == CPlayer::ATTACKTYPE::TYPE04_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE05_HEATACTREF)
+	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
+	
+	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF)
 	{
 		if (m_Info.state != STATE_HEATDAMEGE)
 		{
@@ -318,7 +319,7 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		if (m_Info.state != STATE_DAMEGE)
 		{
 			m_Info.state = STATE_DAMEGE;
-			GetMotion()->Set(TYPE_DAMEGE);
+			//GetMotion()->Set(TYPE_DAMEGE);
 		}
 	}
 }
@@ -331,6 +332,9 @@ HRESULT CEnemyBoss::Init(void)
 	CEnemy::Init();
 	ReadText(ENEMY_TEXT);
 
+	m_pLife2D = CGage2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.25f, 650.0f, 0.0f), 40.0f, (float)((m_Info.nLife * 0.05f) * 20), CGage2D::TYPE_LIFE);
+	m_pLife2D->GetObj2D()->SetEdgeCenterTex((float)((m_Info.nLife * 0.03f) * 20));
+
 	return S_OK;
 }
 
@@ -341,6 +345,12 @@ void CEnemyBoss::Uninit(void)
 {
 	CEnemy::Uninit();
 	CObject::Release();
+
+	if (m_pLife2D != nullptr)
+	{
+		m_pLife2D->Uninit();
+		m_pLife2D = nullptr;
+	}
 
 	//フェードの情報を取得
 	CFade *pFade = CManager::Getinstance()->GetFade();
@@ -358,6 +368,11 @@ void CEnemyBoss::Uninit(void)
 void CEnemyBoss::Update(void)
 {
 	CEnemy::Update();
+
+	if (m_pLife2D != nullptr)
+	{
+		m_pLife2D->GetObj2D()->SetEdgeCenterTex((float)((m_Info.nLife * 0.03f) * 20));
+	}
 }
 
 //==============================================================================
