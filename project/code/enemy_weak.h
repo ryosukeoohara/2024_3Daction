@@ -31,6 +31,7 @@ public:
 		TYPE_DASH,                     // ˆÚ“®
 		TYPE_ATTACK,                   // UŒ‚
 		TYPE_DAMEGE,                   // ƒ_ƒ[ƒW
+		TYPE_GRAP,                     // •ß‚Ü‚ê‚Ä‚é
 		TYPE_MAX
 	};
 
@@ -50,7 +51,7 @@ public:
 private:
 
 	// “G‚Ì“®‚«§Œä
-	//void Controll(void) override;
+	void Controll(void) override;
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;

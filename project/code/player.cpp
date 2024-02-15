@@ -59,7 +59,7 @@ namespace
 	{ 
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
-		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
+		D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, D3DX_PI * -0.38f),
 
 	};  // サイズ
 }
@@ -514,47 +514,47 @@ void CPlayer::Control(void)
 	State();    // 状態
 
 	{
-					//キーボードを取得
-		CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+		//			//キーボードを取得
+		//CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
 
-		if (InputKeyboard->GetTrigger(DIK_T) == true)
-		{//Wキーが押された
+		//if (InputKeyboard->GetTrigger(DIK_T) == true)
+		//{//Wキーが押された
 
-			float x = m_Grap.pEnemy->GetRotition().x - 0.1f;
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(x, m_Grap.pEnemy->GetRotition().y, m_Grap.pEnemy->GetRotition().z));
-		}
-		if (InputKeyboard->GetTrigger(DIK_Y) == true)
-		{//Wキーが押された
+		//	float x = m_Grap.pEnemy->GetRotition().x - 0.1f;
+		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(x, m_Grap.pEnemy->GetRotition().y, m_Grap.pEnemy->GetRotition().z));
+		//}
+		//if (InputKeyboard->GetTrigger(DIK_Y) == true)
+		//{//Wキーが押された
 
-			float x = m_Grap.pEnemy->GetRotition().x + 0.1f;
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(x, m_Grap.pEnemy->GetRotition().y, m_Grap.pEnemy->GetRotition().z));
-		}
+		//	float x = m_Grap.pEnemy->GetRotition().x + 0.1f;
+		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(x, m_Grap.pEnemy->GetRotition().y, m_Grap.pEnemy->GetRotition().z));
+		//}
 
-		if (InputKeyboard->GetTrigger(DIK_G) == true)
-		{//Wキーが押された
+		//if (InputKeyboard->GetTrigger(DIK_G) == true)
+		//{//Wキーが押された
 
-			float y = m_Grap.pEnemy->GetRotition().y - 0.1f;
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, y, m_Grap.pEnemy->GetRotition().z));
-		}
-		if (InputKeyboard->GetTrigger(DIK_H) == true)
-		{//Wキーが押された
+		//	float y = m_Grap.pEnemy->GetRotition().y - 0.1f;
+		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, y, m_Grap.pEnemy->GetRotition().z));
+		//}
+		//if (InputKeyboard->GetTrigger(DIK_H) == true)
+		//{//Wキーが押された
 
-			float y = m_Grap.pEnemy->GetRotition().y + 0.1f;
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, y, m_Grap.pEnemy->GetRotition().z));
-		}
+		//	float y = m_Grap.pEnemy->GetRotition().y + 0.1f;
+		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, y, m_Grap.pEnemy->GetRotition().z));
+		//}
 
-		if (InputKeyboard->GetTrigger(DIK_V) == true)
-		{//Wキーが押された
+		//if (InputKeyboard->GetTrigger(DIK_V) == true)
+		//{//Wキーが押された
 
-			float z = m_Grap.pEnemy->GetRotition().z - 0.1f;
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, m_Grap.pEnemy->GetRotition().y, z));
-		}
-		if (InputKeyboard->GetTrigger(DIK_B) == true)
-		{//Wキーが押された
+		//	float z = m_Grap.pEnemy->GetRotition().z - 0.1f;
+		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, m_Grap.pEnemy->GetRotition().y, z));
+		//}
+		//if (InputKeyboard->GetTrigger(DIK_B) == true)
+		//{//Wキーが押された
 
-			float z = m_Grap.pEnemy->GetRotition().z + 0.1f;
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, m_Grap.pEnemy->GetRotition().y, z));
-		}
+		//	float z = m_Grap.pEnemy->GetRotition().z + 0.1f;
+		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, m_Grap.pEnemy->GetRotition().y, z));
+		//}
 	}
 	
 	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
@@ -950,6 +950,7 @@ void CPlayer::Grap(void)
 			{
 				m_Grap.pEnemy->SetCurrent(nullptr);
 				m_Grap.pEnemy->SetPosition(m_Info.pos);
+				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
 				m_Grap.pEnemy = nullptr;
 				m_Info.state = STATE_NEUTRAL;
@@ -1174,6 +1175,7 @@ void CPlayer::State(void)
 				m_Grap.pEnemy->SetPosition(D3DXVECTOR3(-10.0f, -10.0f, 60.0f));
 				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(-0.2f, 1.27f, -1.4f));
 				m_Grap.pEnemy->SetState(CEnemy::STATE_GRAP);
+				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_GRAP);
 				m_bGrap = true;
 			}
 		}
@@ -1195,16 +1197,16 @@ void CPlayer::State(void)
 	{
 		// カメラをもとの位置に戻す
 		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
+	}
 
+	// モーションが終了かつ敵を投げるモーション
+	if (m_pMotion->IsFinish() == false && m_pMotion->GetType() == STATE_ENEMYGRAP)
+	{
 		if (m_Grap.pEnemy != nullptr)
 		{
-			m_Grap.pEnemy->SetLife(0);
-			m_Grap.pEnemy->SetCurrent(nullptr);
-			m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
-			m_Grap.pEnemy = nullptr;
-			m_Info.state = STATE_NEUTRAL;
-			m_pMotion->Set(TYPE_NEUTRAL);
-			m_bGrap = false;
+			m_Grap.pEnemy->SetCurrent(m_ppCharacter[6]->GetMtxWorld());
+			m_Grap.pEnemy->SetPosition(D3DXVECTOR3(-15.0f, 0.0f, 80.0f));
+			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(-0.2f, 1.27f, -1.4f));
 		}
 	}
 
@@ -1481,17 +1483,31 @@ void CPlayer::Fire(void)
 	m_fDest = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pItem->GetPosition(), m_Info.rot.y);
 	m_Info.rot.y += m_fDest;
 	m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+	m_Info.pos = D3DXVECTOR3(-747.0f, 0.0f, 580.0f);
 
-	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEAT)
+	if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
 	{
-		m_Grap.pEnemy->SetCurrent(m_pItem->GetMtxWorld());
-		D3DXVECTOR3 pos = m_pItem->GetPosition();
-		m_Grap.pEnemy->SetPosition(D3DXVECTOR3(0.0f, -70.0f, -20.0f));
-
-		if (m_Grap.pEnemy->GetState() != CEnemy::STATE_BIRIBIRI)
+		// プレイヤーとの関係を切る
 		{
-			m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
-			m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
+			m_Grap.pEnemy->SetCurrent(nullptr);
+			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_Info.state = STATE_NEUTRAL;
+			m_pMotion->Set(TYPE_NEUTRAL);
+			m_bGrap = false;
+		}
+		
+		// 電子レンジとの関係を作る
+		{
+			m_Grap.pEnemy->SetCurrent(m_pItem->GetMtxWorld());
+			m_Grap.pEnemy->SetPosition(D3DXVECTOR3(0.0f, -70.0f, -30.0f));
+			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+
+			// 状態とモーションを設定
+			if (m_Grap.pEnemy->GetState() != CEnemy::STATE_BIRIBIRI)
+			{
+				m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
+				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
+			}
 		}
 	}
 }

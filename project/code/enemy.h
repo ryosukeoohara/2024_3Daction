@@ -46,6 +46,7 @@ public:
 		TYPE_DASH,                     // 移動
 		TYPE_ATTACK,                   // 攻撃
 		TYPE_DAMEGE,                   // ダメージ
+		TYPE_GRAP,                     // 掴まれ
 		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
 		TYPE_PUNCH,                    // パンチ
 		TYPE_GURUGURU,                 // ぐるぐるパンチ
@@ -114,7 +115,7 @@ public:
 protected:
 
 	// 制御処理
-	void Controll(void);
+	virtual void Controll(void);
 	virtual void Attack(void);
 	virtual void Move(void);
 	

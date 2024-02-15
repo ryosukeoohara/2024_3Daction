@@ -4254,7 +4254,7 @@ MOTIONSET
 	NUM_KEY = 4		# ÉLÅ[êî
 	
 	KEYSET			# --- << 0 / 4 >> ---
-		FRAME = 10
+		FRAME = 8
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 1.13 0.00
 			POS = 0.00 -7.00 0.00
@@ -4354,7 +4354,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 1 / 4 >> ---
-		FRAME = 10
+		FRAME = 8
 		PARTS	# ----- [ 0 ] -----
 			ROT = 0.00 0.75 0.00
 			POS = 0.00 -7.00 0.00
@@ -4454,7 +4454,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 2 / 4 >> ---
-		FRAME = 10
+		FRAME = 5
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.19 0.75 -0.22
 			POS = 0.00 -7.00 0.00
@@ -4554,7 +4554,7 @@ MOTIONSET
 	END_KEYSET
 
 	KEYSET			# --- << 3 / 4 >> ---
-		FRAME = 10
+		FRAME = 5
 		PARTS	# ----- [ 0 ] -----
 			ROT = -0.19 0.09 -0.22
 			POS = 0.00 -7.00 0.00
@@ -4717,7 +4717,7 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = -0.69 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 			SCALE = 1.00 1.00 1.00
 		END_PARTS
@@ -4817,7 +4817,7 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = -0.69 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 			SCALE = 1.00 1.00 1.00
 		END_PARTS
@@ -4917,7 +4917,7 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = -0.69 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 			SCALE = 1.00 1.00 1.00
 		END_PARTS
@@ -5017,7 +5017,7 @@ MOTIONSET
 		END_PARTS
 
 		PARTS	# ----- [ 9 ] -----
-			ROT = -0.69 0.00 0.00
+			ROT = 0.00 0.00 0.00
 			POS = 0.00 0.00 0.00
 			SCALE = 1.00 1.00 1.00
 		END_PARTS

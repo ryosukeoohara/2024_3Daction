@@ -256,73 +256,73 @@ void CEnemy::Draw(void)
 //==============================================================================
 void CEnemy::Controll(void)
 {
-	int nNum = 0;
-	CEnemy **ppEnemy = nullptr;
+	//int nNum = 0;
+	//CEnemy **ppEnemy = nullptr;
 
-	if (CGame::GetEnemyManager() != nullptr)
-	{
-		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-		nNum = CGame::GetEnemyManager()->GetNum();
-	}
+	//if (CGame::GetEnemyManager() != nullptr)
+	//{
+	//	ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+	//	nNum = CGame::GetEnemyManager()->GetNum();
+	//}
 
-	for (int nCount = 0; nCount < nNum; nCount++)
-	{
-		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
-		{
-			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
-		}
-	}
+	//for (int nCount = 0; nCount < nNum; nCount++)
+	//{
+	//	if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
+	//	{
+	//		//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
+	//	}
+	//}
 
-	if (m_Info.state == STATE_DAMEGE)
-	{
-		m_nDamegeCounter--;
+	//if (m_Info.state == STATE_DAMEGE)
+	//{
+	//	m_nDamegeCounter--;
 
-		if (m_nDamegeCounter <= 0)
-		{
-			m_Info.state = STATE_NONE;
-			m_nDamegeCounter = DAMEGECOUNT;
-		}
-	}
-	else
-	{
-		if (m_Info.state != STATE_GRAP)
-		{
-			Move();
-		}
-	}
+	//	if (m_nDamegeCounter <= 0)
+	//	{
+	//		m_Info.state = STATE_NONE;
+	//		m_nDamegeCounter = DAMEGECOUNT;
+	//	}
+	//}
+	//else
+	//{
+	//	if (m_Info.state != STATE_GRAP)
+	//	{
+	//		Move();
+	//	}
+	//}
 
-	if (m_Info.nLife <= 0)
-	{
-		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
-		CGame::GetEnemyManager()->SetDefeatCounter(nNum);
-		return;
-	}
+	//if (m_Info.nLife <= 0)
+	//{
+	//	CGame::GetEnemyManager()->Release(m_Info.nIdxID);
+	//	int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
+	//	CGame::GetEnemyManager()->SetDefeatCounter(nNum);
+	//	return;
+	//}
 
-	if (m_Info.state != STATE_GRAP)
-	{
-		m_Info.move.y -= 0.9f;
+	//if (m_Info.state != STATE_GRAP)
+	//{
+	//	m_Info.move.y -= 0.9f;
 
-		// 移動量
-		m_Info.pos.x += m_Info.move.x;
-		m_Info.pos.y += m_Info.move.y;
-		m_Info.pos.z += m_Info.move.z;
+	//	// 移動量
+	//	m_Info.pos.x += m_Info.move.x;
+	//	m_Info.pos.y += m_Info.move.y;
+	//	m_Info.pos.z += m_Info.move.z;
 
-		if (m_Info.pos.y <= 0.0f)
-		{
-			m_Info.pos.y = 0.0f;
-		}
-	}
+	//	if (m_Info.pos.y <= 0.0f)
+	//	{
+	//		m_Info.pos.y = 0.0f;
+	//	}
+	//}
 
-	
-	
+	//
+	//
 
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
+	////デバッグプロックの情報を取得
+	//CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+	//pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	//pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	//pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+	//pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
 }
 
 //==============================================================================

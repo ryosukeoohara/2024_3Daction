@@ -31,6 +31,7 @@ public:
 		TYPE_DASH,                     // 移動
 		TYPE_ATTACK,                   // 攻撃
 		TYPE_DAMEGE,                   // ダメージ
+		TYPE_GRAP,                     // 掴まれ
 		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
 		TYPE_GURUGURUPUNCH,            // ぐるぐるパンチ
 		TYPE_PUNCH,                    // パンチ
@@ -66,7 +67,7 @@ public:
 private:
 
 	// 敵の動き制御
-	//void Controll(void) override;
+	void Controll(void) override;
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
