@@ -221,7 +221,7 @@ void CEnemyBoss::Attack(void)
 			case ATTACKTYPE_GURUGURU:
 
 				m_Info.state = STATE_ATTACK;
-				GetMotion()->Set(TYPE_GURUGURUPUNCH);
+				GetMotion()->Set(TYPE_GURUGURU);
 
 				break;
 
@@ -332,7 +332,7 @@ void CEnemyBoss::Move(void)
 }
 
 //==============================================================================
-// 制御処理
+// ダメージ処理
 //==============================================================================
 void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
@@ -340,7 +340,7 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 	
-	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF)
+	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
 	{
 		if (m_Info.state != STATE_HEATDAMEGE)
 		{
@@ -357,6 +357,21 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		}
 	}
 }
+
+//==============================================================================
+// ヒートアクション・電子レンジ処理
+//==============================================================================
+//void CEnemyBoss::MicroWave(void)
+//{
+//	if (m_Info.state != STATE_BIRIBIRI)
+//	{
+//		m_Info.pos = (D3DXVECTOR3(0.0f, -70.0f, -30.0f));
+//		m_Info.rot = (D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+//
+//		m_Info.state = STATE_BIRIBIRI;
+//		GetMotion()->Set(TYPE_BIRIBIRI);
+//	}
+//}
 
 //==============================================================================
 // 初期化処理

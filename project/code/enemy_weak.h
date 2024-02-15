@@ -32,6 +32,7 @@ public:
 		TYPE_ATTACK,                   // 攻撃
 		TYPE_DAMEGE,                   // ダメージ
 		TYPE_GRAP,                     // 捕まれてる
+		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_MAX
 	};
 
@@ -55,6 +56,7 @@ private:
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
+	//void MicroWave(void) override;
 
 	CGage3D *m_pLife3D;                          // ゲージのポインタ
 

@@ -36,6 +36,8 @@ public:
 		STATE_HEATDAMEGE,  // 攻撃受けた
 		STATE_GETUP,       // 起き上がり
 		STATE_BIRIBIRI,    // 電子レンジ待機
+		STATE_BIRI,        // 電子レンジびりびり
+		STATE_FAINTING,     // 電子レンジ気絶
 		STATE_MAX
 	};
 
@@ -48,10 +50,12 @@ public:
 		TYPE_DAMEGE,                   // ダメージ
 		TYPE_GRAP,                     // 掴まれ
 		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
+		TYPE_BIRIBIRI,                 // 電子レンジ待機
+		TYPE_BIRI,                     // 電子レンジびりびり
+		TYPE_FAINTING,                 // 電子レンジ気絶
 		TYPE_PUNCH,                    // パンチ
 		TYPE_GURUGURU,                 // ぐるぐるパンチ
 		TYPE_GETUP,                    // 起き上がり
-		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_MAX
 	};
 
@@ -108,9 +112,10 @@ public:
 	int GetIdxID(void) { return m_Info.nIdxID; }
 	CCharacter **GetCharcter(void) { return m_apModel; }
 	static int GetNumAll(void) { return m_nNumAll; }
-	CMotion *GetMotion(void) { return m_pMotion; }
+ 	CMotion *GetMotion(void) { return m_pMotion; }
 
 	virtual void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act);
+	void MicroWave(void);
 
 protected:
 
@@ -144,6 +149,7 @@ private:
 	CGage2D *m_pLife2D;                          // ゲージのポインタ
 	static int m_nNumAll;                      // 敵の総数
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
+	int m_nBiriBiriCount;
 	static int m_nIdx;
 	D3DXMATRIX *m_pCurrent;                    // 親のマトリックス
 	static CEnemy *m_pTop;  //先頭のオブジェクトへのポインタ

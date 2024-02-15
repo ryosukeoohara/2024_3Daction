@@ -33,10 +33,12 @@ public:
 		TYPE_DAMEGE,                   // ダメージ
 		TYPE_GRAP,                     // 掴まれ
 		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
-		TYPE_GURUGURUPUNCH,            // ぐるぐるパンチ
-		TYPE_PUNCH,                    // パンチ
-		TYPE_GETUP,                    // 起き上がり
 		TYPE_BIRIBIRI,                 // 電子レンジ待機
+		TYPE_BIRI,                     // 電子レンジびりびり
+		TYPE_FAINTING,                 // 電子レンジ気絶
+		TYPE_PUNCH,                    // パンチ
+		TYPE_GURUGURU,                 // ぐるぐるパンチ
+		TYPE_GETUP,                    // 起き上がり
 		TYPE_MAX
 	};
 
@@ -71,6 +73,7 @@ private:
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
+	//void MicroWave(void) override;
 
 	CGage2D *m_pLife2D;                          // ゲージのポインタ
 

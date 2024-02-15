@@ -6,7 +6,7 @@
 //==============================================================================
 
 //*=============================================================================
-//インクルードファイル
+// インクルードファイル
 //*=============================================================================
 #include "enemy.h"
 #include "texture.h"
@@ -23,6 +23,7 @@
 #include "collision.h"
 #include "enemymanager.h"
 #include "gage.h"
+#include "camera.h"
 #include <assert.h>
 
 // 静的メンバ変数
@@ -42,6 +43,14 @@ int CEnemy::m_nIdx = 0;
 namespace
 {
 	const int DAMEGECOUNT = 25;  // ダメージ状態
+
+	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] =
+	{
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
+		D3DXVECTOR3(0.0f, D3DX_PI * 0.15f, D3DX_PI * -0.38f),
+
+	};  // ヒートアクション時のカメラ位置
 }
 
 //*=============================================================================
@@ -164,10 +173,6 @@ void CEnemy::Uninit(void)
 		m_pMotion = nullptr;
 	}
 
-	
-
-	
-
 	CObject::Release();
 }
 
@@ -178,9 +183,18 @@ void CEnemy::Update(void)
 {
 	if (m_Info.bDraw == true)
 	{
-		if (m_Info.state != STATE_BIRIBIRI)
+		if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING)
 		{
+			if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEATDAMEGE && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_HEAT)
+			{
+				CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
+			}
+
 			Controll();
+		}
+		else
+		{
+			MicroWave();
 		}
 
 		if (m_pMotion != nullptr)
@@ -354,6 +368,41 @@ void CEnemy::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		m_Info.state = STATE_HEATDAMEGE;
 		m_pMotion->Set(TYPE_HEATDAMEGE);
 	}*/
+}
+
+//==============================================================================
+// 電子レンジびりびり
+//==============================================================================
+void CEnemy::MicroWave(void)
+{
+	m_nBiriBiriCount++;
+
+	if (m_nBiriBiriCount > 60 && m_Info.state == STATE_BIRIBIRI)
+	{
+		if (m_Info.state != STATE_BIRI)
+		{
+			m_Info.state = STATE_BIRI;
+			m_pMotion->Set(CEnemy::TYPE_BIRI);
+
+			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[2].x, CAMERAROT[2].y, CAMERAROT[2].z));
+			//CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
+		}
+
+		m_nBiriBiriCount = 0;
+	}
+
+	if (m_nBiriBiriCount > 120 && m_Info.state == STATE_BIRI)
+	{
+		if (m_Info.state != STATE_FAINTING)
+		{
+			m_Info.state = STATE_FAINTING;
+			m_pMotion->Set(CEnemy::TYPE_FAINTING);
+		}
+
+		m_nBiriBiriCount = 0;
+	}
+
+	
 }
 
 //==============================================================================

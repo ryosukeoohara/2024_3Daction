@@ -59,9 +59,17 @@ namespace
 	{ 
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
-		D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, D3DX_PI * -0.38f),
+		D3DXVECTOR3(0.0f, D3DX_PI, D3DX_PI * -0.38f),
 
-	};  // サイズ
+	};  // ヒートアクション時のカメラ位置
+
+	const float CAMERADISTNCE[CPlayer::HEAT_MAX] =
+	{
+		300.0f,
+		100.0f,
+		200.0f,
+
+	};  // ヒートアクション時のカメラの距離
 }
 
 //================================================================
@@ -513,49 +521,7 @@ void CPlayer::Control(void)
 	Action();   // アクション
 	State();    // 状態
 
-	{
-		//			//キーボードを取得
-		//CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
-
-		//if (InputKeyboard->GetTrigger(DIK_T) == true)
-		//{//Wキーが押された
-
-		//	float x = m_Grap.pEnemy->GetRotition().x - 0.1f;
-		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(x, m_Grap.pEnemy->GetRotition().y, m_Grap.pEnemy->GetRotition().z));
-		//}
-		//if (InputKeyboard->GetTrigger(DIK_Y) == true)
-		//{//Wキーが押された
-
-		//	float x = m_Grap.pEnemy->GetRotition().x + 0.1f;
-		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(x, m_Grap.pEnemy->GetRotition().y, m_Grap.pEnemy->GetRotition().z));
-		//}
-
-		//if (InputKeyboard->GetTrigger(DIK_G) == true)
-		//{//Wキーが押された
-
-		//	float y = m_Grap.pEnemy->GetRotition().y - 0.1f;
-		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, y, m_Grap.pEnemy->GetRotition().z));
-		//}
-		//if (InputKeyboard->GetTrigger(DIK_H) == true)
-		//{//Wキーが押された
-
-		//	float y = m_Grap.pEnemy->GetRotition().y + 0.1f;
-		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, y, m_Grap.pEnemy->GetRotition().z));
-		//}
-
-		//if (InputKeyboard->GetTrigger(DIK_V) == true)
-		//{//Wキーが押された
-
-		//	float z = m_Grap.pEnemy->GetRotition().z - 0.1f;
-		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, m_Grap.pEnemy->GetRotition().y, z));
-		//}
-		//if (InputKeyboard->GetTrigger(DIK_B) == true)
-		//{//Wキーが押された
-
-		//	float z = m_Grap.pEnemy->GetRotition().z + 0.1f;
-		//	m_Grap.pEnemy->SetRotition(D3DXVECTOR3(m_Grap.pEnemy->GetRotition().x, m_Grap.pEnemy->GetRotition().y, z));
-		//}
-	}
+	
 	
 	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CManager::Getinstance()->GetDebugProc()->Print("プレイヤーの向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
@@ -952,6 +918,7 @@ void CPlayer::Grap(void)
 				m_Grap.pEnemy->SetPosition(m_Info.pos);
 				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
+				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
 				m_Grap.pEnemy = nullptr;
 				m_Info.state = STATE_NEUTRAL;
 				m_pMotion->Set(TYPE_NEUTRAL);
@@ -1175,6 +1142,7 @@ void CPlayer::State(void)
 				m_Grap.pEnemy->SetPosition(D3DXVECTOR3(-10.0f, -10.0f, 60.0f));
 				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(-0.2f, 1.27f, -1.4f));
 				m_Grap.pEnemy->SetState(CEnemy::STATE_GRAP);
+				m_Grap.pEnemy->SetChase(CEnemy::CHASE_OFF);
 				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_GRAP);
 				m_bGrap = true;
 			}
@@ -1431,7 +1399,6 @@ void CPlayer::Heat(void)
 		default:
 			break;
 		}
-		
 	}
 }
 
@@ -1475,7 +1442,7 @@ void CPlayer::Smash(CEnemy *pEnemy)
 }
 
 //================================================================
-// ヒートアクション・電子レンジ	
+// ヒートアクション・電子レンジ
 //================================================================
 void CPlayer::Fire(void)
 {
@@ -1483,7 +1450,7 @@ void CPlayer::Fire(void)
 	m_fDest = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pItem->GetPosition(), m_Info.rot.y);
 	m_Info.rot.y += m_fDest;
 	m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
-	m_Info.pos = D3DXVECTOR3(-747.0f, 0.0f, 580.0f);
+	m_Info.pos = D3DXVECTOR3(-720.0f, 0.0f, 580.0f);
 
 	if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
 	{
@@ -1491,7 +1458,7 @@ void CPlayer::Fire(void)
 		{
 			m_Grap.pEnemy->SetCurrent(nullptr);
 			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-			m_Info.state = STATE_NEUTRAL;
+			//m_Info.state = STATE_NEUTRAL;
 			m_pMotion->Set(TYPE_NEUTRAL);
 			m_bGrap = false;
 		}
@@ -1508,6 +1475,18 @@ void CPlayer::Fire(void)
 				m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
 				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
 			}
+		}
+	}
+
+	if (m_Grap.pEnemy != nullptr)
+	{
+		if (m_Grap.pEnemy->GetMotion()->IsFinish() == true)
+		{
+			m_Grap.pEnemy->SetCurrent(nullptr);
+			m_Grap.pEnemy->SetPosition(D3DXVECTOR3(m_pItem->GetPosition().x, 0.0f, m_pItem->GetPosition().z));
+			m_Grap.pEnemy->Damege(300, 0.0f, m_Info.Atc);
+			m_Info.state = STATE_NEUTRAL;
+			m_Grap.pEnemy = nullptr;
 		}
 	}
 }
@@ -1682,6 +1661,7 @@ bool CPlayer::StartHeatAction(void)
 			// ヒートアクションのカメラモードにする
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
 			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[m_HeatAct].x, CAMERAROT[m_HeatAct].y, CAMERAROT[m_HeatAct].z));
+			CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
 			m_Info.state = STATE_HEAT;
 
 			return true;

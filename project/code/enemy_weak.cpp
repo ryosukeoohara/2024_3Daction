@@ -391,3 +391,18 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 	}
 	
 }
+
+//==============================================================================
+// ヒートアクション・電子レンジ処理
+//==============================================================================
+//void CEnemyWeak::MicroWave(void)
+//{
+//	if (m_Info.state != STATE_BIRIBIRI)
+//	{
+//		m_Info.pos = (D3DXVECTOR3(0.0f, -50.0f, -30.0f));
+//		m_Info.rot = (D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+//
+//		m_Info.state = STATE_BIRIBIRI;
+//		GetMotion()->Set(TYPE_BIRIBIRI);
+//	}
+//}

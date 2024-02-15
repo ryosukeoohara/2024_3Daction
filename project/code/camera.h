@@ -25,6 +25,7 @@ public:
 		MODE_RESULT,     // リザルトのカメラ
 		MODE_HEAT,       // ヒートアクション
 		MODE_RETURN,     // 元の位置に戻る
+		MODE_DEBUG,      // ちょーせい
 		MODE_MAX 
 	};
 
@@ -49,19 +50,21 @@ public:
 	void Boss(void);
 
 	// 設定系
-	void SetMode(MODE type) { m_mode = type; }
+	void SetMode(MODE type);
 	void SetPositionR(D3DXVECTOR3 pos);
 	void SetPositionV(D3DXVECTOR3 pos);
 	void SetRotation(D3DXVECTOR3 Rot);
+	void SetDistnce(float fLen);
 
 	// 取得系
-	MODE GetMode(void) { return m_mode; }
+	MODE GetMode(void);
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 
 private:
 	void Mode(void);
 	void Heat(void);
 	void Return(void);
+	void Debug(void);
 
 	D3DXMATRIX m_mtxView;        // ビューマトリックス
 	D3DXMATRIX m_mtxProjection;  // プロジェクションマトリックス
@@ -75,10 +78,11 @@ private:
 	D3DXVECTOR3 m_rot;           // 向き
 	D3DXVECTOR3 m_Oldrot;        // 前回の向き 
 	D3DXVECTOR3 m_move;          // 移動
-
 	MODE m_mode;
 
-	int m_nCounter;     //カメラが切り替わっている時間
+	int m_nCounter;     // カメラが切り替わっている時間
+	float m_fLen;       // 距離
+	float m_fOldLen;    // 前回の距離
 };
 
 

@@ -267,7 +267,7 @@ void CMotion::SetModel(CCharacter **ppModel, int nNumModel)
 }
 
 //===========================================================
-//外部ファイル読み込み
+// 外部ファイル読み込み
 //===========================================================
 void CMotion::ReadText(const char *TextFilename)
 {
@@ -402,6 +402,9 @@ void CMotion::ReadText(const char *TextFilename)
 	}
 }
 
+//===========================================================
+// 角度直す
+//===========================================================
 void CMotion::RotCorrect(float rot)
 {
 	if (rot > D3DX_PI)
