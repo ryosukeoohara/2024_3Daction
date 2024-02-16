@@ -20,6 +20,7 @@ public:
 	enum TYPE
 	{
 		TYPE_GROUND = 0,   // “y‰Œ
+		TYPE_SMOOK,        // ‰Œ
 		TYPE_MAX
 	};
 

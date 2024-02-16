@@ -19,6 +19,7 @@
 const char *CEffect::m_apTexName[TYPE_MAX] =
 {
 	"data\\TEXTURE\\smook.png",
+	"data\\TEXTURE\\smook.png",
 };
 
 //================================================================
@@ -122,11 +123,15 @@ void CEffect::Update(void)
 
 	switch (m_type)
 	{
-	case CEffect::TYPE_GROUND:
+	case TYPE_GROUND:
 		Ground();
 		break;
 
-	case CEffect::TYPE_MAX:
+	case TYPE_SMOOK:
+		Smook();
+		break;
+
+	case TYPE_MAX:
 		break;
 
 	default:
@@ -197,7 +202,15 @@ void CEffect::Blood(void)
 //================================================================
 void CEffect::Smook(void)
 {
-	
+	if (m_Info.col.a >= 0.0f)
+	{
+		m_Info.col.a -= 0.005f;
+	}
+
+	m_Info.fRadius += 1.0f;
+
+	SetColor(m_Info.col);
+	SetSize(m_Info.fRadius, m_Info.fRadius);
 }
 
 //================================================================

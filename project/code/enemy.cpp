@@ -24,6 +24,9 @@
 #include "enemymanager.h"
 #include "gage.h"
 #include "camera.h"
+#include "particle.h"
+#include "effect.h"
+#include "item.h"
 #include <assert.h>
 
 // 静的メンバ変数
@@ -183,13 +186,8 @@ void CEnemy::Update(void)
 {
 	if (m_Info.bDraw == true)
 	{
-		if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING)
+		if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING && m_Info.state != STATE_DETH)
 		{
-			if (m_pMotion->IsFinish() == true && m_Info.state == STATE_HEATDAMEGE && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_HEAT)
-			{
-				CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
-			}
-
 			Controll();
 		}
 		else
@@ -202,6 +200,20 @@ void CEnemy::Update(void)
 			// 更新処理
 			m_pMotion->Update();
 		}
+	}
+
+	if (m_pMotion->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_DETH) && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_HEAT)
+	{
+		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
+
+		m_nBiriBiriCount = 0;
+	}
+
+	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_DETH)
+	{
+		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
+		int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
+		CGame::GetEnemyManager()->SetDefeatCounter(nNum);
 	}
 }
 
@@ -395,14 +407,20 @@ void CEnemy::MicroWave(void)
 	{
 		if (m_Info.state != STATE_FAINTING)
 		{
-			m_Info.state = STATE_FAINTING;
+ 			m_Info.state = STATE_FAINTING;
 			m_pMotion->Set(CEnemy::TYPE_FAINTING);
 		}
 
 		m_nBiriBiriCount = 0;
 	}
 
-	
+	if (m_Info.state == STATE_BIRI)
+	{
+		if (m_nBiriBiriCount % 20 == 0)
+		{
+			CParticle::Create(CGame::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
+		}
+	}
 }
 
 //==============================================================================

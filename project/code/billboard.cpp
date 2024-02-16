@@ -244,8 +244,7 @@ void CBillBoard::Uninit(void)
 //================================================================
 void CBillBoard::Update(void)
 {
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+	
 }
 
 //================================================================

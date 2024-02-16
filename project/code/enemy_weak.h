@@ -33,6 +33,8 @@ public:
 		TYPE_DAMEGE,                   // ダメージ
 		TYPE_GRAP,                     // 捕まれてる
 		TYPE_BIRIBIRI,                 // 電子レンジ待機
+		TYPE_BIRI,                     // 電子レンジびりびり
+		TYPE_FAINTING,                 // 電子レンジ気絶
 		TYPE_MAX
 	};
 

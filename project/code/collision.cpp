@@ -414,11 +414,7 @@ bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float 
 			//CGame::GetEnemyManager()->SetTarget(nCount);
 			pEnemy->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
 
-			CParticle *pPar = CParticle::Create(pEnemy->GetPosition(), CParticle::TYPEPAR_BLOOD);
-			pPar->Blood();
-			pPar->Uninit();
-			delete pPar;
-			pPar = nullptr;
+			CParticle *pPar = CParticle::Create(pEnemy->GetPosition(), CParticle::TYPE_BLOOD);
 
 			/*CParticle *pParticle = CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_GROUND);
 			pParticle->Ground();

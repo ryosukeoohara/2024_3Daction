@@ -219,9 +219,8 @@ void CEnemyWeak::Controll(void)
 
 	if (m_Info.nLife <= 0)
 	{
-		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
-		CGame::GetEnemyManager()->SetDefeatCounter(nNum);
+		m_Info.state = STATE_DETH;
+		GetMotion()->Set(TYPE_DETH);
 		return;
 	}
 
@@ -373,7 +372,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 	m_Info.nLife -= damege;
 	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF)
+	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
 	{
 		if (m_Info.state != STATE_HEATDAMEGE)
 		{
@@ -386,7 +385,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		if (m_Info.state != STATE_DAMEGE)
 		{
 			m_Info.state = STATE_DAMEGE;
-			GetMotion()->Set(TYPE_DAMEGE);
+			//GetMotion()->Set(TYPE_DAMEGE);
 		}
 	}
 	

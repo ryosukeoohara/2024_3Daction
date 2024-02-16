@@ -17,17 +17,18 @@ class CParticle
 {
 public:
 
-	enum TYPEPAR
+	enum TYPE
 	{
-		TYPEPAR_GROUND = 0,  // 土煙
-		TYPEPAR_BLOOD,       // 血液
-		TYPEPAR_SMOOK,       // 煙
-		TYPEPAR_CIRCLE,      // 円形
-		TYPEPAR_MAX
+		TYPE_GROUND = 0,  // 土煙
+		TYPE_BLOOD,       // 血液
+		TYPE_SMOOK,       // 煙
+		TYPE_CIRCLE,      // 円形
+		TYPE_GLASS,       // ガラスの破片
+		TYPE_MAX
 	};
 
 	CParticle();  //コンストラクタ
-	CParticle(D3DXVECTOR3 pos, TYPEPAR type);  //コンストラクタ
+	CParticle(D3DXVECTOR3 pos, TYPE type);  //コンストラクタ
 	~CParticle();  //デストラクタ
 
 	HRESULT Init(void); //Bgの初期化処理    
@@ -43,8 +44,9 @@ public:
 	void Ground(void);
 	void Smook(void);
 	void Circle(void);
+	void Glass(void);
 
-	static CParticle *Create(D3DXVECTOR3 pos, TYPEPAR type);  //生成
+	static CParticle *Create(D3DXVECTOR3 pos, TYPE type);  //生成
 	D3DXCOLOR m_col;          //色
 	float m_fRadius;          //半径(大きさ)
 	int m_nLife;              //寿命(表示時間)
@@ -53,7 +55,7 @@ public:
 
 private:
 	static LPDIRECT3DTEXTURE9 m_pTexture;  //テクスチャへのポインタ
-	TYPEPAR m_type;
+	TYPE m_type;
 
 };
 

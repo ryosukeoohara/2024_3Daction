@@ -37,7 +37,8 @@ public:
 		STATE_GETUP,       // 起き上がり
 		STATE_BIRIBIRI,    // 電子レンジ待機
 		STATE_BIRI,        // 電子レンジびりびり
-		STATE_FAINTING,     // 電子レンジ気絶
+		STATE_FAINTING,    // 電子レンジ気絶
+		STATE_DETH,        // 死亡
 		STATE_MAX
 	};
 
@@ -53,6 +54,7 @@ public:
 		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_BIRI,                     // 電子レンジびりびり
 		TYPE_FAINTING,                 // 電子レンジ気絶
+		TYPE_DETH,                     // 死亡
 		TYPE_PUNCH,                    // パンチ
 		TYPE_GURUGURU,                 // ぐるぐるパンチ
 		TYPE_GETUP,                    // 起き上がり

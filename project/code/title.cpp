@@ -97,28 +97,28 @@ HRESULT CTitle::Init(void)
 		pField->SetDraw(true);
 	}
 
-	CObject2D *pBg = new CObject2D;
-
-	if (pBg != nullptr)
-	{
-		pBg->Init();
-		pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\taitoru.jpg"));
-		pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		pBg->SetSize(100.0f, 100.0f);
-		pBg->SetDraw(true);
-	}
-
 	// マップの生成
 	if (m_pMap == nullptr)
 	{
 		m_pMap = CMap::Create();
 	}
 
-	if (m_pPlayer == nullptr)
+	CObject2D *pBg = new CObject2D;
+
+	if (pBg != nullptr)
+	{
+		pBg->Init();
+		pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\aaa.png"));
+		pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+		pBg->SetSize(200.0f, 200.0f);
+		pBg->SetDraw(true);
+	}
+
+	/*if (m_pPlayer == nullptr)
 	{
 		m_pPlayer = CPlayer::Create();
 		m_pPlayer->SetPosition(TEXPOS[0]);
-	}
+	}*/
 	
 	return S_OK;
 }
@@ -184,7 +184,7 @@ void CTitle::Update(void)
 		}
 	}
 
-	if (m_pPlayer != nullptr)
+	/*if (m_pPlayer != nullptr)
 	{
 		m_pPlayer->TitleWalk();
 	}
@@ -207,7 +207,7 @@ void CTitle::Update(void)
 			m_pPlayer->SetPosition(TEXPOS[m_nCntPos]);
 			CManager::Getinstance()->GetCamera()->SetPositionR(CAMERAPOS[m_nCntPos]);
 		}
-	}
+	}*/
 
 	CManager::Getinstance()->GetDebugProc()->Print("現在のシーン：タイトル");
 }

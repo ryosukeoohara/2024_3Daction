@@ -169,9 +169,8 @@ void CEnemyBoss::Controll(void)
 
 	if (m_Info.nLife <= 0)
 	{
-		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
-		CGame::GetEnemyManager()->SetDefeatCounter(nNum);
+		m_Info.state = STATE_DETH;
+		GetMotion()->Set(TYPE_DETH);
 		return;
 	}
 

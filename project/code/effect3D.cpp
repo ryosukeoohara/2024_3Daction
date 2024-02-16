@@ -66,8 +66,27 @@ void CEffect3D::Update(void)
 	m_Info.move.y -= 0.9f;
 
 	CObjectX::Update();
-	Bike();
 
+	// Ží—Þ•Ê
+	switch (m_type)
+	{
+	case TYPE_NONE:
+		break;
+
+	case TYPE_BIKE:
+
+		Bike();
+		break;
+
+	case TYPE_GLASS:
+
+		Glass();
+		break;
+
+	default:
+		break;
+	}
+	
 	m_Info.pos.x += m_Info.move.x;
 	m_Info.pos.y += m_Info.move.y;
 	m_Info.pos.z += m_Info.move.z;
@@ -79,6 +98,13 @@ void CEffect3D::Update(void)
 
 	SetPosition(m_Info.pos);
 	SetRotition(m_Info.rot);
+
+	m_Info.nLife--;
+
+	if (m_Info.nLife <= 0)
+	{
+		CEffect3D::Uninit();
+	}
 }
 
 //===========================================================
@@ -90,20 +116,21 @@ void CEffect3D::Draw(void)
 }
 
 //===========================================================
-// XVˆ—
+// Ž©“]ŽÔ
 //===========================================================
 void CEffect3D::Bike(void)
 {
-	m_Info.nLife--;
-
-	if (m_Info.nLife <= 0)
-	{
-		CEffect3D::Uninit();
-	}
-
 	//ˆÚ“®—Ê‚ðXV(Œ¸Š‚³‚¹‚é)--------------------------------------------
 	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
+}
+
+//===========================================================
+// ƒKƒ‰ƒX‚Ì”j•Ð
+//===========================================================
+void CEffect3D::Glass(void)
+{
+
 }
 
 //===========================================================

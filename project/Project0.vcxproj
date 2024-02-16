@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code\animation.cpp" />
     <ClCompile Include="code\billboard.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\character.cpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="code\utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="code\animation.h" />
     <ClInclude Include="code\billboard.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\character.h" />

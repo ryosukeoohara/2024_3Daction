@@ -436,6 +436,9 @@ void CCamera::Title(void)
 {
 	m_rot.y -= 0.002f;
 
-	m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
-	m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
+	m_posV.x = m_posR.x - sinf(m_rot.y) * -300.0f;
+	m_posV.z = m_posR.z - cosf(m_rot.y) * -300.0f;
+
+	m_posV = D3DXVECTOR3(m_posV.x, 50.0f, 30.0f + m_posV.z);
+	m_posR = D3DXVECTOR3(0.0f, 50.0f, 500.0f);
 }

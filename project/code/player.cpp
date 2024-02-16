@@ -27,6 +27,7 @@
 #include "utility.h"
 #include "item.h"
 #include "itemmanager.h"
+#include "particle.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -918,6 +919,7 @@ void CPlayer::Grap(void)
 				m_Grap.pEnemy->SetPosition(m_Info.pos);
 				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
+				m_Grap.pEnemy->SetChase(CEnemy::CHASE_ON);
 				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
 				m_Grap.pEnemy = nullptr;
 				m_Info.state = STATE_NEUTRAL;
@@ -1474,6 +1476,8 @@ void CPlayer::Fire(void)
 			{
 				m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
 				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
+
+				CParticle::Create(m_pItem->GetPosition(), CParticle::TYPE_GLASS);
 			}
 		}
 	}
