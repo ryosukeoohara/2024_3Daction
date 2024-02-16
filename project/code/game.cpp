@@ -202,17 +202,17 @@ void CGame::Update(void)
 
 		if (m_pPause != nullptr)
 		{
-			m_pPause->SetDraw(m_bPause);
+			//m_pPause->SetDraw(m_bPause);
 		}
 	}
 
 	if (m_bPause == true)
 	{
-		if (m_pPause != nullptr)
+		/*if (m_pPause != nullptr)
 		{
 			m_pPause->Update();
 			m_pPause->SetDraw(m_bPause);
-		}
+		}*/
 
 		return;
 	}
@@ -229,7 +229,7 @@ void CGame::Update(void)
 	//フェードの情報を取得
 	CFade *pFade = CManager::Getinstance()->GetFade();
 
-	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_RETURN) == true /*|| pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true*/)
 	{//ENTERキーを押したかつシーンがタイトルのとき
 
 		if (pFade->Get() != pFade->FADE_OUT)
