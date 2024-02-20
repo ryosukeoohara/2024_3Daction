@@ -190,7 +190,7 @@ void CEnemy::Update(void)
 		{
 			Controll();
 		}
-		else
+		else if(m_Info.state != STATE_DETH)
 		{
 			MicroWave();
 		}
@@ -394,7 +394,7 @@ void CEnemy::MicroWave(void)
 		if (m_Info.state != STATE_BIRI)
 		{
 			m_Info.state = STATE_BIRI;
-			m_pMotion->Set(CEnemy::TYPE_BIRI);
+			GetMotion()->Set(TYPE_BIRI);
 
 			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[2].x, CAMERAROT[2].y, CAMERAROT[2].z));
 			//CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
@@ -407,8 +407,8 @@ void CEnemy::MicroWave(void)
 	{
 		if (m_Info.state != STATE_FAINTING)
 		{
- 			m_Info.state = STATE_FAINTING;
-			m_pMotion->Set(CEnemy::TYPE_FAINTING);
+			m_Info.state = STATE_FAINTING;
+			GetMotion()->Set(TYPE_FAINTING);
 		}
 
 		m_nBiriBiriCount = 0;

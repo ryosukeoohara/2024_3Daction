@@ -1,12 +1,83 @@
-﻿  animation.cpp
-code\animation.cpp(81): warning C4100: 'type': 引数は関数の本体部で 1 度も参照されません。
-code\animation.cpp(81): warning C4100: 'nLife': 引数は関数の本体部で 1 度も参照されません。
-code\animation.cpp(81): warning C4100: 'move': 引数は関数の本体部で 1 度も参照されません。
-  billboard.cpp
+﻿  camera.cpp
+code\camera.cpp(57): warning C4189: 'pScene': ローカル変数が初期化されましたが、参照されていません
+code\camera.cpp(187): warning C4189: 'pScene': ローカル変数が初期化されましたが、参照されていません
+code\camera.cpp(369): warning C4189: 'InputKeyboard': ローカル変数が初期化されましたが、参照されていません
+  collision.cpp
+code\collision.cpp(82): warning C4100: 'pEnemy': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(82): warning C4100: 'fWidthZ': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(82): warning C4100: 'fWidthX': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(82): warning C4100: 'posOld': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(82): warning C4100: 'pos': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(152): warning C4100: 'pPlayer': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(152): warning C4100: 'fWidthZ': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(152): warning C4100: 'fWidthX': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(152): warning C4100: 'posOld': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(152): warning C4100: 'pos': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(317): warning C4100: 'penemy': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(317): warning C4100: 'pObjectX': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(317): warning C4100: 'posOld': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(317): warning C4100: 'pos': 引数は関数の本体部で 1 度も参照されません。
+code\collision.cpp(427): warning C4189: 'pPar': ローカル変数が初期化されましたが、参照されていません
+  enemy.cpp
+code\enemy.cpp(166): warning C4189: 'pSound': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(225): warning C4189: 'pTexture': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(373): warning C4100: 'act': 引数は関数の本体部で 1 度も参照されません。
+code\enemy.cpp(373): warning C4100: 'blowaway': 引数は関数の本体部で 1 度も参照されません。
+code\enemy.cpp(373): warning C4100: 'damege': 引数は関数の本体部で 1 度も参照されません。
+code\enemy.cpp(434): warning C4189: 'nCntMotion': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(441): warning C4189: 'pTexture': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(436): warning C4189: 'nCntKey': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(438): warning C4189: 'nCntMotionIdx': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(433): warning C4189: 'nCntParts3': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(432): warning C4189: 'aComment': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(435): warning C4189: 'nCntKeySet': ローカル変数が初期化されましたが、参照されていません
+code\enemy.cpp(566): warning C4100: 'cha': 引数は関数の本体部で 1 度も参照されません。
+  enemy_boss.cpp
+code\enemy_boss.cpp(263): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+  enemy_weak.cpp
+code\enemy_weak.cpp(287): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+code\enemy_weak.cpp(310): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+  enemymanager.cpp
+  gage.cpp
+  game.cpp
+code\game.cpp(54): warning C4100: 'mode': 引数は関数の本体部で 1 度も参照されません。
+code\game.cpp(227): warning C4189: 'pInputJoyPad': ローカル変数が初期化されましたが、参照されていません
+code\game.cpp(224): warning C4189: 'pInputMouse': ローカル変数が初期化されましたが、参照されていません
+  item.cpp
+code\item.cpp(41): warning C4100: 'Type': 引数は関数の本体部で 1 度も参照されません。
+code\item.cpp(107): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+  player.cpp
+code\player.cpp(309): warning C4189: 'pScene': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(306): warning C4189: 'pTexture': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(449): warning C4456: 'pFade' を宣言すると、以前のローカル宣言が隠蔽されます
+  code\player.cpp(403): note: 'pFade' の宣言を確認してください
+code\player.cpp(406): warning C4189: 'pScene': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(409): warning C4189: 'pSound': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(400): warning C4189: 'pInputJoyPad': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(397): warning C4189: 'InputKeyboard': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(403): warning C4189: 'pFade': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(521): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+code\player.cpp(550): warning C4189: 'pSound': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(724): warning C4189: 'InputKeyboard': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(769): warning C4189: 'pSound': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(763): warning C4189: 'pInputMouse': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1173): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+code\player.cpp(1302): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+code\player.cpp(1377): warning C4238: 非標準の拡張機能が使用されています: 右辺値のクラスが左辺値に使用されます。
+code\player.cpp(1277): warning C4189: 'fLength': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1553): warning C4189: 'nCntMotion': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1560): warning C4189: 'pTexture': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1555): warning C4189: 'nCntKey': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1557): warning C4189: 'nCntMotionIdx': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1552): warning C4189: 'nCntParts3': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1551): warning C4189: 'aComment': ローカル変数が初期化されましたが、参照されていません
+code\player.cpp(1554): warning C4189: 'nCntKeySet': ローカル変数が初期化されましたが、参照されていません
+  title.cpp
+code\title.cpp(169): warning C4189: 'pInputMouse': ローカル変数が初期化されましたが、参照されていません
   コード生成しています。
-  22 of 593 functions ( 3.7%) were compiled, the rest were copied from previous compilation.
-    6 functions were new in current compilation
-    144 functions had inline decision re-evaluated but remain unchanged
+  48 of 597 functions ( 8.0%) were compiled, the rest were copied from previous compilation.
+    3 functions were new in current compilation
+    58 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   Project0.vcxproj -> C:\Users\student\Documents\ゲーム制作\個人製作\Project0\2024_3Daction\project\Project0.exe
   Project0.vcxproj -> C:\Users\student\Documents\ゲーム制作\個人製作\Project0\2024_3Daction\project\Project0.pdb (Full PDB)

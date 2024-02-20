@@ -261,6 +261,27 @@ void CEnemyManager::SetTarget(int idx)
 }
 
 //=============================================================================
+// ヒートアクションのターゲット
+//=============================================================================
+void CEnemyManager::SetTrue(int idx)
+{
+	if (m_appEnemy != nullptr)
+	{
+		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
+		{
+			if (nCount != idx)
+			{
+				if (m_appEnemy[nCount] != nullptr)
+				{// 使用されていたら
+
+					m_appEnemy[nCount]->SetDraw(true);
+				}
+			}
+		}
+	}
+}
+
+//=============================================================================
 // コンストラクタ
 //=============================================================================
 void CEnemyManager::ListOut(void)

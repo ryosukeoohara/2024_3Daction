@@ -59,6 +59,7 @@ public:
 	{
 		TYPE_NONE = 0, // なんもない
 		TYPE_STAMINA,  // スタミナ
+		TYPE_LIFE,     // ライフ
 		TYPE_MAX
 	};
 

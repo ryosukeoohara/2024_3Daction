@@ -44,6 +44,7 @@ public:
 	void SetNum(int num) { m_nEnemyAll = num; }
 	void SetDefeatCounter(int num) { m_nNum = num; }
 	void SetTarget(int idx);
+	void SetTrue(int idx);
 	
 	// Žæ“¾Œn
 	CEnemy **GetEnemy(void) { return m_appEnemy; }

@@ -122,15 +122,25 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 	{
 		if (ppEnemy[nCount] != nullptr)
 		{
-			float circleX = pMyPos->x - ppEnemy[nCount]->GetPosition().x;
-			float circleZ = pMyPos->z - ppEnemy[nCount]->GetPosition().z;
-			float c = 0.0f;
+			int n = ppEnemy[nCount]->GetIdxID();
 
-			c = (float)sqrt(circleX * circleX + circleZ * circleZ);
-
-			if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
+			if (CGame::GetPlayer()->GetGrapEnemy() != nullptr)
 			{
-				ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
+				int a = CGame::GetPlayer()->GetGrapEnemy()->GetIdxID();
+
+				if (a != n)
+				{
+					float circleX = pMyPos->x - ppEnemy[nCount]->GetPosition().x;
+					float circleZ = pMyPos->z - ppEnemy[nCount]->GetPosition().z;
+					float c = 0.0f;
+
+					c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+					if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
+					{
+						ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
+					}
+				}
 			}
 		}
 	}

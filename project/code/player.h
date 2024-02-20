@@ -161,6 +161,7 @@ public:
 	CMotion *GetMotion(void) { return m_pMotion; }
 	ATTACKTYPE GetActType(void) { return m_Info.Atc; }
 	CItem *GetItem(void) { return m_pItem; }
+	CEnemy *GetGrapEnemy(void) { return m_Grap.pEnemy; }
 
 private:
 

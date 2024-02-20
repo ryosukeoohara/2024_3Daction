@@ -35,8 +35,26 @@ public:
 		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_BIRI,                     // 電子レンジびりびり
 		TYPE_FAINTING,                 // 電子レンジ気絶
+		TYPE_DETH,
+		TYPE_FALLDOWN,
 		TYPE_MAX
 	};
+
+	////モーション
+	//enum MOTIONTYPE
+	//{
+	//	TYPE_NEUTRAL = 0,              // ニュートラル
+	//	TYPE_DASH,                     // 移動
+	//	TYPE_ATTACK,                   // 攻撃
+	//	TYPE_DAMEGE,                   // ダメージ
+	//	TYPE_GRAP,                     // 捕まれてる
+	//	TYPE_BIRIBIRI,                 // 電子レンジ待機
+	//	TYPE_BIRI,                     // 電子レンジびりびり
+	//	TYPE_FAINTING,                 // 電子レンジ気絶
+	//	TYPE_DETH,
+	//	TYPE_FALLDOWN,
+	//	TYPE_MAX
+	//};
 
 public:
 
@@ -63,6 +81,7 @@ private:
 	CGage3D *m_pLife3D;                          // ゲージのポインタ
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
+	int m_nBiriBiriCount;
 	int m_nAtcCounter;                         // 攻撃のインターバル
 	int m_nIdx;
 };

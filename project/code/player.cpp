@@ -45,12 +45,15 @@
 #define PLAYER_Z      (10.0f)                                     // プレイヤーのZ軸の幅
 #define GRAPSPEED     (0.7f)                                      // 掴み状態の移動の速さ
 #define SPEED         (1.0f)                                      // 移動の速さ
-#define MOVE          (4.0f)
+#define MOVE          (4.0f)                                      // 移動の速さ
 #define FRIST         (21)                                        // 攻撃判定発生開始
 #define FINISH        (31)                                        // 攻撃判定終了
-#define LOSTSTMINA    (10)                                        // ダッシュのスタミナ消費量
+#define MAXSTAMINA    (40.0f)                                     // スタミナの最大値
+#define BOOSTSTAMINA  (0.1f)                                      // スタミナの回復値
+#define LOSTSTMINA    (10.0f)                                     // ダッシュのスタミナ消費量
+#define GRAPSTMINA    (0.1f)                                      // 敵を掴んでいる時のスタミナ消費量
 #define HAND          (9)                                         // 右手の番号
-#define PLAYER01_TEXT ("data\\TEXT\\motion_neet2.txt")       // プレイヤーのテキストファイル
+#define PLAYER01_TEXT ("data\\TEXT\\motion_neet2.txt")            // プレイヤーのテキストファイル
 #define PLAYER02_TEXT ("data\\TEXT\\motion_set_player2.txt")      // プレイヤーのテキストファイル
 
 // 無名名前空間を定義
@@ -424,9 +427,9 @@ void CPlayer::Update(void)
 	}
 
 	// スタミナ
-	if (m_fStamina < 40)
+	if (m_fStamina < MAXSTAMINA && m_bGrap == false)
 	{
-		m_fStamina += 0.1f;
+		m_fStamina += BOOSTSTAMINA;
 
 		if (m_pStamina != nullptr)
 		{
@@ -522,8 +525,6 @@ void CPlayer::Control(void)
 	Action();   // アクション
 	State();    // 状態
 
-	
-	
 	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CManager::Getinstance()->GetDebugProc()->Print("プレイヤーの向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
 }
@@ -903,7 +904,7 @@ void CPlayer::Grap(void)
 	//ゲームパッドを取得
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
-	// ジャイアントスイング
+	// 敵を掴む
 	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
 	{
 		if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID && m_bLift == false)
@@ -915,16 +916,19 @@ void CPlayer::Grap(void)
 			}
 			else
 			{
-				m_Grap.pEnemy->SetCurrent(nullptr);
-				m_Grap.pEnemy->SetPosition(m_Info.pos);
-				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
-				m_Grap.pEnemy->SetChase(CEnemy::CHASE_ON);
-				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
-				m_Grap.pEnemy = nullptr;
-				m_Info.state = STATE_NEUTRAL;
-				m_pMotion->Set(TYPE_NEUTRAL);
-				m_bGrap = false;
+				if (m_Grap.pEnemy != nullptr)
+				{
+					m_Grap.pEnemy->SetCurrent(nullptr);
+					m_Grap.pEnemy->SetPosition(m_Info.pos);
+					m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
+					m_Grap.pEnemy->SetChase(CEnemy::CHASE_ON);
+					m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
+					m_Grap.pEnemy = nullptr;
+					m_Info.state = STATE_NEUTRAL;
+					m_pMotion->Set(TYPE_NEUTRAL);
+					m_bGrap = false;
+				}
 			}
 		}
 	}
@@ -948,6 +952,36 @@ void CPlayer::Grap(void)
 
 				m_bLift = true;
 			}
+		}
+	}
+
+	if (m_fStamina > 0.0f && m_bGrap == true)
+	{// 敵を掴んでいたらスタミナを減らす
+
+		m_fStamina -= GRAPSTMINA;
+
+		if (m_pStamina != nullptr)
+		{
+			m_pStamina->GetBill()->SetTex(m_fStamina);
+		}
+	}
+
+	if (m_fStamina < 0.0f && m_bGrap == true)
+	{// スタミナがなくなったかつ敵を掴んでいたら
+
+		// 敵を離す
+		if (m_Grap.pEnemy != nullptr)
+		{
+			m_Grap.pEnemy->SetCurrent(nullptr);
+			m_Grap.pEnemy->SetPosition(m_Info.pos);
+			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+			m_Grap.pEnemy->SetState(CEnemy::STATE_NEUTRAL);
+			m_Grap.pEnemy->SetChase(CEnemy::CHASE_ON);
+			m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
+			m_Grap.pEnemy = nullptr;
+			m_Info.state = STATE_NEUTRAL;
+			m_pMotion->Set(TYPE_NEUTRAL);
+			m_bGrap = false;
 		}
 	}
 }
@@ -1218,16 +1252,19 @@ void CPlayer::State(void)
 //================================================================
 void CPlayer::Damege(void)
 {
-	if (m_Info.state != STATE_DAMEGE)
+	if (m_Info.state == STATE_HEAT)
 	{
-		m_Info.state = STATE_DAMEGE;
-		//m_pMotion->Set();
-		m_nDamegeCounter = 10;
+		if (m_Info.state != STATE_DAMEGE)
+		{
+			m_Info.state = STATE_DAMEGE;
+			//m_pMotion->Set();
+			m_nDamegeCounter = 10;
+		}
+
+		m_Info.nLife--;
+
+		m_nDamegeCounter--;
 	}
-
-	m_Info.nLife--;
-
-	m_nDamegeCounter--;
 }
 
 //================================================================
@@ -1456,6 +1493,11 @@ void CPlayer::Fire(void)
 
 	if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
 	{
+		// 
+		{
+			CGame::GetEnemyManager()->SetTarget(m_nIdxEne);
+		}
+
 		// プレイヤーとの関係を切る
 		{
 			m_Grap.pEnemy->SetCurrent(nullptr);
@@ -1490,6 +1532,11 @@ void CPlayer::Fire(void)
 			m_Grap.pEnemy->SetPosition(D3DXVECTOR3(m_pItem->GetPosition().x, 0.0f, m_pItem->GetPosition().z));
 			m_Grap.pEnemy->Damege(300, 0.0f, m_Info.Atc);
 			m_Info.state = STATE_NEUTRAL;
+
+			// 
+			{
+				CGame::GetEnemyManager()->SetTrue(m_nIdxEne);
+			}
 			m_Grap.pEnemy = nullptr;
 		}
 	}

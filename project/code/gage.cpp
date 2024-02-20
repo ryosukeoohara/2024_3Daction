@@ -238,6 +238,10 @@ void CGage3D::SetCol(void)
 		break;
 
 	case CGage3D::TYPE_STAMINA:
+		m_pBillBoard->SetColor(D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
+		break;
+
+	case CGage3D::TYPE_LIFE:
 		m_pBillBoard->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.2f, 1.0f));
 		break;
 

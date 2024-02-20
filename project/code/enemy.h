@@ -54,26 +54,26 @@ public:
 		TYPE_BIRIBIRI,                 // 電子レンジ待機
 		TYPE_BIRI,                     // 電子レンジびりびり
 		TYPE_FAINTING,                 // 電子レンジ気絶
-		TYPE_DETH,                     // 死亡
-		TYPE_PUNCH,                    // パンチ
-		TYPE_GURUGURU,                 // ぐるぐるパンチ
 		TYPE_GETUP,                    // 起き上がり
+		TYPE_DETH,                     // 死亡
 		TYPE_MAX
 	};
 
 	// 敵の種類
 	enum TYPE
 	{
-		TYPE_WEAK = 0,      // ザコ
+		TYPE_WEAK = 0,  // ザコ
 		TYPE_BOSS,      // ボス
 	};
 
+	// 追尾
 	enum CHASE
 	{
 		CHASE_OFF = 0,
 		CHASE_ON,
 		CHASE_MAX
 	};
+
 	CHASE m_Chase;
 
 public:

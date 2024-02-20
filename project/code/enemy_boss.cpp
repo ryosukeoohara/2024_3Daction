@@ -26,6 +26,9 @@
 #include "fade.h"
 #include "utility.h"
 #include "gage.h"
+#include "camera.h"
+#include "particle.h"
+#include "item.h"
 #include <assert.h>
 
 //*=============================================================================
@@ -37,6 +40,14 @@
 namespace
 {
 	const int DAMEGECOUNT = 10;  // ダメージ状態
+
+	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] =
+	{
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
+		D3DXVECTOR3(0.0f, D3DX_PI * 0.15f, D3DX_PI * -0.38f),
+
+	};  // ヒートアクション時のカメラ位置
 }
 
 //==============================================================================
@@ -46,6 +57,7 @@ CEnemyBoss::CEnemyBoss()
 {
 	m_Chase = CHASE_ON;
 	m_pLife2D = nullptr;
+	m_nBiriBiriCount = 0;
 	/*CEnemyBoss *pEnemy = m_pTop;
 
 	if (m_pTop == nullptr)
@@ -85,6 +97,7 @@ CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_nAtcCounter = 0;
 	m_Chase = CHASE_ON;
 	m_pLife2D = nullptr;
+	m_nBiriBiriCount = 0;
 
 	/*CEnemyBoss *pEnemy = m_pTop;
 
@@ -362,13 +375,39 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 //==============================================================================
 //void CEnemyBoss::MicroWave(void)
 //{
-//	if (m_Info.state != STATE_BIRIBIRI)
-//	{
-//		m_Info.pos = (D3DXVECTOR3(0.0f, -70.0f, -30.0f));
-//		m_Info.rot = (D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+//	m_nBiriBiriCount++;
 //
-//		m_Info.state = STATE_BIRIBIRI;
-//		GetMotion()->Set(TYPE_BIRIBIRI);
+//	if (m_nBiriBiriCount > 60 && m_Info.state == STATE_BIRIBIRI)
+//	{
+//		if (m_Info.state != STATE_BIRI)
+//		{
+//			m_Info.state = STATE_BIRI;
+//			GetMotion()->Set(TYPE_BIRI);
+//
+//			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[2].x, CAMERAROT[2].y, CAMERAROT[2].z));
+//			//CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
+//		}
+//
+//		m_nBiriBiriCount = 0;
+//	}
+//
+//	if (m_nBiriBiriCount > 120 && m_Info.state == STATE_BIRI)
+//	{
+//		if (m_Info.state != STATE_FAINTING)
+//		{
+//			m_Info.state = STATE_FAINTING;
+//			GetMotion()->Set(TYPE_FAINTING);
+//		}
+//
+//		m_nBiriBiriCount = 0;
+//	}
+//
+//	if (m_Info.state == STATE_BIRI)
+//	{
+//		if (m_nBiriBiriCount % 20 == 0)
+//		{
+//			CParticle::Create(CGame::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
+//		}
 //	}
 //}
 

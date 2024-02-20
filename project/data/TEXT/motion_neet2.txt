@@ -1702,7 +1702,7 @@ MOTIONSET
 	STRAT_COLLI = 13 # 攻撃判定発生フレーム
 	END_COLLI = 18  # 攻撃判定終了フレーム
 	ATTACK = 50     # ダメージ
-	BLOWAWAY = 5.0  # 吹っ飛び
+	BLOWAWAY = 3.0  # 吹っ飛び
 
 	KEYSET			# --- << 0 / 6 >> ---
 		FRAME = 10

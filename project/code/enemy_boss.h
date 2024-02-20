@@ -27,18 +27,8 @@ public:
 	//モーション
 	enum MOTIONTYPE
 	{
-		TYPE_NEUTRAL = 0,              // ニュートラル
-		TYPE_DASH,                     // 移動
-		TYPE_ATTACK,                   // 攻撃
-		TYPE_DAMEGE,                   // ダメージ
-		TYPE_GRAP,                     // 掴まれ
-		TYPE_HEATDAMEGE,               // ヒートアクションダメージ
-		TYPE_BIRIBIRI,                 // 電子レンジ待機
-		TYPE_BIRI,                     // 電子レンジびりびり
-		TYPE_FAINTING,                 // 電子レンジ気絶
-		TYPE_PUNCH,                    // パンチ
+		TYPE_PUNCH = CEnemy::MOTIONTYPE::TYPE_MAX,                    // パンチ
 		TYPE_GURUGURU,                 // ぐるぐるパンチ
-		TYPE_GETUP,                    // 起き上がり
 		TYPE_MAX
 	};
 
@@ -78,6 +68,7 @@ private:
 	CGage2D *m_pLife2D;                          // ゲージのポインタ
 
 	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
+	int m_nBiriBiriCount;                      // 電子レンジびりびりカウント
 	int m_nAtcCounter;                         // 攻撃のインターバル
 	int m_nIdx;
 	
