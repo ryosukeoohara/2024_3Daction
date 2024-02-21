@@ -63,13 +63,18 @@ private:
 	void Attack(void) override;
 	void Move(void) override;
 	void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act) override;
+	void RollingPunch(void);
+	void NormalPunch(void);
+	void Fly(void);
 	//void MicroWave(void) override;
 
 	CGage2D *m_pLife2D;                          // ゲージのポインタ
 
-	int m_nDamegeCounter;                      // ダメージ状態でいるカウント
-	int m_nBiriBiriCount;                      // 電子レンジびりびりカウント
-	int m_nAtcCounter;                         // 攻撃のインターバル
+	int m_nDamegeCounter;         // ダメージ状態でいるカウント
+	int m_nBiriBiriCount;         // 電子レンジびりびりカウント
+	int m_nAtcCounter;            // 攻撃のインターバル
+	int m_nReceivedAttack;        // 攻撃を受けた回数
+	int m_nAttackType;
 	int m_nIdx;
 	
 

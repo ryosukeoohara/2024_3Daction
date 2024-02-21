@@ -58,6 +58,8 @@ CEnemyBoss::CEnemyBoss()
 	m_Chase = CHASE_ON;
 	m_pLife2D = nullptr;
 	m_nBiriBiriCount = 0;
+	m_nReceivedAttack = 0;
+	m_nAttackType = -1;
 	/*CEnemyBoss *pEnemy = m_pTop;
 
 	if (m_pTop == nullptr)
@@ -98,6 +100,8 @@ CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Chase = CHASE_ON;
 	m_pLife2D = nullptr;
 	m_nBiriBiriCount = 0;
+	m_nReceivedAttack = 0;
+	m_nAttackType = -1;
 
 	/*CEnemyBoss *pEnemy = m_pTop;
 
@@ -226,9 +230,9 @@ void CEnemyBoss::Attack(void)
 			//乱数の種を設定
 			srand((unsigned int)time(0));
 
-			int AttackType = rand() % ATTACKTYPE_MAX;  //攻撃の種類抽選
+			m_nAttackType = rand() % ATTACKTYPE_MAX;  //攻撃の種類抽選
 
-			switch (AttackType)
+			switch (m_nAttackType)
 			{
 			case ATTACKTYPE_GURUGURU:
 
@@ -250,6 +254,7 @@ void CEnemyBoss::Attack(void)
 				GetMotion()->Set(TYPE_ATTACK);
 
 				break;
+
 			default:
 				break;
 			}
@@ -257,13 +262,28 @@ void CEnemyBoss::Attack(void)
 	}
 	else
 	{
-		if (GetMotion()->GetAttackOccurs() <= GetMotion()->GetNowFrame() && GetMotion()->GetAttackEnd() >= GetMotion()->GetNowFrame())
-		{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+		switch (m_nAttackType)
+		{
+		case ATTACKTYPE_GURUGURU:
+			NormalPunch();
+			
 
-			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
-			{
-				CGame::GetPlayer()->Damage(20, 2.0f);
-			}
+			break;
+
+		case ATTACKTYPE_PUNCH:
+
+			RollingPunch();
+
+			break;
+
+		case ATTACKTYPE_FLY:
+
+			Fly();
+
+			break;
+
+		default:
+			break;
 		}
 	}
 }
@@ -284,47 +304,50 @@ void CEnemyBoss::Move(void)
 
 	if (m_Chase == CHASE_ON)
 	{
-		if (m_Info.state != STATE_ATTACK)
+		if (m_Info.state != STATE_PAINFULDAMAGE)
 		{
-			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
-
-			fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
-
-			m_Info.rot.y += fDiffmove * 0.05f;
-
-			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
-		}
-		
-		//移動量を更新(減衰させる)
-		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
-		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
-		
-		D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
-
-		if (Dest.x <= 120.0f && Dest.x >= -120.0f && Dest.z <= 120.0f && Dest.z >= -120.0f)
-		{
-			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+			if (m_Info.state != STATE_ATTACK)
 			{
-				m_Info.state = STATE_NEUTRAL;
-				GetMotion()->Set(TYPE_NEUTRAL);
+				fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
+
+				fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
+
+				m_Info.rot.y += fDiffmove * 0.05f;
+
+				m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 			}
 
-			Attack();
+			//移動量を更新(減衰させる)
+			m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
+			m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
 
-			m_Info.move.x = 0.0f;
-			m_Info.move.z = 0.0f;
-		}
-		else
-		{
-			if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+			D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
+
+			if (Dest.x <= 120.0f && Dest.x >= -120.0f && Dest.z <= 120.0f && Dest.z >= -120.0f)
 			{
-				m_Info.state = STATE_DASH;
-				GetMotion()->Set(TYPE_DASH);
+				if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
+				{
+					m_Info.state = STATE_NEUTRAL;
+					GetMotion()->Set(TYPE_NEUTRAL);
+				}
+
+				Attack();
+
+				m_Info.move.x = 0.0f;
+				m_Info.move.z = 0.0f;
+			}
+			else
+			{
+				if (m_Info.state != STATE_DASH && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
+				{
+					m_Info.state = STATE_DASH;
+					GetMotion()->Set(TYPE_DASH);
+				}
 			}
 		}
 	}
 
-	if (GetMotion()->IsFinish() == true && m_Info.state == STATE_HEATDAMEGE && m_Info.state != STATE_GETUP)
+	if (GetMotion()->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_PAINFULDAMAGE) && m_Info.state != STATE_GETUP)
 	{
 		m_Info.state = STATE_GETUP;
 		GetMotion()->Set(TYPE_GETUP);
@@ -348,24 +371,160 @@ void CEnemyBoss::Move(void)
 //==============================================================================
 void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
-	m_Info.nLife -= damege;
-
-	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
-	
-	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
+	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE && m_Info.state != STATE_ATTACK)
 	{
-		if (m_Info.state != STATE_HEATDAMEGE)
+		m_Info.nLife -= damege;
+
+		m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
+
+		if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
 		{
-			m_Info.state = STATE_HEATDAMEGE;
-			GetMotion()->Set(TYPE_HEATDAMEGE);
+			if (m_Info.state != STATE_HEATDAMEGE)
+			{
+				m_Info.state = STATE_HEATDAMEGE;
+				GetMotion()->Set(TYPE_HEATDAMEGE);
+			}
+		}
+		else
+		{
+			if (m_Info.state != STATE_DAMEGE)
+			{
+				// 乱数の種を設定
+				srand((unsigned int)time(0));
+
+				int a = rand() % 60;
+				int n = m_Info.nLife / 3;
+				if (a >= n && CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
+				{
+					m_Info.state = STATE_PAINFULDAMAGE;
+					GetMotion()->Set(TYPE_HEATDAMEGE);
+					m_Chase = CHASE_OFF;
+					m_Info.move.x = 0.0f;
+					m_Info.move.z = 0.0f;
+				}
+				else
+				{
+					m_Info.state = STATE_DAMEGE;
+					GetMotion()->Set(TYPE_DAMEGE);
+				}
+			}
 		}
 	}
-	else
+}
+
+//==============================================================================
+// ぐるぐるパンチ攻撃
+//==============================================================================
+void CEnemyBoss::RollingPunch(void)
+{
+	// キャラのパーツ取得
+	CCharacter **ppParts = nullptr;
+	ppParts = GetCharcter();
+
+	D3DXVECTOR3 PartsPosR = {};
+	D3DXMATRIX *PartsMtxR = {};
+	D3DXVECTOR3 PartsPosL = {};
+	D3DXMATRIX *PartsMtxL = {};
+
+	// 左手
+	if (ppParts[8] != nullptr)
 	{
-		if (m_Info.state != STATE_DAMEGE)
+		// マトリックスの取得
+		PartsMtxR = ppParts[8]->GetMtxWorld();
+
+		PartsPosR.x = PartsMtxR->_41;
+		PartsPosR.y = PartsMtxR->_42;
+		PartsPosR.z = PartsMtxR->_43;
+	}
+
+	// 右手
+	if (ppParts[11] != nullptr)
+	{
+		// マトリックスの取得
+		PartsMtxL = ppParts[11]->GetMtxWorld();
+
+		PartsPosL.x = PartsMtxL->_41;
+		PartsPosL.y = PartsMtxL->_42;
+		PartsPosL.z = PartsMtxL->_43;
+	}
+
+	if (GetMotion()->GetAttackOccurs() <= GetMotion()->GetNowFrame() && GetMotion()->GetAttackEnd() >= GetMotion()->GetNowFrame())
+	{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+		if (CGame::GetCollision()->Circle(&PartsPosR, &CGame::GetPlayer()->GetPosition(), 20.0f, 50.0f) == true)
 		{
-			m_Info.state = STATE_DAMEGE;
-			//GetMotion()->Set(TYPE_DAMEGE);
+			CGame::GetPlayer()->Damage(GetMotion()->GetAttackDamege(), GetMotion()->GetKnockBack());
+		}
+
+		if (CGame::GetCollision()->Circle(&PartsPosL, &CGame::GetPlayer()->GetPosition(), 20.0f, 50.0f) == true)
+		{
+			CGame::GetPlayer()->Damage(GetMotion()->GetAttackDamege(), GetMotion()->GetKnockBack());
+		}
+	}
+}
+
+//==============================================================================
+// 普通のパンチ
+//==============================================================================
+void CEnemyBoss::NormalPunch(void)
+{
+	// キャラのパーツ取得
+	CCharacter **ppParts = nullptr;
+	ppParts = GetCharcter();
+
+	D3DXVECTOR3 PartsPos = {};
+	D3DXMATRIX *PartsMtx = {};
+
+	// 右手
+	if (ppParts[11] != nullptr)
+	{
+		// マトリックスの取得
+		PartsMtx = ppParts[11]->GetMtxWorld();
+
+		PartsPos.x = PartsMtx->_41;
+		PartsPos.y = PartsMtx->_42;
+		PartsPos.z = PartsMtx->_43;
+	}
+
+	if (GetMotion()->GetAttackOccurs() <= GetMotion()->GetNowFrame() && GetMotion()->GetAttackEnd() >= GetMotion()->GetNowFrame())
+	{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+		if (CGame::GetCollision()->Circle(&PartsPos, &CGame::GetPlayer()->GetPosition(), 50.0f, 50.0f) == true)
+		{
+			CGame::GetPlayer()->Damage(GetMotion()->GetAttackDamege(), GetMotion()->GetKnockBack());
+		}
+	}
+}
+
+//==============================================================================
+// 飛び込み攻撃
+//==============================================================================
+void CEnemyBoss::Fly(void)
+{
+	// キャラのパーツ取得
+	CCharacter **ppParts = nullptr;
+	ppParts = GetCharcter();
+
+	D3DXVECTOR3 PartsPos = {};
+	D3DXMATRIX *PartsMtx = {};
+
+	// 腹
+	if (ppParts[5] != nullptr)
+	{
+		// マトリックスの取得
+		PartsMtx = ppParts[5]->GetMtxWorld();
+
+		PartsPos.x = PartsMtx->_41;
+		PartsPos.y = PartsMtx->_42;
+		PartsPos.z = PartsMtx->_43;
+	}
+
+	if (GetMotion()->GetAttackOccurs() <= GetMotion()->GetNowFrame() && GetMotion()->GetAttackEnd() >= GetMotion()->GetNowFrame())
+	{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+		if (CGame::GetCollision()->Circle(&PartsPos, &CGame::GetPlayer()->GetPosition(), 50.0f, 50.0f) == true)
+		{
+			CGame::GetPlayer()->Damage(GetMotion()->GetAttackDamege(), GetMotion()->GetKnockBack());
 		}
 	}
 }

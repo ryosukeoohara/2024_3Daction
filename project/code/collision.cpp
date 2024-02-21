@@ -111,6 +111,7 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
 	CEnemy **ppEnemy = nullptr;
 	int nNum = 0;
+	int nGrapID = -1;
 
 	if (pEnemyManager != nullptr)
 	{
@@ -122,24 +123,22 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 	{
 		if (ppEnemy[nCount] != nullptr)
 		{
-			int n = ppEnemy[nCount]->GetIdxID();
-
 			if (CGame::GetPlayer()->GetGrapEnemy() != nullptr)
 			{
-				int a = CGame::GetPlayer()->GetGrapEnemy()->GetIdxID();
+				nGrapID = CGame::GetPlayer()->GetGrapEnemy()->GetIdxID();
+			}
 
-				if (a != n)
+			if (ppEnemy[nCount]->GetIdxID() != nGrapID)
+			{
+				float circleX = pMyPos->x - ppEnemy[nCount]->GetPosition().x;
+				float circleZ = pMyPos->z - ppEnemy[nCount]->GetPosition().z;
+				float c = 0.0f;
+
+				c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+				if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight))
 				{
-					float circleX = pMyPos->x - ppEnemy[nCount]->GetPosition().x;
-					float circleZ = pMyPos->z - ppEnemy[nCount]->GetPosition().z;
-					float c = 0.0f;
-
-					c = (float)sqrt(circleX * circleX + circleZ * circleZ);
-
-					if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight) && ppEnemy[nCount]->GetState() != CEnemy::STATE_DAMEGE && ppEnemy[nCount]->GetState() != CEnemy::STATE_HEATDAMEGE)
-					{
-						ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
-					}
+					ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetKnockBack(), CGame::GetPlayer()->GetActType());
 				}
 			}
 		}
@@ -422,7 +421,7 @@ bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float 
 		{
 			// “G‚Ì”Ô†‚ð•Û‘¶
 			//CGame::GetEnemyManager()->SetTarget(nCount);
-			pEnemy->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetBlowAway(), CGame::GetPlayer()->GetActType());
+			pEnemy->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetKnockBack(), CGame::GetPlayer()->GetActType());
 
 			CParticle *pPar = CParticle::Create(pEnemy->GetPosition(), CParticle::TYPE_BLOOD);
 

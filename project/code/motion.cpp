@@ -222,11 +222,27 @@ int CMotion::GetAttackDamege(void)
 }
 
 //===========================================================
+//更新処理
+//===========================================================
+int CMotion::GetInvincibleStrat(void)
+{
+	return m_aInfo[m_nType].m_nInvincibleStart;
+}
+
+//===========================================================
+//更新処理
+//===========================================================
+int CMotion::GetInvincibleEnd(void)
+{
+	return m_aInfo[m_nType].m_nInvincibleEnd;
+}
+
+//===========================================================
 // 吹っ飛び
 //===========================================================
-float CMotion::GetBlowAway(void)
+float CMotion::GetKnockBack(void)
 {
-	return m_aInfo[m_nType].m_nBlowAway;
+	return m_aInfo[m_nType].m_nKnockBack;
 }
 
 //===========================================================
@@ -337,10 +353,22 @@ void CMotion::ReadText(const char *TextFilename)
 							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nAttackDamege);
 						}
 
-						if (strcmp("BLOWAWAY", aString) == 0)
+						if (strcmp("KNOCKBACK", aString) == 0)
 						{
 							fscanf(pFile, "%s", &aString);
-							fscanf(pFile, "%f", &m_aInfo[nCntMotion].m_nBlowAway);
+							fscanf(pFile, "%f", &m_aInfo[nCntMotion].m_nKnockBack);
+						}
+
+						if (strcmp("STRAT", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nInvincibleStart);
+						}
+
+						if (strcmp("END", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nInvincibleEnd);
 						}
 
 						if (strcmp("KEYSET", aString) == 0)

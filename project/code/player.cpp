@@ -59,6 +59,8 @@
 // 無名名前空間を定義
 namespace
 {
+	const int DAMAGECOUNT = 15;
+
 	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] = 
 	{ 
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
@@ -115,6 +117,7 @@ CPlayer::CPlayer()
 	m_pEnemy = nullptr;
 	m_pBotton = nullptr;
 	m_nIdxEne = 0;
+	m_nIdxItem = -1;
 	m_nDamageCounter = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
@@ -126,6 +129,7 @@ CPlayer::CPlayer()
 	m_bAvoid = false;
 	m_bLift = false;
 	m_bGrap = false;
+	m_bInvi = false;
 	
 	m_bPushW = false;
 	m_bPushA = false;
@@ -167,6 +171,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_pEnemy = nullptr;
 	m_pBotton = nullptr;
 	m_nIdxEne = 0;
+	m_nIdxItem = -1;
 	m_nDamageCounter = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
@@ -178,6 +183,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_bAvoid = false;
 	m_bLift = false;
 	m_bGrap = false;
+	m_bInvi = false;
 
 	m_bPushW = false;
 	m_bPushA = false;
@@ -247,7 +253,7 @@ CPlayer * CPlayer::Create(void)
 //================================================================
 void CPlayer::Damage(int nDamage, float fKnockBack)
 {
-	if (m_Info.state != STATE_DAMEGE)
+	if (m_Info.state != STATE_DAMEGE && m_bInvi == false)
 	{
 		m_Info.state = STATE_DAMEGE;
 		m_pMotion->Set(TYPE_AVOID);
@@ -408,9 +414,22 @@ void CPlayer::Update(void)
 	//サウンドを取得
 	CSound *pSound = CManager::Getinstance()->GetSound();
 
-	// 制御処理
-	Control();
+	if (m_Info.state == STATE_DAMEGE)
+	{
+		m_nDamegeCounter--;
 
+		if (m_nDamegeCounter <= 0)
+		{
+			m_Info.state = STATE_NONE;
+			m_nDamegeCounter = DAMAGECOUNT;
+		}
+	}
+	else
+	{
+		// 制御処理
+		Control();
+	}
+	
 	// パーツごとの更新
 	for (int nCount = 0; nCount < m_nNumModel; nCount++)
 	{
@@ -514,11 +533,14 @@ void CPlayer::Control(void)
 		nNum = CGame::GetEnemyManager()->GetNum();
 	}
 
-	for (int nCount = 0; nCount < nNum; nCount++)
+	if (m_bInvi == false)
 	{
-		if (ppEnemy[nCount] != nullptr)
+		for (int nCount = 0; nCount < nNum; nCount++)
 		{
-			m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 20.0f);
+			if (ppEnemy[nCount] != nullptr)
+			{
+				m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 20.0f);
+			}
 		}
 	}
 	
@@ -730,7 +752,7 @@ void CPlayer::Action(void)
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
 	// 通常攻撃
-	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_B, 0) == true)
 	{
 		if (m_Info.state != STATE_GRAP && m_Info.state != STATE_HEAT)
 		{
@@ -905,11 +927,11 @@ void CPlayer::Grap(void)
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
 	// 敵を掴む
-	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_RB, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
 	{
-		if (m_Info.state != STATE_LIFT && m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID && m_bLift == false)
+		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID)
 		{
-			if (m_Grap.pEnemy == nullptr)
+			if (m_Grap.pEnemy == nullptr && m_Grap.pItem == nullptr)
 			{
 				m_Info.state = STATE_GRAP;
 				m_pMotion->Set(TYPE_GRAP);
@@ -929,28 +951,17 @@ void CPlayer::Grap(void)
 					m_pMotion->Set(TYPE_NEUTRAL);
 					m_bGrap = false;
 				}
-			}
-		}
-	}
 
-	// アイテム持つ
-	if (InputKeyboard->GetTrigger(DIK_F) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_LB, 0) == true)
-	{
-		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP && m_bGrap == false)
-		{// 状態が投げる、掴みかつ何も掴んでいないとき
-
-			// アイテムを投げる
-			if (m_bLift == true)
-			{
-				m_Info.state = STATE_THROW;
-				m_pMotion->Set(TYPE_THROW);
-			}
-
-			// アイテムを掴むよ
-			if (m_Grap.pItem == nullptr && CGame::GetCollision()->Item(&m_Info.pos) == true && m_bLift == false)
-			{// 何も掴んでいないときかつアイテムの判定内
-
-				m_bLift = true;
+				if (m_Grap.pItem != nullptr)
+				{
+					m_Grap.pItem->SetCurrent(nullptr);
+					m_Grap.pItem->SetPosition(m_Info.pos);
+					m_Grap.pItem->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+					m_Grap.pItem = nullptr;
+					m_Info.state = STATE_NEUTRAL;
+					m_pMotion->Set(TYPE_NEUTRAL);
+					m_bLift = false;
+				}
 			}
 		}
 	}
@@ -997,7 +1008,7 @@ void CPlayer::Avoid(void)
 	//ゲームパッドを取得
 	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
 
-	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true))
+	if ((InputKeyboard->GetTrigger(DIK_LSHIFT) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true))
 	{
 		if (m_Info.state != STATE_AVOID && m_Info.state != STATE_LIFT &&
 			m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP &&
@@ -1134,6 +1145,17 @@ void CPlayer::State(void)
 		m_bDesh = false;
 		m_Info.move.x += sinf(m_Info.rot.y + D3DX_PI) * 0.5f;
 		m_Info.move.z += cosf(m_Info.rot.y + D3DX_PI) * 0.5f;
+
+		if (m_pMotion->GetInvincibleStrat() <= m_pMotion->GetNowFrame() && m_pMotion->GetInvincibleEnd() >= m_pMotion->GetNowFrame())
+		{// 時間内だったら完全無敵にする
+
+			m_bInvi = true;
+		}
+		else
+		{// 完全無敵終了
+
+			m_bInvi = false;
+		}
 	}
 
 	// 持っているアイテムで攻撃した
@@ -1154,9 +1176,11 @@ void CPlayer::State(void)
 	}
 
 	// 敵を掴む
-	if (m_Info.state == STATE_GRAP && m_bGrap == false)
+	if (m_Info.state == STATE_GRAP && m_bGrap == false && m_bLift == false)
 	{
 		CEnemy **ppEnemy = nullptr;
+		CItem **ppItem = nullptr;
+		D3DXVECTOR3 Distance = D3DXVECTOR3(10000.0f, 100000.0f, 100000.0f);
 
 		if (CGame::GetEnemyManager() != nullptr)
 		{// 敵の情報
@@ -1164,23 +1188,59 @@ void CPlayer::State(void)
 			ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 		}
 
+		if (CGame::GetItemManager() != nullptr)
+		{// アイテムの情報
+
+			ppItem = CGame::GetItemManager()->GetItem();
+		}
+
 		// 距離測って番号返す
-		m_nIdxEne = EnemyDistance();
+		Distance = EnemyDistance();
 
-		if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
-		{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+		if (Distance.x >= ItemDistance().x && Distance.z >= ItemDistance().z)
+		{// 範囲内
 
-			if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[m_nIdxEne]->GetPosition(), 40.0f, 40.0f) == true)
+			if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
+			{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
+
+				if (CGame::GetCollision()->Circle(&m_Info.pos, &ppItem[m_nIdxItem]->GetPosition(), 40.0f, 40.0f) == true)
+				{// 範囲内
+
+					// 敵を覚える
+					m_Grap.pItem = ppItem[m_nIdxItem];
+
+					// 親、位置、向き、状態、追尾、モーションを設定し、掴んでいることにする
+					m_Grap.pItem->SetCurrent(m_ppCharacter[9]->GetMtxWorld());
+					m_Grap.pItem->SetPosition(D3DXVECTOR3(50.0f, 5.0f, -15.0f));
+					m_Grap.pItem->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
+					m_bLift = true;
+				}
+			}
+		}
+		else
+		{
+			if (ppEnemy[m_nIdxEne] != nullptr)
 			{
-				m_Grap.pEnemy = ppEnemy[m_nIdxEne];
+				if (m_pMotion->GetAttackOccurs() <= m_pMotion->GetNowFrame() && m_pMotion->GetAttackEnd() >= m_pMotion->GetNowFrame())
+				{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
 
-				m_Grap.pEnemy->SetCurrent(m_ppCharacter[9]->GetMtxWorld());
-				m_Grap.pEnemy->SetPosition(D3DXVECTOR3(-10.0f, -10.0f, 60.0f));
-				m_Grap.pEnemy->SetRotition(D3DXVECTOR3(-0.2f, 1.27f, -1.4f));
-				m_Grap.pEnemy->SetState(CEnemy::STATE_GRAP);
-				m_Grap.pEnemy->SetChase(CEnemy::CHASE_OFF);
-				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_GRAP);
-				m_bGrap = true;
+					if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[m_nIdxEne]->GetPosition(), 40.0f, 40.0f) == true
+						&& ppEnemy[m_nIdxEne]->GetState() == CEnemy::STATE_PAINFULDAMAGE || ppEnemy[m_nIdxEne]->GetState() == CEnemy::STATE_GETUP)
+					{// 範囲内かつ敵がコケている
+
+					 // 敵を覚える
+						m_Grap.pEnemy = ppEnemy[m_nIdxEne];
+
+						// 親、位置、向き、状態、追尾、モーションを設定し、掴んでいることにする
+						m_Grap.pEnemy->SetCurrent(m_ppCharacter[9]->GetMtxWorld());
+						m_Grap.pEnemy->SetPosition(D3DXVECTOR3(-10.0f, -10.0f, 60.0f));
+						m_Grap.pEnemy->SetRotition(D3DXVECTOR3(-0.2f, 1.27f, -1.4f));
+						m_Grap.pEnemy->SetState(CEnemy::STATE_GRAP);
+						m_Grap.pEnemy->SetChase(CEnemy::CHASE_OFF);
+						m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_GRAP);
+						m_bGrap = true;
+					}
+				}
 			}
 		}
 	}
@@ -1293,7 +1353,7 @@ void CPlayer::Heat(void)
 			if (ppEnemy[nCount] != nullptr)
 			{
 				// 距離測って番号返す
-				m_nIdxEne = EnemyDistance();
+				EnemyDistance();
 			}
 		}
 
@@ -1690,7 +1750,7 @@ void CPlayer::ReadText(const char *fliename)
 //================================================================
 bool CPlayer::StartHeatAction(void)
 {
-	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
+	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
 	{// ヒートアクションする
 
 		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
@@ -1725,22 +1785,22 @@ bool CPlayer::StartHeatAction(void)
 //================================================================
 // 敵との距離算出：敵の番号を返すよ
 //================================================================
-int CPlayer::EnemyDistance(void)
+D3DXVECTOR3 CPlayer::EnemyDistance(void)
 {
 	CEnemy **ppEnemy = nullptr;
-	int nNum = 0; // 敵の総数
-	int nIdx = -1; // 敵の番号
+	int nNumEnemy = 0; // 敵の総数
+	int nIdx = -1;     // 敵の番号
 	D3DXVECTOR3 OldDistance = D3DXVECTOR3(10000.0f, 100000.0f, 100000.0f);
 	D3DXVECTOR3 Distance = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (CGame::GetEnemyManager() != nullptr)
 	{// 敵の総数と敵の情報
 
-		nNum = CGame::GetEnemyManager()->GetNum();
+		nNumEnemy = CGame::GetEnemyManager()->GetNum();
 		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
 	}
 
-	for (int nCount = 0; nCount < nNum; nCount++)
+	for (int nCount = 0; nCount < nNumEnemy; nCount++)
 	{
 		if (ppEnemy[nCount] != nullptr)
 		{
@@ -1753,10 +1813,49 @@ int CPlayer::EnemyDistance(void)
 				OldDistance = Distance;
 
 				// 掴む番号を覚える
-				nIdx = nCount;
+				m_nIdxEne = nCount;
 			}
 		}
 	}
 
-	return nIdx;
+	return OldDistance;
+}
+
+//================================================================
+// 敵との距離算出：敵の番号を返すよ
+//================================================================
+D3DXVECTOR3 CPlayer::ItemDistance(void)
+{
+	CItem **ppItem = nullptr;
+	int nNumItem = 0;  // アイテムの総数
+	int nIdx = -1;     // 敵の番号
+	D3DXVECTOR3 OldDistance = D3DXVECTOR3(10000.0f, 100000.0f, 100000.0f);
+	D3DXVECTOR3 Distance = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	if (CGame::GetItemManager() != nullptr)
+	{// アイテムの総数とアイテムの情報
+
+		nNumItem = CGame::GetItemManager()->GetNum();
+		ppItem = CGame::GetItemManager()->GetItem();
+	}
+
+	for (int nCount = 0; nCount < nNumItem; nCount++)
+	{
+		if (ppItem[nCount] != nullptr)
+		{
+			// 距離測定
+			Distance = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, ppItem[nCount]->GetPosition());
+
+			if (Distance.x <= OldDistance.x && Distance.y <= OldDistance.y && Distance.z <= OldDistance.z)
+			{// 今回と前回の距離を比較して近かったら
+
+				OldDistance = Distance;
+
+				// 掴む番号を覚える
+				m_nIdxItem = nCount;
+			}
+		}
+	}
+
+	return OldDistance;
 }

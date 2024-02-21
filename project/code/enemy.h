@@ -26,19 +26,21 @@ public:
 	// 状態
 	enum STATE
 	{
-		STATE_NONE = 0,    // なんもない
-		STATE_NEUTRAL,     // 待機
-		STATE_DASH,        // 移動
-		STATE_WALK,        // 移動
-		STATE_ATTACK,      // 攻撃
-		STATE_GRAP,        // 投げられ待ち
-		STATE_DAMEGE,      // 攻撃受けた
-		STATE_HEATDAMEGE,  // 攻撃受けた
-		STATE_GETUP,       // 起き上がり
-		STATE_BIRIBIRI,    // 電子レンジ待機
-		STATE_BIRI,        // 電子レンジびりびり
-		STATE_FAINTING,    // 電子レンジ気絶
-		STATE_DETH,        // 死亡
+		STATE_NONE = 0,       // なんもない
+		STATE_NEUTRAL,        // 待機
+		STATE_DASH,           // 移動
+		STATE_WALK,           // 移動
+		STATE_ATTACK,         // 攻撃
+		STATE_GRAP,           // 投げられ待ち
+		STATE_DAMEGE,         // 攻撃受けた
+		STATE_PAINFULDAMAGE,  // 痛い攻撃を受けた
+		STATE_HEATDAMEGE,     // 攻撃受けた
+		STATE_GETUP,          // 起き上がり
+		STATE_BIRIBIRI,       // 電子レンジ待機
+		STATE_BIRI,           // 電子レンジびりびり
+		STATE_FAINTING,       // 電子レンジ気絶
+		STATE_FALLDOWN,       // 転ぶ
+		STATE_DETH,           // 死亡
 		STATE_MAX
 	};
 
@@ -56,6 +58,7 @@ public:
 		TYPE_FAINTING,                 // 電子レンジ気絶
 		TYPE_GETUP,                    // 起き上がり
 		TYPE_DETH,                     // 死亡
+		TYPE_FALLDOWN,
 		TYPE_MAX
 	};
 

@@ -24,21 +24,21 @@ class CEnemyWeak : public CEnemy
 {
 public:
 
-	//モーション
-	enum MOTIONTYPE
-	{
-		TYPE_NEUTRAL = 0,              // ニュートラル
-		TYPE_DASH,                     // 移動
-		TYPE_ATTACK,                   // 攻撃
-		TYPE_DAMEGE,                   // ダメージ
-		TYPE_GRAP,                     // 捕まれてる
-		TYPE_BIRIBIRI,                 // 電子レンジ待機
-		TYPE_BIRI,                     // 電子レンジびりびり
-		TYPE_FAINTING,                 // 電子レンジ気絶
-		TYPE_DETH,
-		TYPE_FALLDOWN,
-		TYPE_MAX
-	};
+	////モーション
+	//enum MOTIONTYPE
+	//{
+	//	TYPE_NEUTRAL = 0,              // ニュートラル
+	//	TYPE_DASH,                     // 移動
+	//	TYPE_ATTACK,                   // 攻撃
+	//	TYPE_DAMEGE,                   // ダメージ
+	//	TYPE_GRAP,                     // 捕まれてる
+	//	TYPE_BIRIBIRI,                 // 電子レンジ待機
+	//	TYPE_BIRI,                     // 電子レンジびりびり
+	//	TYPE_FAINTING,                 // 電子レンジ気絶
+	//	TYPE_DETH,
+	//	TYPE_FALLDOWN,
+	//	TYPE_MAX
+	//};
 
 	////モーション
 	//enum MOTIONTYPE
@@ -68,6 +68,9 @@ public:
 	void Draw(void) override;                           //描画
 
 	static CEnemyWeak *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife);    //生成
+
+	 // 設定系
+	void SetChase(CHASE cha) { m_Chase = cha; }
 	
 private:
 

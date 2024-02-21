@@ -45,7 +45,9 @@ private:
 		int m_nAttackOccurs;  // 攻撃判定発生フレーム
 		int m_nAttackEnd;  // 攻撃判定終了フレーム
 		int m_nAttackDamege;  // 攻撃力
-		float m_nBlowAway;    // 吹っ飛び
+		int m_nInvincibleStart;  // 完全無敵状態開始
+		int m_nInvincibleEnd;    // 完全無敵終了
+		float m_nKnockBack;      // 吹っ飛び
 		bool m_bLoop;     // ループするかどうか
 		bool m_bFinish;   // 終了したかどうか
 
@@ -78,7 +80,9 @@ public:
 	int GetAttackOccurs(void);
 	int GetAttackEnd(void);
 	int GetAttackDamege(void);
-	float GetBlowAway(void);
+	int GetInvincibleStrat(void);
+	int GetInvincibleEnd(void);
+	float GetKnockBack(void);
 	INFO GetInfo(void);
 
 private:

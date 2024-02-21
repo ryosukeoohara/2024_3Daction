@@ -48,6 +48,7 @@ public:
 		STATE_ENEMYGRAP,    // 敵を投げる
 		STATE_GRAPWALK,     // 敵を掴んで歩く
 		STATE_DAMEGE,       // ダメージ
+		STATE_INVINCIBE,    // 無敵
 		STATE_DEHT,         // 死Smash
 		STATE_MAX
 	};
@@ -165,6 +166,7 @@ public:
 
 private:
 
+	// メンバ関数
 	void Control(void);                   // 制御
 	void Move(void);                      // 移動
 	void Action(void);                    // 攻撃
@@ -178,8 +180,10 @@ private:
 	void Fire(void);                      // ヒートアクション・電子レンジ
 	void ReadText(const char *fliename);  // テキストファイル読み込み
 	bool StartHeatAction(void);
-	int EnemyDistance(void);              // 敵との距離
+	D3DXVECTOR3 EnemyDistance(void);              // 敵との距離
+	D3DXVECTOR3 ItemDistance(void);
 
+	// メンバ変数
 	int m_nNumModel;                    //モデル(パーツ)の総数
 	int m_nIdxTexture;
 	int m_nIdxShaadow;
@@ -200,6 +204,7 @@ private:
 	CEnemy *m_pEnemy;
 	CObject2D *m_pBotton;
 	int m_nIdxEne;
+	int m_nIdxItem;
 	int m_nDamageCounter;
 	float m_fDest;
 	float m_fDestOld;
@@ -211,6 +216,7 @@ private:
 	bool m_bAvoid;                        // 回避
 	bool m_bLift;                         // 持ち上げる
 	bool m_bGrap;                         // 投げ
+	bool m_bInvi;                         // 無敵かどうか
 
 	//チュートリアルで使う関数,変数
 	void ControlTutorial(void);          // チュートリアルのプレイヤーの制御

@@ -28,6 +28,7 @@
 #include "camera.h"
 #include "particle.h"
 #include "item.h"
+#include <time.h>
 #include  <assert.h>
 
 //*=============================================================================
@@ -56,6 +57,7 @@ CEnemyWeak::CEnemyWeak()
 {
 	m_pLife3D = nullptr;
 	m_nBiriBiriCount = 0;
+	m_Chase = CHASE_ON;
 	/*CEnemyWeak *pEnemy = m_pTop;
 
 	if (m_pTop == nullptr)
@@ -94,6 +96,7 @@ CEnemyWeak::CEnemyWeak(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	SetState(CEnemy::STATE_NONE);
 	m_pLife3D = nullptr;
 	m_nBiriBiriCount = 0;
+	m_Chase = CHASE_ON;
 
 	/*CEnemyWeak *pEnemy = m_pTop;
 
@@ -306,74 +309,98 @@ void CEnemyWeak::Move(void)
 {
 	//プレイヤーの情報取得
 	CPlayer *pPlayer = CGame::GetPlayer();
+	
+	if (m_Chase == CHASE_ON)
+	{
+		if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
+		{//円の中にプレイヤーが入った
 
-	if (CGame::GetCollision()->Circle(&m_Info.pos, &pPlayer->GetPosition(), 400.0f, 50.0f) == true)
-	{//円の中にプレイヤーが入った
+			m_Info.posOld = m_Info.pos;
 
-		m_Info.posOld = m_Info.pos;
+			D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
-		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
+			float fDiffmove = 0.0f;
 
-		float fDiffmove = 0.0f;
+			if (m_Info.state != STATE_DAMEGE)
+			{
+				// 追尾
+				fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
 
-		if (m_Info.state != STATE_DAMEGE)
-		{
-			// 追尾
-			fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, PlayerPos, m_Info.rot.y);
+				// 角度補正
+				fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
 
-			// 角度補正
-			fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
+				m_Info.rot.y += fDiffmove * 0.05f;
 
-			m_Info.rot.y += fDiffmove * 0.05f;
+				// 角度補正
+				m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
-			// 角度補正
-			m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+				//移動量を更新(減衰させる)
+				m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
+				m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
+			}
 
-			//移動量を更新(減衰させる)
-			m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
-			m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
+			// プレイヤーとの距離
+			D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
+
+			if (Dest.x <= 60.0f && Dest.x >= -60.0f && Dest.z <= 60.0f && Dest.z >= -60.0f)
+			{
+				if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
+				{
+					m_Info.state = STATE_NEUTRAL;
+					GetMotion()->Set(TYPE_NEUTRAL);
+				}
+
+				Attack();
+				m_Info.move.x = 0.0f;
+				m_Info.move.z = 0.0f;
+			}
+			else
+			{
+				if (m_Info.state != STATE_DASH && m_Info.state != STATE_DAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
+				{
+					m_Info.state = STATE_DASH;
+					GetMotion()->Set(TYPE_DASH);
+				}
+			}
 		}
-
-		// プレイヤーとの距離
-		D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
-		
-		if (Dest.x <= 60.0f && Dest.x >= -60.0f && Dest.z <= 60.0f && Dest.z >= -60.0f)
+		else
 		{
-			if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE)
+			m_Info.move.x = 0.0f;
+			m_Info.move.z = 0.0f;
+
+			if (m_Info.state != STATE_NEUTRAL)
 			{
 				m_Info.state = STATE_NEUTRAL;
 				GetMotion()->Set(TYPE_NEUTRAL);
 			}
+		}
+	}
 
-			Attack();
+	if (m_Info.state == STATE_PAINFULDAMAGE)
+	{
+		if (GetMotion()->GetNowFrame() >= 0 && GetMotion()->GetNowFrame() <= 20)
+		{
 			m_Info.move.x = 0.0f;
 			m_Info.move.z = 0.0f;
 		}
-		else
-		{
-			if (m_Info.state != STATE_DASH && m_Info.state != STATE_DAMEGE)
-			{
-				m_Info.state = STATE_DASH;
-				GetMotion()->Set(TYPE_DASH);
-			}
-		}
 	}
-	else
+
+	if (GetMotion()->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_PAINFULDAMAGE) && m_Info.state != STATE_GETUP)
 	{
-		m_Info.move.x = 0.0f;
-		m_Info.move.z = 0.0f;
-
-		if (m_Info.state != STATE_NEUTRAL)
-		{
-			m_Info.state = STATE_NEUTRAL;
-			GetMotion()->Set(TYPE_NEUTRAL);
-		}
+		m_Info.state = STATE_GETUP;
+		GetMotion()->Set(TYPE_GETUP);
 	}
-
-	if (GetMotion()->IsFinish() == true)
+	else if (GetMotion()->IsFinish() == true)
 	{
 		m_Info.state = STATE_NEUTRAL;
 		GetMotion()->Set(TYPE_NEUTRAL);
+
+		if (m_Chase != CHASE_ON)
+		{
+			m_Chase = CHASE_ON;
+
+			m_nAtcCounter = 0;
+		}
 	}
 }
 
@@ -382,30 +409,38 @@ void CEnemyWeak::Move(void)
 //==============================================================================
 void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
-	m_Info.nLife -= damege;
-	m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
-
-	if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
+	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
 	{
-		if (m_Info.state != STATE_HEATDAMEGE)
-		{
-			m_Info.state = STATE_HEATDAMEGE;
-			GetMotion()->Set(TYPE_HEATDAMEGE);
-		}
-	}
-	else
-	{
-		if (m_Info.state != STATE_DAMEGE)
-		{
-			m_Info.state = STATE_DAMEGE;
+		m_Info.nLife -= damege;
+		m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
 
-			if (CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
+		if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
+		{
+			if (m_Info.state != STATE_HEATDAMEGE)
 			{
-				GetMotion()->Set(TYPE_FALLDOWN);
+				m_Info.state = STATE_HEATDAMEGE;
+				GetMotion()->Set(TYPE_HEATDAMEGE);
 			}
-			else
+		}
+		else
+		{
+			if (m_Info.state != STATE_DAMEGE)
 			{
-				GetMotion()->Set(TYPE_DAMEGE);
+				// 乱数の種を設定
+				srand((unsigned int)time(0));
+
+				int a = rand() % 60;
+				if (m_Info.nLife <= a && CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
+				{
+					m_Info.state = STATE_PAINFULDAMAGE;
+					GetMotion()->Set(TYPE_HEATDAMEGE);
+					m_Chase = CHASE_OFF;
+				}
+				else
+				{
+					m_Info.state = STATE_DAMEGE;
+					GetMotion()->Set(TYPE_DAMEGE);
+				}
 			}
 		}
 	}

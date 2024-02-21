@@ -679,7 +679,7 @@ MOTIONSET
 	NUM_FRAME = 33  # 総フレーム数
 	STRAT_COLLI = 8 # 攻撃判定発生フレーム
 	END_COLLI = 13  # 攻撃判定終了フレーム
-	ATTACK = 10     # ダメージ
+	ATTACK = 5     # ダメージ
 	BLOWAWAY = 2.0  # 吹っ飛び
 
 	KEYSET			# --- << 0 / 6 >> ---
@@ -1190,7 +1190,7 @@ MOTIONSET
 	NUM_FRAME = 33  # 総フレーム数
 	STRAT_COLLI = 10 # 攻撃判定発生フレーム
 	END_COLLI = 15  # 攻撃判定終了フレーム
-	ATTACK = 30     # ダメージ
+	ATTACK = 8     # ダメージ
 	BLOWAWAY = 2.0  # 吹っ飛び
 
 	KEYSET			# --- << 0 / 6 >> ---
@@ -1701,7 +1701,7 @@ MOTIONSET
 	NUM_FRAME = 33  # 総フレーム数
 	STRAT_COLLI = 13 # 攻撃判定発生フレーム
 	END_COLLI = 18  # 攻撃判定終了フレーム
-	ATTACK = 50     # ダメージ
+	ATTACK = 10     # ダメージ
 	BLOWAWAY = 3.0  # 吹っ飛び
 
 	KEYSET			# --- << 0 / 6 >> ---
@@ -2209,6 +2209,8 @@ END_MOTIONSET
 MOTIONSET
 	LOOP = 0		# ループするかどうか[0:ループしない / 1:ループする]
 	NUM_KEY = 7		# キー数
+	STRAT = 5       # 完全無敵
+	END = 40        # 完全無敵終了
 
 	KEYSET			# --- << 0 / 7 >> ---
 		FRAME = 7
