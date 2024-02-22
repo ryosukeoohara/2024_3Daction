@@ -237,6 +237,7 @@ void CEnemyWeak::Controll(void)
 	{
 		m_Info.state = STATE_DETH;
 		GetMotion()->Set(TYPE_DETH);
+
 		return;
 	}
 

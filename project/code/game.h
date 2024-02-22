@@ -65,6 +65,7 @@ private:
 	static CCollision *m_Collision;
 	static CItemManager *m_pItemManager;
 	static CMap *m_pMap;
+	int m_nOnStageCounter;
 	bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか
 	static int m_nCounter;

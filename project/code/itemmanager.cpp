@@ -22,9 +22,11 @@
 
 const char *CItemManager::m_apTexName[CItem::TYPE_MAX] =
 {
-	"data\\MODEL\\refrigerator.x",
-	"data\\MODEL\\bike.x",     // 自転車
-	"data\\MODEL\\microwave.x",     // 自転車
+	"data\\MODEL\\refrigerator.x",  // 冷蔵庫
+	"data\\MODEL\\bike.x",          // 自転車
+	"data\\MODEL\\microwave.x",     // 電子レンジ
+	"data\\MODEL\\table.x",         // デーブル
+	"data\\MODEL\\poster.x",        // 看板
 };
 
 //=============================================================================

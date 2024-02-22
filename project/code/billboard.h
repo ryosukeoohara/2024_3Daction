@@ -15,6 +15,14 @@
 class CBillBoard : public CObject
 {
 public:
+
+	enum TYPE
+	{
+		TYPE_NONE = 0,
+		TYPE_HIT,
+		TYPE_MAX
+	};
+
 	CBillBoard();
 	~CBillBoard();
 
@@ -30,10 +38,12 @@ public:
 	void SetSize(float fHeight, float fWidth);                            // サイズ
 	void SetEdgeCenter(float fWidth, float fHeight);                      // サイズ
 	void SetTex(float fTex);
+	void SetAnim(void);
 	void SetIdxTex(int Idx) { m_nIdxTexture = Idx; }                      // テクスチャのインデックス番号
 	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }                    // 位置
 	void SetRotition(D3DXVECTOR3 rot) { m_rot = rot; }                    // 向き
 	void SetColor(D3DXCOLOR col);                                         // 色
+	void SetType(TYPE type) { m_Type = type; }                            // 種類
 	void SetDraw(bool bDraw = true) { m_bDraw = bDraw; }                  // 描画するかどうか
 
 	// 取得系
@@ -41,7 +51,7 @@ public:
 	D3DXVECTOR3 GetRotition(void) { return m_rot; }
 
 private:
-	LPDIRECT3DTEXTURE9 m_pTexture;       //テクスチャへのポインタ
+	LPDIRECT3DTEXTURE9 m_pTexture;             // テクスチャへのポインタ
 	D3DXMATRIX m_mtxView;
 	D3DXMATRIX m_mtxWorld;                     // ワールドマトリックス
 	D3DXMATRIX *m_pCurrent;
@@ -50,9 +60,16 @@ private:
 	D3DXVECTOR3 m_rot;                         // 向き
 	D3DXCOLOR m_col;                           // 色
 	int m_nIdxTexture;                         // テクスチャのインデックス番号
+	int m_nNowPattern;                         // アニメーションパターン
+	int m_nNumPattern;                         // アニメーションパターン
+	int m_nCounterAnim;
+	int m_nHeight;
+	int m_nWidth;
 	float m_fHeight;                           // 高さ
 	float m_fWidth;                            // 幅
 	bool m_bDraw;                              // 描画するかどうか
+
+	TYPE m_Type;
 };
 
 #endif

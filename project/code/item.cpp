@@ -18,8 +18,8 @@
 #include "texture.h"
 
 // マクロ定義
-#define TEXT_NAME  ("data\\TEXT\\item.txt")  // マップに配置するアイテム
-#define TEX_GRAP   ("data\\TEXTURE\\arrow.png")  // マップに配置するアイテム
+#define TEXT_NAME  ("data\\TEXT\\item.txt")        // マップに配置するアイテム
+#define TEX_GRAP   ("data\\TEXTURE\\Ybutton.png")  // マップに配置するアイテム
 
 // 無名名前空間を定義
 namespace
@@ -107,8 +107,8 @@ void CItem::Update(void)
 	if (CGame::GetCollision()->Circle(&GetPosition(), &CGame::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
 	{// 範囲内
 
-		if (m_Type != TYPE_MICROWAVE)
-		{// 種類が電子レンジ以外
+		if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE)
+		{// 種類が電子レンジかつテーブル以外
 
 			if (m_pBill == nullptr)
 			{

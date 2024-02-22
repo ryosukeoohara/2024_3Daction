@@ -12,6 +12,21 @@
 #include "texture.h"
 #include "debugproc.h"
 
+namespace
+{
+	const D3DXVECTOR2 XYPATTERN[CBillBoard::TYPE_MAX] = 
+	{
+		D3DXVECTOR2(1.0f, 1.0f), // なんもない
+		D3DXVECTOR2(4.0f, 4.0f), // 攻撃ヒット
+	}; // 分割数
+
+	const int NUMPATTERN[CBillBoard::TYPE_MAX] =
+	{
+		0,  // なんもない
+		16, // 攻撃ヒット
+	}; // パターンの総数
+}
+
 //================================================================
 //コンストラクタ
 //================================================================
@@ -24,9 +39,15 @@ CBillBoard::CBillBoard()
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_nIdxTexture = -1;
+	m_nNumPattern = 0;
+	m_nNowPattern = 0;
+	m_nCounterAnim = 0;
+	m_nHeight = 0;
+	m_nWidth = 0;
 	m_fHeight = 0.0f;
 	m_fWidth = 0.0f;
 	m_bDraw = true;
+	m_Type = TYPE_NONE;
 }
 
 //================================================================
@@ -69,20 +90,6 @@ void CBillBoard::SetSize(float fHeight, float fWidth)
 
 	//頂点バッファをロックし頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	////頂点座標の設定
-	//pVtx[0].pos.x = m_pos.x;
-	//pVtx[0].pos.y = m_fWidth;
-	//pVtx[0].pos.z = m_pos.z;
-	//pVtx[1].pos.x = m_pos.x + m_fHeight;
-	//pVtx[1].pos.y = m_fWidth;
-	//pVtx[1].pos.z = m_pos.z;
-	//pVtx[2].pos.x = m_pos.x;
-	//pVtx[2].pos.y = 0.0f;
-	//pVtx[2].pos.z = m_pos.z;
-	//pVtx[3].pos.x = m_pos.x + m_fHeight;
-	//pVtx[3].pos.y = 0.0f;
-	//pVtx[3].pos.z = m_pos.z;
 
 	//頂点座標の設定
 	pVtx[0].pos = D3DXVECTOR3(-fWidth, fHeight, 0.0f);
@@ -143,6 +150,43 @@ void CBillBoard::SetTex(float fTex)
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
+}
+
+//================================================================
+// アニメーションするよ
+//================================================================
+void CBillBoard::SetAnim(void)
+{
+	VERTEX_3D *pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	m_nNowPattern++;
+
+	if (m_nNowPattern % 3 == 0)
+	{
+		m_nCounterAnim = (m_nCounterAnim + 1) % m_nNumPattern;
+
+		float fx = m_nCounterAnim % m_nWidth * (1.0f / XYPATTERN[m_Type].x);
+		float fy = m_nCounterAnim / m_nHeight * (1.0f / XYPATTERN[m_Type].y);
+
+		//テクスチャ座標の設定
+		pVtx[0].tex = D3DXVECTOR2(0.0f + fx,                         0.0f + fy);
+		pVtx[1].tex = D3DXVECTOR2((1.0f / XYPATTERN[m_Type].x) + fx, 0.0f + fy);
+		pVtx[2].tex = D3DXVECTOR2(0.0f + fx,                         (1.0f / XYPATTERN[m_Type].y) + fy);
+		pVtx[3].tex = D3DXVECTOR2((1.0f / XYPATTERN[m_Type].x) + fx, (1.0f / XYPATTERN[m_Type].y) + fy);
+
+		m_nNowPattern = 0;
+	}
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+
+	if (m_nCounterAnim + 1 >= m_nNumPattern)
+	{
+		Uninit();
+	}
 }
 
 //================================================================
@@ -207,9 +251,14 @@ HRESULT CBillBoard::Init(void)
 
 	//テクスチャ座標の設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+	pVtx[1].tex = D3DXVECTOR2((1.0f / XYPATTERN[m_Type].x), 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(0.0f, (1.0f / XYPATTERN[m_Type].y));
+	pVtx[3].tex = D3DXVECTOR2((1.0f / XYPATTERN[m_Type].x), (1.0f / XYPATTERN[m_Type].y));
+
+	m_nHeight = (int)XYPATTERN[m_Type].x;
+	m_nWidth = (int)XYPATTERN[m_Type].y;
+
+	m_nNumPattern = NUMPATTERN[m_Type];
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
@@ -269,7 +318,7 @@ void CBillBoard::Draw(void)
 
 		D3DXMATRIX m_mtxTrans;           // 計算用マトリックス
 
-										 //ワールドマトリックスの初期化
+		//ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&m_mtxWorld);
 
 		//ビューマトリックスを取得

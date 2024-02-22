@@ -26,6 +26,7 @@ public:
 		MODE_HEAT,       // ヒートアクション
 		MODE_RETURN,     // 元の位置に戻る
 		MODE_DEBUG,      // ちょーせい
+		MODE_ONSTAGE,    // 登場
 		MODE_MAX 
 	};
 
@@ -65,6 +66,7 @@ private:
 	void Heat(void);
 	void Return(void);
 	void Debug(void);
+	void OnStage(void);
 
 	D3DXMATRIX m_mtxView;        // ビューマトリックス
 	D3DXMATRIX m_mtxProjection;  // プロジェクションマトリックス

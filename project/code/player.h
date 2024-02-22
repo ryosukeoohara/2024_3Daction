@@ -47,6 +47,7 @@ public:
 		STATE_GRAPDASH,     // 掴んで走る
 		STATE_ENEMYGRAP,    // 敵を投げる
 		STATE_GRAPWALK,     // 敵を掴んで歩く
+		STATE_POWERFUL,     // 地面にたたきつける
 		STATE_DAMEGE,       // ダメージ
 		STATE_INVINCIBE,    // 無敵
 		STATE_DEHT,         // 死Smash
@@ -65,12 +66,13 @@ public:
 	enum ATTACKTYPE
 	{
 		TYPE_NONE = 0,          // なんもない
-		TYPE_ATTACK1,          // 一段目
-		TYPE_ATTACK2,          // 二段目
-		TYPE_ATTACK3,          // 三段目
+		TYPE_ATTACK1,           // 一段目
+		TYPE_ATTACK2,           // 二段目
+		TYPE_ATTACK3,           // 三段目
 		TYPE_HEATACTBIKE,       // ヒートアクション・バイク
 		TYPE_HEATACTREF,        // ヒートアクション・冷蔵庫
 		TYPE_HEATACTMICROWAVE,  // ヒートアクション・電子レンジ
+		TYPE_HEATACTPOWERFUL,   // ヒートアクション・地面にたたきつける
 		TYPEMAX_ATTACK
 	};
 
@@ -92,6 +94,7 @@ private:
 		TYPE_GRAPNEUTRAL,                // 掴みニュートラル
 		TYPE_ENEMYGRAP,                  // 敵を掴んで投げる
 		TYPE_GRAPWALK,                   // 掴んで歩く
+		TYPE_POWERFUL,                   // 地面たたきつけ
 		TYPE_MAX
 	} ;
 
@@ -178,6 +181,7 @@ private:
 	void Heat(void);                      // ヒートアクション
 	void Smash(CEnemy *pEnemy);           // ヒートアクション・たたきつけ
 	void Fire(void);                      // ヒートアクション・電子レンジ
+	void PowerfulBlow(void);              // ヒートアクション・地面に強打
 	void ReadText(const char *fliename);  // テキストファイル読み込み
 	bool StartHeatAction(void);
 	D3DXVECTOR3 EnemyDistance(void);              // 敵との距離

@@ -25,6 +25,8 @@ public:
 		TYPE_REF = 0,       // 冷蔵庫
 		TYPE_BIKE,          // 自転車
 		TYPE_MICROWAVE,     // 電子レンジ
+		TYPE_TABLE,         // テーブル
+		TYPE_POSTER,        // 看板
 		TYPE_MAX
 	};
 

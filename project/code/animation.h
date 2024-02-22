@@ -44,7 +44,7 @@ public:
 	void Update(void);  // XVˆ—
 	void Draw(void);    // •`‰æˆ—
 
-	static CAnimation *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, int nLife, TYPE type);  //¶¬
+	static CAnimation *Create(D3DXVECTOR3 pos, float fRadius, CBillBoard::TYPE type);  //¶¬
 
 	INFO m_Info;
 

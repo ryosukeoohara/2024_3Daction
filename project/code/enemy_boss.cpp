@@ -371,7 +371,7 @@ void CEnemyBoss::Move(void)
 //==============================================================================
 void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
-	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE && m_Info.state != STATE_ATTACK)
+	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE && (m_Info.state != STATE_ATTACK || CGame::GetPlayer()->GetState() == CPlayer::STATE_HEAT))
 	{
 		m_Info.nLife -= damege;
 

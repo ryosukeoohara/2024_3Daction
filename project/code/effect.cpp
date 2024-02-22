@@ -90,9 +90,6 @@ CEffect *CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float
 //================================================================
 HRESULT CEffect::Init(void)
 {
-	//í—Ş‚Ìİ’è
-	SetType(TYPE_EFFECT);
-
 	//‰Šú‰»ˆ—
 	CBillBoard::Init();
 	//m_fRadius = 15.0f;

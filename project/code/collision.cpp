@@ -26,6 +26,7 @@
 #include "map.h"
 #include "motion.h"
 #include "particle.h"
+#include "animation.h"
 
 //=============================================================================
 //コンストラクタ
@@ -139,6 +140,7 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 				if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight))
 				{
 					ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetKnockBack(), CGame::GetPlayer()->GetActType());
+					CAnimation::Create(*pMyPos, 30.0f, CBillBoard::TYPE_HIT);
 				}
 			}
 		}

@@ -46,6 +46,7 @@ CGame::CGame()
 {
 	m_bUse = false;
 	m_bPause = false;
+	m_nOnStageCounter = 0;
 }
 
 //===========================================================
@@ -55,6 +56,7 @@ CGame::CGame(CScene::MODE mode)
 {
 	m_bUse = false;
 	m_bPause = false;
+	m_nOnStageCounter = 0;
 }
 
 //===========================================================
@@ -141,7 +143,7 @@ HRESULT CGame::Init(void)
 		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
-	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
+	//CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	return S_OK;
 }
@@ -216,6 +218,8 @@ void CGame::Update(void)
 
 		return;
 	}
+
+	//if(m_nOnStageCounter >= )
 
 	//キーボードを取得
 	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();

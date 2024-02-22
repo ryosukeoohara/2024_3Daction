@@ -124,6 +124,9 @@ void CCamera::Reset(void)
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
+//================================================================
+// モード設定
+//================================================================
 void CCamera::SetMode(MODE type)
 {
 	m_mode = type;
@@ -186,14 +189,18 @@ void CCamera::Mode(void)
 	//シーンの情報を寿徳
 	CScene *pScene = CManager::Getinstance()->GetScene();
 
+	
+
 	switch (m_mode)
 	{
 	case CCamera::MODE_NONE:
 		break;
+
 	case CCamera::MODE_TITLE:
 
 		Title();
 		break;
+
 	case CCamera::MODE_GAME:
 
 		m_OldposR = m_posR;
@@ -203,10 +210,11 @@ void CCamera::Mode(void)
 
 		CameraV();
 		break;
+
 	case CCamera::MODE_RESULT:
 
-		
 		break;
+
 	case CCamera::MODE_HEAT:
 
 		Heat();
@@ -220,6 +228,11 @@ void CCamera::Mode(void)
 	case MODE_DEBUG:
 
 		Debug();
+		break;
+
+	case MODE_ONSTAGE:
+
+		OnStage();
 		break;
 
 	case CCamera::MODE_MAX:
@@ -358,6 +371,48 @@ void CCamera::Debug(void)
 	////移動量を更新(減衰させる)--------------------------------------------
 	//m_move.x += (0.0f - m_move.x) * 0.1f;
 	//m_move.z += (0.0f - m_move.z) * 0.1f;
+}
+
+//================================================================
+// 登場
+//================================================================
+void CCamera::OnStage(void)
+{
+	if (m_nCounter <= 80)
+	{
+		// カメラを目標の向きまで回転させる
+		D3DXVECTOR3 posVDest = m_OldposV - m_posV;
+		SetRotation(m_posV + posVDest * 0.05f);
+
+		m_nCounter++;
+	}
+	else
+	{
+		// カメラモードをゲーム
+		m_mode = MODE_GAME;
+
+		// カウンターをリセット
+		m_nCounter = 0;
+	}
+
+	m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
+	m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
+
+	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
+	m_posR = D3DXVECTOR3(0.0f, 50.0f, 0.0f);
+	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+
+	//目標の注視点を設定
+	m_posRDest.x = 0.0f;
+	m_posRDest.z = 0.0f;
+
+	//カメラの移動量
+	m_move.x = m_posRDest.x - m_posR.x;
+	m_move.z = m_posRDest.z - m_posR.z;
+
+	//位置に移動量を保存
+	m_posR.x += m_move.x;
+	m_posR.z += m_move.z;
 }
 
 //================================================================

@@ -4,21 +4,21 @@ ALL_ENEMY = 3
 
 ENEMYSET
    POS = 0.0 0.0 50.0
-   ROT = 0.0 1.57 0.0
-   LIFE = 0
+   ROT = 0.0 3.14 0.0
+   LIFE = 100
    TYPE = 0
 ENEMYSET_END
 
 ENEMYSET
    POS = 50.0 0.0 0.0
-   ROT = 0.0 1.57 0.0
-   LIFE = 0
+   ROT = 0.0 3.14 0.0
+   LIFE = 100
    TYPE = 0
 ENEMYSET_END
 
 ENEMYSET
    POS = 150.0 0.0 0.0
-   ROT = 0.0 1.57 0.0
+   ROT = 0.0 3.14 0.0
    LIFE = 100
    TYPE = 0
 ENEMYSET_END

@@ -6,6 +6,17 @@
 //===========================================================
 
 #include "animation.h"
+#include "manager.h"
+#include "texture.h"
+
+namespace
+{
+	const char *TEXTURENAME[CBillBoard::TYPE_MAX] =
+	{
+		"data\\TEXTURE\\.png",
+		"data\\TEXTURE\\hit.png",
+	};  // テクスチャの名前
+}
 
 //===========================================================
 // コンストラクタ
@@ -65,6 +76,9 @@ void CAnimation::Uninit(void)
 void CAnimation::Update(void)
 {
 	CBillBoard::Update();
+
+	// アニメーション設定
+	CBillBoard::SetAnim();
 }
 
 //===========================================================
@@ -78,17 +92,20 @@ void CAnimation::Draw(void)
 //===========================================================
 // 生成
 //===========================================================
-CAnimation * CAnimation::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, int nLife, TYPE type)
+CAnimation * CAnimation::Create(D3DXVECTOR3 pos, float fRadius, CBillBoard::TYPE type)
 {
 	CAnimation *pAnim = nullptr;
 	pAnim = new CAnimation;
 
 	if (pAnim != nullptr)
 	{
+		// 種類、位置、サイズ、テクスチャ、描画設定
+		pAnim->SetType(type);
 		pAnim->Init();
 		pAnim->SetPosition(pos);
 		pAnim->SetSize(fRadius, fRadius);
-		pAnim->SetColor(col);
+		pAnim->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[type]));
+		pAnim->SetDraw();
 	}
 
 	return pAnim;
