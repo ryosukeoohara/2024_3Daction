@@ -145,7 +145,7 @@ HRESULT CGame::Init(void)
 		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
-	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
+	//CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	return S_OK;
 }

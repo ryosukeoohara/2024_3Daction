@@ -17,13 +17,13 @@ namespace
 	const D3DXVECTOR2 XYPATTERN[CBillBoard::TYPE_MAX] = 
 	{
 		D3DXVECTOR2(1.0f, 1.0f), // なんもない
-		D3DXVECTOR2(4.0f, 4.0f), // 攻撃ヒット
+		D3DXVECTOR2(4.0f, 3.0f), // 攻撃ヒット
 	}; // 分割数
 
 	const int NUMPATTERN[CBillBoard::TYPE_MAX] =
 	{
 		0,  // なんもない
-		16, // 攻撃ヒット
+		10, // 攻撃ヒット
 	}; // パターンの総数
 }
 
@@ -164,7 +164,7 @@ void CBillBoard::SetAnim(void)
 
 	m_nNowPattern++;
 
-	if (m_nNowPattern % 3 == 0)
+	if (m_nNowPattern % 2 == 0)
 	{
 		m_nCounterAnim = (m_nCounterAnim + 1) % m_nNumPattern;
 

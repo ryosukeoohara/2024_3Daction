@@ -293,14 +293,7 @@ void CEnemyManager::SetMobility(void)
 			if (m_appEnemy[nCount] != nullptr)
 			{// Žg—p‚³‚ê‚Ä‚¢‚½‚ç
 
-				if (m_appEnemy[nCount]->GetMobility() == CEnemy::Mobile)
-				{
-					m_appEnemy[nCount]->SetImmobile();
-				}
-				else if (m_appEnemy[nCount]->GetMobility() == CEnemy::Immobile)
-				{
-					m_appEnemy[nCount]->SetMobile();
-				}
+				m_appEnemy[nCount]->SetMobile();
 			}
 		}
 	}

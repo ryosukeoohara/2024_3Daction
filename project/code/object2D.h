@@ -43,6 +43,7 @@ public:		//誰でもアクセスできる
 	int GetIdxTex(void) { return m_nIdxTexture;	}       // テクスチャのインデックス番号
 	float GetHeight(void) { return m_fHeight; }         // 高さ
 	float GetWidth(void) { return m_fWidth; }           // 幅
+	bool GetDraw(void) { return m_bDraw; }              // 描画するかどうか
 
 private:	//自分だけがアクセスできる
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;   // 頂点情報を格納

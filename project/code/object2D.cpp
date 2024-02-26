@@ -203,6 +203,8 @@ void CObject2D::Draw(void)
 //================================================================
 void CObject2D::SetColor(D3DXCOLOR col)
 {
+	m_col = col;
+
 	VERTEX_2D *pVtx;
 
 	//頂点バッファをロックし頂点情報へのポインタを取得

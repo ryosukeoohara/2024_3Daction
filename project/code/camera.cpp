@@ -15,6 +15,7 @@
 #include "player.h"
 #include "enemymanager.h"
 #include "UImanager.h"
+#include "appearanceUI.h"
 
 //É}ÉNÉçíËã`
 #define CAMERA_DISTNCE    (300.0f)
@@ -303,6 +304,9 @@ void CCamera::Return(void)
 		D3DXVECTOR3 posDestV = m_OldposV - m_posV;
 		SetPositionV(m_posV + posDestV * 0.05f);
 
+		float fLenDest = m_fOldLen - m_fLen;
+		SetDistnce(m_fLen + fLenDest * 0.05f);
+
 		m_nCounter++;
 	}
 	else
@@ -408,11 +412,11 @@ void CCamera::OnStage(void)
 
 		if (CGame::GetWave() == CGame::WAVE_00)
 		{
-			CUIManager::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), CUIManager::TYPE_WEAKNAME);
+			CAppearanceUI::Create(CAppearanceUI::TYPE_WEAKNAME);
 		}
 		else if (CGame::GetWave() == CGame::WAVE_01)
 		{
-			CUIManager::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), CUIManager::TYPE_BOSSNAME);
+			CAppearanceUI::Create(CAppearanceUI::TYPE_BOSSNAME);
 		}
 	}
 

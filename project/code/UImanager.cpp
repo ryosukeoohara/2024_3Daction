@@ -102,6 +102,10 @@ void CUIManager::ShrinkSize(void)
 		fHeight = fHeight - 25.0f;
 		fWidth = fWidth - 50.0f;
 	}
+	else
+	{
+
+	}
 	
 	CObject2D::SetSize(fWidth, fHeight);
 

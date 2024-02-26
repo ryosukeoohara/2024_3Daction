@@ -14,7 +14,7 @@ namespace
 	const char *TEXTURENAME[CBillBoard::TYPE_MAX] =
 	{
 		"data\\TEXTURE\\.png",
-		"data\\TEXTURE\\hit.png",
+		"data\\TEXTURE\\hit1.png",
 	};  // テクスチャの名前
 }
 
