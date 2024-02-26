@@ -77,6 +77,15 @@ public:
 		CHASE_MAX
 	};
 
+	enum MOBILITY
+	{
+		Mobile = 0,  // “®‚¯‚é
+		Immobile,    // “®‚¯‚È‚¢
+		MAX
+	};
+
+	MOBILITY m_Mobility;
+
 	CHASE m_Chase;
 
 public:
@@ -107,6 +116,8 @@ public:
 	void SetType(TYPE type) { m_Type = type; }
 	virtual void SetChase(CHASE cha);
 	void SetDraw(bool value) { m_Info.bDraw = value; }
+	void SetMobile(void) { m_Mobility = Mobile; }                    // “®‚¯‚é‚æ‚¤‚É‚·‚é
+	void SetImmobile(void) { m_Mobility = Immobile; }                // “®‚¯‚È‚¢‚æ‚¤‚É‚·‚é
 
 	// Žæ“¾Œn
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // ˆÊ’u
@@ -118,6 +129,7 @@ public:
 	CCharacter **GetCharcter(void) { return m_apModel; }
 	static int GetNumAll(void) { return m_nNumAll; }
  	CMotion *GetMotion(void) { return m_pMotion; }
+	MOBILITY GetMobility(void) { return m_Mobility; }
 
 	virtual void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act);
 	void MicroWave(void);

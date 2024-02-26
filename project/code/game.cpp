@@ -46,6 +46,7 @@ CGame::CGame()
 {
 	m_bUse = false;
 	m_bPause = false;
+	m_bOnStage = false;
 	m_nOnStageCounter = 0;
 }
 
@@ -56,6 +57,7 @@ CGame::CGame(CScene::MODE mode)
 {
 	m_bUse = false;
 	m_bPause = false;
+	m_bOnStage = false;
 	m_nOnStageCounter = 0;
 }
 
@@ -143,7 +145,7 @@ HRESULT CGame::Init(void)
 		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
-	//CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
+	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	return S_OK;
 }
@@ -198,6 +200,18 @@ void CGame::Uninit(void)
 //===========================================================
 void CGame::Update(void)
 {
+	//キーボードを取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//マウスを取得
+	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	//フェードの情報を取得
+	CFade *pFade = CManager::Getinstance()->GetFade();
+
 	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_P) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
 	{
 		m_bPause = m_bPause ? false : true;
@@ -219,19 +233,11 @@ void CGame::Update(void)
 		return;
 	}
 
-	//if(m_nOnStageCounter >= )
-
-	//キーボードを取得
-	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
-
-	//マウスを取得
-	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
-
-	//ゲームパッドを取得
-	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
-
-	//フェードの情報を取得
-	CFade *pFade = CManager::Getinstance()->GetFade();
+	if (pFade->Get() != pFade->FADE_OUT &&  pFade->GetCol() == 0.0f && m_bOnStage == false && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
+	{
+		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_ONSTAGE);
+		m_bOnStage = true;
+	}
 
 	if (InputKeyboard->GetTrigger(DIK_RETURN) == true /*|| pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true*/)
 	{//ENTERキーを押したかつシーンがタイトルのとき
@@ -256,6 +262,7 @@ void CGame::Update(void)
 				m_pPlayer->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 				m_pPlayer->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 				WaveControll();
+				m_bOnStage = false;
 			}
 			
 			if (pFade->Get() != pFade->FADE_OUT)

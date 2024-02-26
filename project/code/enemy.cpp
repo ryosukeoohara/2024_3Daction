@@ -73,6 +73,7 @@ CEnemy::CEnemy()
 	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 	m_Info.state = STATE_NONE;
+	m_Mobility = Immobile;
 	m_Info.nLife = 0;
 	m_Info.nIdxID = -1;
 	m_Info.bDraw = true;
@@ -95,6 +96,7 @@ CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 	m_Info.state = STATE_NONE;
+	m_Mobility = Immobile;
 	m_Info.nLife = nlife;
 	m_Info.nIdxID = -1;
 	m_Info.bDraw = true;
@@ -176,6 +178,21 @@ void CEnemy::Uninit(void)
 		m_pMotion = nullptr;
 	}
 
+	if (m_apModel != nullptr)
+	{
+		for (int nCount = 0; nCount < m_nNumModel; nCount++)
+		{
+			if (m_apModel[nCount] != nullptr)
+			{
+				m_apModel[nCount]->Uninit();
+				m_apModel[nCount] = nullptr;
+			}
+		}
+
+		delete m_apModel;
+		m_apModel = nullptr;
+	}
+
 	CObject::Release();
 }
 
@@ -186,19 +203,33 @@ void CEnemy::Update(void)
 {
 	if (m_Info.bDraw == true)
 	{
-		if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING && m_Info.state != STATE_DETH)
+		if (m_Mobility == Mobile)
 		{
-			Controll();
+			if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING && m_Info.state != STATE_DETH)
+			{
+				Controll();
+			}
+			else if (m_Info.state != STATE_DETH)
+			{
+				MicroWave();
+			}
 		}
-		else if(m_Info.state != STATE_DETH)
-		{
-			MicroWave();
-		}
-
+		
 		if (m_pMotion != nullptr)
 		{
 			// XVˆ—
 			m_pMotion->Update();
+		}
+
+		if (m_apModel != nullptr)
+		{
+			for (int nCount = 0; nCount < m_nNumModel; nCount++)
+			{
+				if (m_apModel[nCount] != nullptr)
+				{
+					m_apModel[nCount]->Update();
+				}
+			}
 		}
 	}
 
@@ -556,7 +587,7 @@ void CEnemy::ReadText(char *fliename)
 	if (m_pMotion != nullptr)
 	{
 		//ƒ‚ƒfƒ‹‚ÌÝ’è
-		m_pMotion->SetModel(&m_apModel[0], m_nNumModel);
+		m_pMotion->SetModel(m_apModel, m_nNumModel);
 
 		//‰Šú‰»ˆ—
 		m_pMotion->ReadText(fliename);

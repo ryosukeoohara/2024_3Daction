@@ -34,13 +34,15 @@ public:		//誰でもアクセスできる
 	void SetSize(float fWidth, float fHeight);                  // サイズ
 	void SetEdgeCenter(float fWidth, float fHeight);            // サイズ
 	void SetEdgeCenterTex(float ftex);
-	void SetDraw(bool bverdict) { m_bDraw = bverdict; }         // 描画するかどうか
+	void SetDraw(bool bverdict = true) { m_bDraw = bverdict; }         // 描画するかどうか
 	
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }     // 位置
 	D3DXVECTOR3 GetRotition(void) { return m_rot; }     // 向き
 	D3DXCOLOR GetColor(void) { return m_col; }          // 色
 	int GetIdxTex(void) { return m_nIdxTexture;	}       // テクスチャのインデックス番号
+	float GetHeight(void) { return m_fHeight; }         // 高さ
+	float GetWidth(void) { return m_fWidth; }           // 幅
 
 private:	//自分だけがアクセスできる
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;   // 頂点情報を格納

@@ -68,6 +68,7 @@ private:
 	int m_nOnStageCounter;
 	bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか
+	bool m_bOnStage;
 	static int m_nCounter;
 };
 

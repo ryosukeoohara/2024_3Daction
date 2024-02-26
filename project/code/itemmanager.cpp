@@ -123,12 +123,10 @@ void CItemManager::Release(int idx)
 void CItemManager::ReadText(const char *text)
 {
 	char aString[128] = {};    // 文字読み取り用
-	char aComment[128] = {};   // テキストファイル内のコメント読み取り用
 	char aFileName[128] = {};  // ファイルの名前読み取り用
 	int nCntItem = 0;
-	int nCntFileName = 0;
 	int nType = -1;
-	D3DXVECTOR3 pos, rot;      // 読み取り用
+	D3DXVECTOR3 pos = {}, rot = {};      // 読み取り用
 
 	FILE *pFile;   //ファイルポインタを宣言
 

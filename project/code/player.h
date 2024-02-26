@@ -126,9 +126,17 @@ private:
 		CEnemy *pEnemy;                   // 敵
 	};
 
+	enum MOBILITY
+	{
+		Mobile = 0,  // 動ける
+		Immobile,    // 動けない
+		MAX
+	};
+
 	INFO m_Info;                          // 情報
 	GRAP m_Grap;                          // 掴むでいるもの
 	HEAT m_HeatAct;
+	MOBILITY m_Mobility;
 	
 public:
 	CPlayer();  //コンストラクタ
@@ -152,6 +160,8 @@ public:
 	void SetState(STATE state) { m_Info.state = state; }             // 状態
 	void SetGrapItem(CItem *obj) { m_Grap.pItem = obj; }
 	void SetLife(int nlife) { m_Info.nLife = nlife; }                // 体力
+	void SetMobile(void) { m_Mobility = Mobile; }                    // 動けるようにする
+	void SetImmobile(void) { m_Mobility = Immobile; }                // 動けないようにする
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置取得

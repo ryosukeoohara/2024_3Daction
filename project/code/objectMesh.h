@@ -54,6 +54,8 @@ private:
 	D3DXVECTOR3 m_rot;                         // 向き
 	D3DXCOLOR m_col;                           // 色
 	int m_nIdxTexture;                         // テクスチャのインデックス番号
+	int m_nIdx;
+	int m_nVtx;
 	float m_fHeight;                           // 高さ
 	float m_fWidth;                            // 幅
 	bool m_bDraw;                              // 描画するかどうか

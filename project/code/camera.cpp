@@ -13,6 +13,8 @@
 #include "title.h"
 #include "game.h"
 #include "player.h"
+#include "enemymanager.h"
+#include "UImanager.h"
 
 //マクロ定義
 #define CAMERA_DISTNCE    (300.0f)
@@ -23,6 +25,8 @@
 namespace
 {
 	const D3DXVECTOR3 HEAT_CAMERAROT = { 0.0f, -D3DX_PI * 0.75f, D3DX_PI * -0.38f };   // 目標の角度
+	const D3DXVECTOR3 ONSTAGE_POSV = { 0.0f, 150.0f, -100.0f };   // 目標の角度
+	const D3DXVECTOR3 ONSTAGE_POSR = { 0.0f, 50.0f, 0.0f };   // 目標の角度
 }
 
 //================================================================
@@ -189,19 +193,17 @@ void CCamera::Mode(void)
 	//シーンの情報を寿徳
 	CScene *pScene = CManager::Getinstance()->GetScene();
 
-	
-
 	switch (m_mode)
 	{
-	case CCamera::MODE_NONE:
+	case MODE_NONE:
 		break;
 
-	case CCamera::MODE_TITLE:
+	case MODE_TITLE:
 
 		Title();
 		break;
 
-	case CCamera::MODE_GAME:
+	case MODE_GAME:
 
 		m_OldposR = m_posR;
 		m_OldposV = m_posV;
@@ -211,17 +213,17 @@ void CCamera::Mode(void)
 		CameraV();
 		break;
 
-	case CCamera::MODE_RESULT:
+	case MODE_RESULT:
 
 		break;
 
-	case CCamera::MODE_HEAT:
+	case MODE_HEAT:
 
 		Heat();
 		break;
 
-	case CCamera::MODE_RETURN:
-		Heat();
+	case MODE_RETURN:
+		//Heat();
 		Return();
 		break;
 
@@ -232,10 +234,14 @@ void CCamera::Mode(void)
 
 	case MODE_ONSTAGE:
 
+		/*m_OldposR = m_posR;
+		m_OldposV = m_posV;
+		m_Oldrot = m_rot;
+		m_fOldLen = m_fLen;*/
 		OnStage();
 		break;
 
-	case CCamera::MODE_MAX:
+	case MODE_MAX:
 		break;
 
 	default:
@@ -297,9 +303,6 @@ void CCamera::Return(void)
 		D3DXVECTOR3 posDestV = m_OldposV - m_posV;
 		SetPositionV(m_posV + posDestV * 0.05f);
 
-		float fLen = m_fOldLen - m_fLen;
-		m_fLen = m_fLen + fLen * 0.1f;
-
 		m_nCounter++;
 	}
 	else
@@ -309,6 +312,10 @@ void CCamera::Return(void)
 
 		// カウンターをリセット
 		m_nCounter = 0;
+
+		CGame::GetPlayer()->SetMobile();
+
+		CGame::GetEnemyManager()->SetMobility();
 	}
 }
 
@@ -317,60 +324,60 @@ void CCamera::Return(void)
 //================================================================
 void CCamera::Debug(void)
 {
-	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_I) == true)
-	{
-		//カメラの移動量
-		/*m_move.x += m_posRDest.x - m_posR.x;
-		m_move.z += m_posRDest.z - m_posR.z;*/
-		m_posV.x += m_posR.x - sinf(m_rot.y) * -m_fLen;
-		m_posV.z += m_posR.z - cosf(m_rot.y) * -m_fLen;
-	}
+	//if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_I) == true)
+	//{
+	//	//カメラの移動量
+	//	/*m_move.x += m_posRDest.x - m_posR.x;
+	//	m_move.z += m_posRDest.z - m_posR.z;*/
+	//	m_posV.x += m_posR.x - sinf(m_rot.y) * -m_fLen;
+	//	m_posV.z += m_posR.z - cosf(m_rot.y) * -m_fLen;
+	//}
 
-	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_U) == true)
-	{
-		//カメラの移動量
-		/*m_move.x += m_posRDest.x - m_posR.x;
-		m_move.z += m_posRDest.z - m_posR.z;*/
-		m_posV.x -= m_posR.x - sinf(m_rot.y) * -m_fLen;
-		m_posV.z -= m_posR.z - cosf(m_rot.y) * -m_fLen;
-	}
+	//if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_U) == true)
+	//{
+	//	//カメラの移動量
+	//	/*m_move.x += m_posRDest.x - m_posR.x;
+	//	m_move.z += m_posRDest.z - m_posR.z;*/
+	//	m_posV.x -= m_posR.x - sinf(m_rot.y) * -m_fLen;
+	//	m_posV.z -= m_posR.z - cosf(m_rot.y) * -m_fLen;
+	//}
 
-	if (CManager::Getinstance()->GetInputJoyPad()->GetRXStick(CInputJoyPad::STICK_RX, 0) > 0)
-	{
-		m_rot.y += 0.05f;
-	}
-	else if (CManager::Getinstance()->GetInputJoyPad()->GetRXStick(CInputJoyPad::STICK_RX, 0) < 0)
-	{
-		m_rot.y -= 0.05f;
-	}
+	//if (CManager::Getinstance()->GetInputJoyPad()->GetRXStick(CInputJoyPad::STICK_RX, 0) > 0)
+	//{
+	//	m_rot.y += 0.05f;
+	//}
+	//else if (CManager::Getinstance()->GetInputJoyPad()->GetRXStick(CInputJoyPad::STICK_RX, 0) < 0)
+	//{
+	//	m_rot.y -= 0.05f;
+	//}
 
-	if (m_rot.y > D3DX_PI)
-	{
-		m_rot.y -= D3DX_PI * 2.0f;
-	}
-	else if (m_rot.y < -D3DX_PI)
-	{
-		m_rot.y += D3DX_PI * 2.0f;
-	}
+	//if (m_rot.y > D3DX_PI)
+	//{
+	//	m_rot.y -= D3DX_PI * 2.0f;
+	//}
+	//else if (m_rot.y < -D3DX_PI)
+	//{
+	//	m_rot.y += D3DX_PI * 2.0f;
+	//}
 
-	/*m_posV.x = m_posR.x - sinf(m_rot.y) * -CAMERA_DISTNCE;
-	m_posV.z = m_posR.z - cosf(m_rot.y) * -CAMERA_DISTNCE;*/
+	///*m_posV.x = m_posR.x - sinf(m_rot.y) * -CAMERA_DISTNCE;
+	//m_posV.z = m_posR.z - cosf(m_rot.y) * -CAMERA_DISTNCE;*/
 
-	/*m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
-	m_posR = D3DXVECTOR3(m_posR.x, 50.0f, m_posR.z + 10.0f);
-	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);*/
+	///*m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
+	//m_posR = D3DXVECTOR3(m_posR.x, 50.0f, m_posR.z + 10.0f);
+	//m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);*/
 
-	////目標の注視点を設定
-	//m_posRDest.x = m_posR.x;
-	//m_posRDest.z = m_posR.z;
+	//////目標の注視点を設定
+	////m_posRDest.x = m_posR.x;
+	////m_posRDest.z = m_posR.z;
 
-	////位置に移動量を保存
-	//m_posR.x += m_move.x;
-	//m_posR.z += m_move.z;
+	//////位置に移動量を保存
+	////m_posR.x += m_move.x;
+	////m_posR.z += m_move.z;
 
-	////移動量を更新(減衰させる)--------------------------------------------
-	//m_move.x += (0.0f - m_move.x) * 0.1f;
-	//m_move.z += (0.0f - m_move.z) * 0.1f;
+	//////移動量を更新(減衰させる)--------------------------------------------
+	////m_move.x += (0.0f - m_move.x) * 0.1f;
+	////m_move.z += (0.0f - m_move.z) * 0.1f;
 }
 
 //================================================================
@@ -380,39 +387,50 @@ void CCamera::OnStage(void)
 {
 	if (m_nCounter <= 80)
 	{
-		// カメラを目標の向きまで回転させる
-		D3DXVECTOR3 posVDest = m_OldposV - m_posV;
-		SetRotation(m_posV + posVDest * 0.05f);
+		D3DXVECTOR3 posDestR = ONSTAGE_POSR - m_posR;
+		SetPositionR(m_posR + posDestR * 0.05f);
+
+		D3DXVECTOR3 posDestV = ONSTAGE_POSV - m_posV;
+		SetPositionV(m_posV + posDestV * 0.05f);
+
+		m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
+		m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
 
 		m_nCounter++;
 	}
 	else
 	{
 		// カメラモードをゲーム
-		m_mode = MODE_GAME;
+		m_mode = MODE_RETURN;
 
 		// カウンターをリセット
 		m_nCounter = 0;
+
+		if (CGame::GetWave() == CGame::WAVE_00)
+		{
+			CUIManager::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), CUIManager::TYPE_WEAKNAME);
+		}
+		else if (CGame::GetWave() == CGame::WAVE_01)
+		{
+			CUIManager::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), CUIManager::TYPE_BOSSNAME);
+		}
 	}
 
-	m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
-	m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
+	//m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
+	//m_posR = D3DXVECTOR3(0.0f, 50.0f, 0.0f);
+	//m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
 
-	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
-	m_posR = D3DXVECTOR3(0.0f, 50.0f, 0.0f);
-	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+	////目標の注視点を設定
+	//m_posRDest.x = 0.0f;
+	//m_posRDest.z = 0.0f;
 
-	//目標の注視点を設定
-	m_posRDest.x = 0.0f;
-	m_posRDest.z = 0.0f;
+	////カメラの移動量
+	//m_move.x = m_posRDest.x - m_posR.x;
+	//m_move.z = m_posRDest.z - m_posR.z;
 
-	//カメラの移動量
-	m_move.x = m_posRDest.x - m_posR.x;
-	m_move.z = m_posRDest.z - m_posR.z;
-
-	//位置に移動量を保存
-	m_posR.x += m_move.x;
-	m_posR.z += m_move.z;
+	////位置に移動量を保存
+	//m_posR.x += m_move.x;
+	//m_posR.z += m_move.z;
 }
 
 //================================================================

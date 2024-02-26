@@ -97,6 +97,7 @@ CPlayer::CPlayer()
 	m_Grap.pEnemy = nullptr;
 
 	m_HeatAct = HEAT_NONE;
+	m_Mobility = Immobile;
 	m_nIdxTexture = -1;
 	m_nIdxShaadow = -1;
 	m_nCntColi = 0;
@@ -151,6 +152,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
 
 	m_HeatAct = HEAT_NONE;
+	m_Mobility = Immobile;
 	m_nIdxTexture = -1;
 	m_nIdxShaadow = -1;
 	m_nCntColi = 0;
@@ -421,8 +423,11 @@ void CPlayer::Update(void)
 	}
 	else
 	{
-		// 制御処理
-		Control();
+		if (m_Mobility == Mobile)
+		{
+			// 制御処理
+			Control();
+		}
 	}
 	
 	// パーツごとの更新
@@ -1221,10 +1226,10 @@ void CPlayer::State(void)
 					{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
 
 						if (CGame::GetCollision()->Circle(&m_Info.pos, &ppEnemy[m_nIdxEne]->GetPosition(), 40.0f, 40.0f) == true
-							/*&& ppEnemy[m_nIdxEne]->GetState() == CEnemy::STATE_PAINFULDAMAGE || ppEnemy[m_nIdxEne]->GetState() == CEnemy::STATE_GETUP*/)
+							&& ppEnemy[m_nIdxEne]->GetState() == CEnemy::STATE_PAINFULDAMAGE || ppEnemy[m_nIdxEne]->GetState() == CEnemy::STATE_GETUP)
 						{// 範囲内かつ敵がコケている
 
-						 // 敵を覚える
+							// 敵を覚える
 							m_Grap.pEnemy = ppEnemy[m_nIdxEne];
 
 							// 親、位置、向き、状態、追尾、モーションを設定し、掴んでいることにする
@@ -1361,7 +1366,7 @@ void CPlayer::Heat(void)
 
 				m_HeatAct = HEAT_SMASH;
 
-				// Yボタンが出てくる
+				// Xボタンが出てくる
 				{
 					if (m_pBotton == nullptr)
 					{
@@ -1447,7 +1452,7 @@ void CPlayer::Heat(void)
 				{
 					m_pBotton->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.8f, 0.0f));
 					m_pBotton->SetSize(25.0f, 25.0f);
-					m_pBotton->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Ybutton.png"));
+					m_pBotton->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Xbutton.png"));
 					m_pBotton->SetDraw(true);
 				}
 			}

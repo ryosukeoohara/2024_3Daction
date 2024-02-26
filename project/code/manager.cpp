@@ -533,7 +533,7 @@ HRESULT CScene::Init(void)
 
 			m_Game->Init();
 
-			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_ONSTAGE);
+			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_GAME);
 			CManager::Getinstance()->GetCamera()->Reset();
 		}
 

@@ -223,7 +223,7 @@ void CEnemyBoss::Attack(void)
 	{
 		m_nAtcCounter++;
 
-		if (m_nAtcCounter >= 40)
+		if (m_nAtcCounter >= 60)
 		{
 			m_nAtcCounter = 0;
 

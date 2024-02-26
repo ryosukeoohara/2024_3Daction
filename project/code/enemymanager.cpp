@@ -282,6 +282,31 @@ void CEnemyManager::SetTrue(int idx)
 }
 
 //=============================================================================
+// 動けたり動けなかったり
+//=============================================================================
+void CEnemyManager::SetMobility(void)
+{
+	if (m_appEnemy != nullptr)
+	{
+		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
+		{
+			if (m_appEnemy[nCount] != nullptr)
+			{// 使用されていたら
+
+				if (m_appEnemy[nCount]->GetMobility() == CEnemy::Mobile)
+				{
+					m_appEnemy[nCount]->SetImmobile();
+				}
+				else if (m_appEnemy[nCount]->GetMobility() == CEnemy::Immobile)
+				{
+					m_appEnemy[nCount]->SetMobile();
+				}
+			}
+		}
+	}
+}
+
+//=============================================================================
 // コンストラクタ
 //=============================================================================
 void CEnemyManager::ListOut(void)

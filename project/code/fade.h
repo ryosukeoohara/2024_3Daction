@@ -38,7 +38,10 @@ public:
 
 	// æ“¾Œn
 	FADE Get(void) { return m_fade; }          //æ“¾ˆ—
-	float GetCol(void) { return m_Color.a; }
+	float GetCol(void) 
+	{ 
+		return m_Color.a; 
+	}
 
 	static CFade *Create(CScene::MODE modenext);                //¶¬
 
