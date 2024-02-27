@@ -196,73 +196,73 @@ void CEnemyWeak::Draw(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyWeak::Controll(void)
-{
-	int nNum = 0;
-	CEnemy **ppEnemy = nullptr;
-
-	if (CGame::GetEnemyManager() != nullptr)
-	{
-		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-		nNum = CGame::GetEnemyManager()->GetNum();
-	}
-
-	for (int nCount = 0; nCount < nNum; nCount++)
-	{
-		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
-		{
-			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
-		}
-	}
-
-	if (m_Info.state == STATE_DAMEGE)
-	{
-		m_nDamegeCounter--;
-
-		if (m_nDamegeCounter <= 0)
-		{
-			m_Info.state = STATE_NONE;
-			m_nDamegeCounter = DAMEGECOUNT;
-		}
-	}
-	else
-	{
-		if (m_Info.state != STATE_GRAP)
-		{
-			Move();
-		}
-	}
-
-	if (m_Info.nLife <= 0)
-	{
-		m_Info.state = STATE_DETH;
-		GetMotion()->Set(TYPE_DETH);
-
-		return;
-	}
-
-	if (m_Info.state != STATE_GRAP)
-	{
-		m_Info.move.y -= 0.9f;
-
-		// 移動量
-		m_Info.pos.x += m_Info.move.x;
-		m_Info.pos.y += m_Info.move.y;
-		m_Info.pos.z += m_Info.move.z;
-
-		if (m_Info.pos.y <= 0.0f)
-		{
-			m_Info.pos.y = 0.0f;
-		}
-	}
-	 
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
-}
+//void CEnemyWeak::Controll(void)
+//{
+//	int nNum = 0;
+//	CEnemy **ppEnemy = nullptr;
+//
+//	if (CGame::GetEnemyManager() != nullptr)
+//	{
+//		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+//		nNum = CGame::GetEnemyManager()->GetNum();
+//	}
+//
+//	for (int nCount = 0; nCount < nNum; nCount++)
+//	{
+//		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
+//		{
+//			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
+//		}
+//	}
+//
+//	if (m_Info.state == STATE_DAMEGE)
+//	{
+//		m_nDamegeCounter--;
+//
+//		if (m_nDamegeCounter <= 0)
+//		{
+//			m_Info.state = STATE_NONE;
+//			m_nDamegeCounter = DAMEGECOUNT;
+//		}
+//	}
+//	else
+//	{
+//		if (m_Info.state != STATE_GRAP)
+//		{
+//			Move();
+//		}
+//	}
+//
+//	if (m_Info.nLife <= 0)
+//	{
+//		m_Info.state = STATE_DETH;
+//		GetMotion()->Set(TYPE_DETH);
+//
+//		return;
+//	}
+//
+//	if (m_Info.state != STATE_GRAP)
+//	{
+//		m_Info.move.y -= 0.9f;
+//
+//		// 移動量
+//		m_Info.pos.x += m_Info.move.x;
+//		m_Info.pos.y += m_Info.move.y;
+//		m_Info.pos.z += m_Info.move.z;
+//
+//		if (m_Info.pos.y <= 0.0f)
+//		{
+//			m_Info.pos.y = 0.0f;
+//		}
+//	}
+//	 
+//	//デバッグプロックの情報を取得
+//	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+//	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+//	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+//	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+//	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
+//}
 
 //==============================================================================
 // 制御処理
@@ -386,23 +386,7 @@ void CEnemyWeak::Move(void)
 		}
 	}
 
-	if (GetMotion()->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_PAINFULDAMAGE) && m_Info.state != STATE_GETUP)
-	{
-		m_Info.state = STATE_GETUP;
-		GetMotion()->Set(TYPE_GETUP);
-	}
-	else if (GetMotion()->IsFinish() == true)
-	{
-		m_Info.state = STATE_NEUTRAL;
-		GetMotion()->Set(TYPE_NEUTRAL);
-
-		if (m_Chase != CHASE_ON)
-		{
-			m_Chase = CHASE_ON;
-
-			m_nAtcCounter = 0;
-		}
-	}
+	
 }
 
 //==============================================================================
@@ -413,7 +397,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
 	{
 		m_Info.nLife -= damege;
-		m_Info.move = D3DXVECTOR3(sinf(CGame::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CGame::GetPlayer()->GetRotition().y) * -blowaway);
+		m_Info.move = D3DXVECTOR3(sinf(CPlayer::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CPlayer::GetPlayer()->GetRotition().y) * -blowaway);
 
 		if (act == CPlayer::ATTACKTYPE::TYPE_HEATACTBIKE || act == CPlayer::ATTACKTYPE::TYPE_HEATACTREF || act == CPlayer::ATTACKTYPE::TYPE_HEATACTMICROWAVE)
 		{
@@ -431,7 +415,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 				srand((unsigned int)time(0));
 
 				int a = rand() % 60;
-				if (m_Info.nLife <= a && CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
+				if (m_Info.nLife <= a && CPlayer::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
 				{
 					m_Info.state = STATE_PAINFULDAMAGE;
 					GetMotion()->Set(TYPE_HEATDAMEGE);

@@ -21,6 +21,7 @@
 CEnemy *CEnemyManager::m_pTop = nullptr;
 CEnemy *CEnemyManager::m_pCur = nullptr;
 CEnemy *CEnemyManager::m_pSNext = nullptr;
+int CEnemyManager::m_nNum = 0;
 
 //*============================================================================
 // マクロ定義
@@ -121,15 +122,15 @@ CEnemyManager * CEnemyManager::Create(void)
 //=============================================================================
 void CEnemyManager::Release(int idx)
 {
-	if (m_appEnemy[idx] != nullptr)
-	{
-		if (m_appEnemy[idx]->GetLife() <= 0)
-		{
-			// 終了処理
-			m_appEnemy[idx]->Uninit();
-			m_appEnemy[idx] = nullptr;
-		}
-	}
+	//if (m_appEnemy[idx] != nullptr)
+	//{
+	//	if (m_appEnemy[idx]->GetLife() <= 0)
+	//	{
+	//		// 終了処理
+	//		m_appEnemy[idx]->Uninit();
+	//		m_appEnemy[idx] = nullptr;
+	//	}
+	//}
 }
 
 //=============================================================================
@@ -212,15 +213,13 @@ void CEnemyManager::ReadText(const char *text)
 					{
 						if (nType == CEnemy::TYPE_WEAK)
 						{
-							m_appEnemy[nCntEnemy] = CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
-							m_appEnemy[nCntEnemy]->SetIdx(nCntEnemy);
-							m_appEnemy[nCntEnemy]->SetType(CEnemy::TYPE_WEAK);
+							CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
+							
 						}
 						else if (nType == CEnemy::TYPE_BOSS)
 						{
-							m_appEnemy[nCntEnemy] = CEnemyBoss::Create(m_Readpos, m_Readrot, nLife);
-							m_appEnemy[nCntEnemy]->SetIdx(nCntEnemy);
-							m_appEnemy[nCntEnemy]->SetType(CEnemy::TYPE_BOSS);
+							CEnemyBoss::Create(m_Readpos, m_Readrot, nLife);
+							
 						}
 
 						nCntEnemy++;
@@ -286,16 +285,13 @@ void CEnemyManager::SetTrue(int idx)
 //=============================================================================
 void CEnemyManager::SetMobility(void)
 {
-	if (m_appEnemy != nullptr)
-	{
-		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
-		{
-			if (m_appEnemy[nCount] != nullptr)
-			{// 使用されていたら
+	CEnemy *pEnem = CEnemy::GetTop();
 
-				m_appEnemy[nCount]->SetMobile();
-			}
-		}
+	while (pEnem != nullptr)
+	{
+		CEnemy *pEnemNext = pEnem->GetNext();
+		pEnem->SetMobile();
+		pEnem = pEnemNext;
 	}
 }
 

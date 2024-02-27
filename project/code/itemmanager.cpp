@@ -36,6 +36,7 @@ CItemManager::CItemManager()
 {
 	//初期化
 	m_ppItem = nullptr;
+	m_nNum = 0;
 }
 
 //=============================================================================
@@ -59,22 +60,22 @@ HRESULT CItemManager::Init(void)
 //=============================================================================
 void CItemManager::Uninit(void)
 {
-	if (m_ppItem != nullptr)
-	{
-		for (int nCount = 0; nCount < m_nNumItem; nCount++)
-		{
-			if (m_ppItem[nCount] != nullptr)
-			{// 使用されていたら
+	//if (m_ppItem != nullptr)
+	//{
+	//	for (int nCount = 0; nCount < m_nNumItem; nCount++)
+	//	{
+	//		if (m_ppItem[nCount] != nullptr)
+	//		{// 使用されていたら
 
-				// 終了処理
-				m_ppItem[nCount]->Uninit();
-				m_ppItem[nCount] = nullptr;
-			}
-		}
+	//			// 終了処理
+	//			m_ppItem[nCount]->Uninit();
+	//			m_ppItem[nCount] = nullptr;
+	//		}
+	//	}
 
-		delete m_ppItem;
-		m_ppItem = nullptr;
-	}
+	//	delete m_ppItem;
+	//	m_ppItem = nullptr;
+	//}
 }
 
 //=============================================================================
@@ -109,11 +110,18 @@ CItemManager * CItemManager::Create(void)
 //=============================================================================
 void CItemManager::Release(int idx)
 {
-	if (m_ppItem[idx] != nullptr)
+	CItem *pItem = CItem::GetTop();
+
+	while (pItem != nullptr)
 	{
-		// 終了処理
-		m_ppItem[idx]->Uninit();
-		m_ppItem[idx] = nullptr;
+		CItem *pItemNext = pItem->GetNext();
+
+		if (pItem->GetID() == idx)
+		{
+			pItem->Uninit();
+		}
+
+		pItem = pItemNext;
 	}
 }
 
@@ -148,7 +156,7 @@ void CItemManager::ReadText(const char *text)
 					fscanf(pFile, "%s", &aString);      //=
 					fscanf(pFile, "%d", &m_nNumItem);  //モデルの総数
 
-					m_ppItem = new CItem*[m_nNumItem];
+					//m_ppItem = new CItem*[m_nNumItem];
 
 				}  // NUM_ITEMのかっこ
 
@@ -188,8 +196,9 @@ void CItemManager::ReadText(const char *text)
 						}
 					}
 
-					m_ppItem[nCntItem] = CItem::Create(pos, rot, (CItem::TYPE)nType, m_apTexName[nType]);
-					m_ppItem[nCntItem]->SetID(nCntItem);
+					CItem::Create(pos, rot, (CItem::TYPE)nType, m_nNum, m_apTexName[nType]);
+					//m_ppItem[nCntItem]->SetID(nCntItem);
+					m_nNum++;
 					nCntItem++;
 				}
 			}

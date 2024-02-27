@@ -60,6 +60,9 @@ public:		//誰でもアクセスできる
 	CObject *m_pNext;       //次のオブジェクトへのポインタ
 	
 private:	//自分だけがアクセスできる
+
+	static void DeadChuck(void);
+
 	//LPDIRECT3DTEXTURE9 m_pTexture;        //テクスチャへのポインタ
 	static CObject *m_apObjct[MAX_OBJECT];
 	static int m_nNumAll;   //オブジェクトの総数

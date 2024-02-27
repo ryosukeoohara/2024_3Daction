@@ -41,22 +41,20 @@ public:
 	void ReadText(const char *text);           //テキストファイル読み込み
 
 	// 設定系
-	void SetNum(int num) { m_nEnemyAll = num; }
-	void SetDefeatCounter(int num) { m_nNum = num; }
+	void SetNum(int num) { m_nNum = num; }
 	void SetTarget(int idx);
 	void SetTrue(int idx);
 	void SetMobility(void);
 	
 	// 取得系
 	CEnemy **GetEnemy(void) { return m_appEnemy; }
-	int GetNum(void) { return m_nEnemyAll; }
-	int GetDefeatCounter(void) { return m_nNum; }
+	static int GetNum(void) { return m_nNum; }
 							       
 private:
 	void ListOut(void);
 
 	int m_nEnemyAll;               // 敵の総数
-	int m_nNum;
+	static int m_nNum;
 	int m_nCntWave;
 	CEnemy **m_appEnemy;   //エネミーへのポインタ
 

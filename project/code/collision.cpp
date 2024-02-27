@@ -109,41 +109,25 @@ bool CCollision::Circle(D3DXVECTOR3 *pMyPos, D3DXVECTOR3 *pTargetPos, float fMyR
 //=============================================================================
 void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTargetRadius, float fHeight)
 {
-	CEnemyManager *pEnemyManager = CGame::GetEnemyManager();
-	CEnemy **ppEnemy = nullptr;
-	int nNum = 0;
-	int nGrapID = -1;
+	CEnemy *pEnemy = CEnemy::GetTop();
 
-	if (pEnemyManager != nullptr)
+	while (pEnemy != nullptr)
 	{
-		ppEnemy = pEnemyManager->GetEnemy();
-		nNum = CGame::GetEnemyManager()->GetNum();
-	}
+		CEnemy *pEnemyNext = pEnemy->GetNext();
 
-	for (int nCount = 0; nCount < nNum; nCount++)
-	{
-		if (ppEnemy[nCount] != nullptr)
+		float circleX = pMyPos->x - pEnemy->GetPosition().x;
+		float circleZ = pMyPos->z - pEnemy->GetPosition().z;
+		float c = 0.0f;
+
+		c = (float)sqrt(circleX * circleX + circleZ * circleZ);
+
+		if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= pEnemy->GetPosition().y && pMyPos->y <= pEnemy->GetPosition().y + fHeight) && pEnemy->GetState() != CEnemy::STATE_DAMEGE)
 		{
-			if (CGame::GetPlayer()->GetGrapEnemy() != nullptr)
-			{
-				nGrapID = CGame::GetPlayer()->GetGrapEnemy()->GetIdxID();
-			}
-
-			if (ppEnemy[nCount]->GetIdxID() != nGrapID)
-			{
-				float circleX = pMyPos->x - ppEnemy[nCount]->GetPosition().x;
-				float circleZ = pMyPos->z - ppEnemy[nCount]->GetPosition().z;
-				float c = 0.0f;
-
-				c = (float)sqrt(circleX * circleX + circleZ * circleZ);
-
-				if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= ppEnemy[nCount]->GetPosition().y && pMyPos->y <= ppEnemy[nCount]->GetPosition().y + fHeight))
-				{
-					ppEnemy[nCount]->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetKnockBack(), CGame::GetPlayer()->GetActType());
-					CAnimation::Create(*pMyPos, 30.0f, CBillBoard::TYPE_HIT);
-				}
-			}
+			pEnemy->Damege(CPlayer::GetPlayer()->GetMotion()->GetAttackDamege(), CPlayer::GetPlayer()->GetMotion()->GetKnockBack(), CPlayer::GetPlayer()->GetActType());
+			CAnimation::Create(*pMyPos, 30.0f, CBillBoard::TYPE_HIT);
 		}
+
+		pEnemy = pEnemyNext;
 	}
 }
 

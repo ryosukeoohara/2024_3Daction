@@ -7,6 +7,8 @@
 #include "gage.h"
 #include "game.h"
 #include "player.h"
+#include "manager.h"
+#include "texture.h"
 
 namespace
 {
@@ -29,7 +31,8 @@ CGage2D::CGage2D()
 	m_fWidth = 0.0f;
 	m_fHeight = 0.0f;
 	m_Type = TYPE_NONE;
-	m_pObject2D = nullptr;
+	m_pObject2D = nullptr; 
+	m_pObjGage = nullptr;
 }
 
 //===========================================================
@@ -64,6 +67,15 @@ HRESULT CGage2D::Init(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE2DTYPE type)
 {
 	m_Type = type;
 
+	if (m_pObjGage == nullptr)
+	{
+		m_pObjGage = CObject2D::Create();
+		m_pObjGage->SetPosition(D3DXVECTOR3(pos.x - 10.0f, pos.y - 10.0f , pos.z));
+		m_pObjGage->SetEdgeCenter(fWid * 10.4f, fHei * 1.4f);
+		m_pObjGage->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\lifegage.png"));
+		m_pObjGage->SetDraw(true);
+	}
+
 	if (m_pObject2D == nullptr)
 	{
 		m_pObject2D = CObject2D::Create();
@@ -71,7 +83,7 @@ HRESULT CGage2D::Init(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE2DTYPE type)
 		m_pObject2D->SetEdgeCenter(fWid, fHei);
 		m_pObject2D->SetDraw(true);
 	}
-	
+
 	return S_OK;
 }
 
@@ -265,5 +277,8 @@ void CGage3D::SetMixPos(void)
 
 	pos.y += m_UpHeight;
 
-	m_pBillBoard->SetPosition(D3DXVECTOR3(pos.x, pos.y, pos.z));
+	if (m_pBillBoard != nullptr)
+	{
+		m_pBillBoard->SetPosition(D3DXVECTOR3(pos.x, pos.y, pos.z));
+	}
 }

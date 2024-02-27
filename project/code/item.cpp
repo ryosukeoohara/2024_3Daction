@@ -17,6 +17,11 @@
 #include "billboard.h"
 #include "texture.h"
 
+// 静的メンバ変数
+CItem *CItem::m_pTop = nullptr;
+CItem *CItem::m_pCur = nullptr;
+
+
 // マクロ定義
 #define TEXT_NAME  ("data\\TEXT\\item.txt")        // マップに配置するアイテム
 #define TEX_GRAP   ("data\\TEXTURE\\Ybutton.png")  // マップに配置するアイテム
@@ -33,16 +38,44 @@ namespace
 CItem::CItem()
 {
 	m_pBill = nullptr;
+
+	if (m_pTop != nullptr)
+	{// 先頭が存在している場合
+
+		m_pCur->m_pNext = this;
+		m_pPrev = m_pCur;
+		m_pCur = this;
+	}
+	else
+	{// 存在しない場合
+
+		m_pTop = this;
+		m_pCur = this;
+	}
 }
 
 //================================================================
 // コンストラクタ(オーバーロード)
 //================================================================
-CItem::CItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE Type, const char *aModelFliename) : CObjectX(aModelFliename)
+CItem::CItem(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE Type, int nIdx, const char *aModelFliename) : CObjectX(aModelFliename)
 {
 	SetPosition(pos);
 	SetRotition(rot);
 	m_pBill = nullptr;
+
+	if (m_pTop != nullptr)
+	{// 先頭が存在している場合
+
+		m_pCur->m_pNext = this;
+		m_pPrev = m_pCur;
+		m_pCur = this;
+	}
+	else
+	{// 存在しない場合
+
+		m_pTop = this;
+		m_pCur = this;
+	}
 }
 
 //================================================================
@@ -56,7 +89,7 @@ CItem::~CItem()
 //================================================================
 // 生成処理
 //================================================================
-CItem *CItem::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE type, const char *aModelFliename)
+CItem *CItem::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE type, int nIdx, const char *aModelFliename)
 {
 	//オブジェクト2Dのポインタ
 	CItem *pItem = NULL;
@@ -66,11 +99,12 @@ CItem *CItem::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE type, const char *aM
 		if (pItem == NULL)
 		{
 			//オブジェクト2Dの生成
-			pItem = new CItem(pos, rot, type, aModelFliename);
+			pItem = new CItem(pos, rot, type, nIdx, aModelFliename);
 
 			//初期化処理
 			pItem->Init();
 			pItem->SetType(type);
+			pItem->SetID(nIdx);
 		}
 	}
 
@@ -92,6 +126,45 @@ HRESULT CItem::Init(void)
 //================================================================
 void CItem::Uninit(void)
 {
+	// リストから自分自身を削除する
+	if (m_pTop == this)
+	{// 自身が先頭
+		if (m_pNext != nullptr)
+		{// 次が存在している
+			m_pTop = m_pNext;	// 次を先頭にする
+			m_pNext->m_pPrev = nullptr;	// 次の前のポインタを覚えていないようにする
+		}
+		else
+		{// 存在していない
+			m_pTop = nullptr;	// 先頭がない状態にする
+			m_pCur = nullptr;	// 最後尾がない状態にする
+		}
+	}
+	else if (m_pCur == this)
+	{// 自身が最後尾
+		if (m_pPrev != nullptr)
+		{// 次が存在している
+			m_pCur = m_pPrev;			// 前を最後尾にする
+			m_pPrev->m_pNext = nullptr;	// 前の次のポインタを覚えていないようにする
+		}
+		else
+		{// 存在していない
+			m_pTop = nullptr;	// 先頭がない状態にする
+			m_pCur = nullptr;	// 最後尾がない状態にする
+		}
+	}
+	else
+	{
+		if (m_pNext != nullptr)
+		{
+			m_pNext->m_pPrev = m_pPrev;	// 自身の次に前のポインタを覚えさせる
+		}
+		if (m_pPrev != nullptr)
+		{
+			m_pPrev->m_pNext = m_pNext;	// 自身の前に次のポインタを覚えさせる
+		}
+	}
+
 	CObjectX::Uninit();
 
 	//CGame::GetItemManager()->Release(m_nID);
@@ -104,10 +177,10 @@ void CItem::Update(void)
 {
 	CObjectX::Update();
 
-	if (CGame::GetCollision()->Circle(&GetPosition(), &CGame::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
+	if (CGame::GetCollision()->Circle(&GetPosition(), &CPlayer::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
 	{// 範囲内
 
-		if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE)
+		if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE /*&& CPlayer::GetPlayer()->GetGrapItem()->GetID() != m_nID*/)
 		{// 種類が電子レンジかつテーブル以外
 
 			if (m_pBill == nullptr)

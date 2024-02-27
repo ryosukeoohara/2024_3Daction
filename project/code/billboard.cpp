@@ -164,7 +164,7 @@ void CBillBoard::SetAnim(void)
 
 	m_nNowPattern++;
 
-	if (m_nNowPattern % 2 == 0)
+	if (m_nNowPattern % 1 == 0)
 	{
 		m_nCounterAnim = (m_nCounterAnim + 1) % m_nNumPattern;
 

@@ -254,7 +254,9 @@ void CGame::Update(void)
 	{
 		m_pEnemyManager->Update();
 
-		if (m_pEnemyManager->GetDefeatCounter() <= 0)
+		int n = m_pEnemyManager->GetNum();
+
+		if (n <= 0)
 		{
 			if (pFade->GetCol() >= 0.9f && pFade->FADE_IN)
 			{

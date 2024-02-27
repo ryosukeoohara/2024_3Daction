@@ -48,6 +48,7 @@ private:
 
 	int m_nNumModel;
 	int m_nNumItem;
+	int m_nNum;
 
 	static const char *m_apTexName[CItem::TYPE_MAX];
 };

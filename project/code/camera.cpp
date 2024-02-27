@@ -16,6 +16,7 @@
 #include "enemymanager.h"
 #include "UImanager.h"
 #include "appearanceUI.h"
+#include "tutorial.h"
 
 //マクロ定義
 #define CAMERA_DISTNCE    (300.0f)
@@ -202,6 +203,11 @@ void CCamera::Mode(void)
 	case MODE_TITLE:
 
 		Title();
+		break;
+
+	case MODE_TUTORIAL:
+
+		Tutorial();
 		break;
 
 	case MODE_GAME:
@@ -466,6 +472,67 @@ void CCamera::CameraV(void)
 	}
 
 	m_rot.y += MousePos.x * 0.005f;
+
+	if (m_rot.y > D3DX_PI)
+	{
+		m_rot.y -= D3DX_PI * 2.0f;
+	}
+	else if (m_rot.y < -D3DX_PI)
+	{
+		m_rot.y += D3DX_PI * 2.0f;
+	}
+
+	m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
+	m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
+
+	D3DXVECTOR3 pos = pPlayer->GetPosition();
+
+	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
+	m_posR = D3DXVECTOR3(pos.x, 50.0f, pos.z + 10.0f);
+	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+
+	//目標の注視点を設定
+	m_posRDest.x = pos.x;
+	m_posRDest.z = pos.z;
+
+	//カメラの移動量
+	m_move.x = m_posRDest.x - m_posR.x;
+	m_move.z = m_posRDest.z - m_posR.z;
+
+	//位置に移動量を保存
+	m_posR.x += m_move.x;
+	m_posR.z += m_move.z;
+}
+
+//================================================================
+// チュートリアル
+//================================================================
+void CCamera::Tutorial(void)
+{
+	//キーボードの情報を取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//マウスの情報を取得
+	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
+
+	//マウスの位置を取得
+	D3DXVECTOR2 MousePos = pInputMouse->GetMouseMove();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	CPlayer *pPlayer = CTutorial::GetPlayer();
+
+	if (pInputJoyPad->GetRXStick(CInputJoyPad::STICK_RX, 0) > 0)
+	{
+		m_rot.y += 0.05f;
+	}
+	else if (pInputJoyPad->GetRXStick(CInputJoyPad::STICK_RX, 0) < 0)
+	{
+		m_rot.y -= 0.05f;
+	}
+
+	//m_rot.y += MousePos.x * 0.005f;
 
 	if (m_rot.y > D3DX_PI)
 	{

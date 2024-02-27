@@ -130,6 +130,8 @@ public:
 	static int GetNumAll(void) { return m_nNumAll; }
  	CMotion *GetMotion(void) { return m_pMotion; }
 	MOBILITY GetMobility(void) { return m_Mobility; }
+	static CEnemy *GetTop(void) { return m_pTop; }
+	CEnemy *GetNext(void) { return m_pNext; }
 
 	virtual void Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act);
 	void MicroWave(void);
@@ -137,7 +139,7 @@ public:
 protected:
 
 	// 制御処理
-	virtual void Controll(void);
+	void Controll(void);
 	virtual void Attack(void);
 	virtual void Move(void);
 	
@@ -171,7 +173,7 @@ private:
 	D3DXMATRIX *m_pCurrent;                    // 親のマトリックス
 	static CEnemy *m_pTop;  //先頭のオブジェクトへのポインタ
 	static CEnemy *m_pCur; //最後尾のオブジェクトへのポインタ
-	static CEnemy *m_pNext;
+	CEnemy *m_pNext;
 	CEnemy *m_pPrev;       //前のオブジェクトへのポインタ
 	bool m_bDeath;          //死亡フラグ
 	

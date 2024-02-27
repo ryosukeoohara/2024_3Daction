@@ -21,6 +21,7 @@ public:
 	{
 		MODE_NONE = 0,
 		MODE_TITLE,      // タイトルのカメラ
+		MODE_TUTORIAL,   // チュートリアル
 		MODE_GAME,       // ゲームのカメラ
 		MODE_RESULT,     // リザルトのカメラ
 		MODE_HEAT,       // ヒートアクション
@@ -41,6 +42,7 @@ public:
 	void Uninit(void);        //カメラの終了処理
 	void Update(void);        //カメラの更新処理
 	void CameraV(void);
+	void Tutorial(void);
 	void Edit(void);          //エディットのカメラ
 	void CameraR(void);
 	void Title(void);

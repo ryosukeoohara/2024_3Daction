@@ -174,8 +174,10 @@ public:
 	bool GetbAttack(void) { return m_bAttack; }                // 攻撃中かどうか
 	CMotion *GetMotion(void) { return m_pMotion; }
 	ATTACKTYPE GetActType(void) { return m_Info.Atc; }
-	CItem *GetItem(void) { return m_pItem; }
+	CItem *GetItem(void) { return m_pItemMicro; }
 	CEnemy *GetGrapEnemy(void) { return m_Grap.pEnemy; }
+	CItem *GetGrapItem(void) { return m_Grap.pItem; }
+	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 
 private:
 
@@ -212,11 +214,14 @@ private:
 	D3DXVECTOR3 m_posOrigin;             
 	CMotion *m_pMotion;                   // モーションへのポインタ
 	CCharacter **m_ppCharacter;           // キャラクターへのポインタ
-	CItem *m_pItem;                       // 掴んでるオブジェクトのポインタ
+	CItem *m_pItemMicro;                       // 電子レンジ保存用
 	CGage2D *m_pLife;                     // ゲージのポインタ
 	CGage3D *m_pStamina;                  // ゲージのポインタ
-	CEnemy *m_pEnemy;
+	CEnemy *m_pEnemy;                     // 一時保存用
+	CItem *m_pItem;                       // 一時保存用
 	CObject2D *m_pBotton;
+	CObject2D *m_pGekiatu;
+	static CPlayer *m_pPlayer;
 	int m_nIdxEne;
 	int m_nIdxItem;
 	int m_nDamageCounter;

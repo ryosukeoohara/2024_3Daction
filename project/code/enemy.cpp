@@ -32,7 +32,6 @@
 // 静的メンバ変数
 CEnemy *CEnemy::m_pTop = nullptr;
 CEnemy *CEnemy::m_pCur = nullptr;
-CEnemy *CEnemy::m_pNext = nullptr;
 
 int CEnemy::m_nIdx = 0;
 
@@ -79,9 +78,24 @@ CEnemy::CEnemy()
 	m_Info.bDraw = true;
 	m_nDamegeCounter = 0;
 	m_pCurrent = nullptr;
+	m_pNext = nullptr;
 	m_pLife2D = nullptr;
 	m_pLife3D = nullptr;
 	m_bDeath = false;
+
+	if (m_pTop != nullptr)
+	{// 先頭が存在している場合
+
+		m_pCur->m_pNext = this;	// 現在最後尾のオブジェクトのポインタにつなげる
+		m_pPrev = m_pCur;
+		m_pCur = this;	// 自分自身が最後尾になる
+	}
+	else
+	{// 存在しない場合
+
+		m_pTop = this;	// 自分自身が先頭になる
+		m_pCur = this;	// 自分自身が最後尾になる
+	}
 }
 
 //==============================================================================
@@ -102,9 +116,24 @@ CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_Info.bDraw = true;
 	m_nDamegeCounter = 0;
 	m_pCurrent = nullptr;
+	m_pNext = nullptr;
 	m_pLife2D = nullptr;
 	m_pLife3D = nullptr;
 	m_bDeath = false;
+
+	if (m_pTop != nullptr)
+	{// 先頭が存在している場合
+
+		m_pCur->m_pNext = this;	// 現在最後尾のオブジェクトのポインタにつなげる
+		m_pPrev = m_pCur;
+		m_pCur = this;	// 自分自身が最後尾になる
+	}
+	else
+	{// 存在しない場合
+
+		m_pTop = this;	// 自分自身が先頭になる
+		m_pCur = this;	// 自分自身が最後尾になる
+	}
 }
 
 //==============================================================================
@@ -163,6 +192,45 @@ HRESULT CEnemy::Init(void)
 void CEnemy::Uninit(void)
 {
 	m_bDeath = true;
+
+	// リストから自分自身を削除する
+	if (m_pTop == this)
+	{// 自身が先頭
+		if (m_pNext != nullptr)
+		{// 次が存在している
+			m_pTop = m_pNext;	// 次を先頭にする
+			m_pNext->m_pPrev = nullptr;	// 次の前のポインタを覚えていないようにする
+		}
+		else
+		{// 存在していない
+			m_pTop = nullptr;	// 先頭がない状態にする
+			m_pCur = nullptr;	// 最後尾がない状態にする
+		}
+	}
+	else if (m_pCur == this)
+	{// 自身が最後尾
+		if (m_pPrev != nullptr)
+		{// 次が存在している
+			m_pCur = m_pPrev;			// 前を最後尾にする
+			m_pPrev->m_pNext = nullptr;	// 前の次のポインタを覚えていないようにする
+		}
+		else
+		{// 存在していない
+			m_pTop = nullptr;	// 先頭がない状態にする
+			m_pCur = nullptr;	// 最後尾がない状態にする
+		}
+	}
+	else
+	{
+		if (m_pNext != nullptr)
+		{
+			m_pNext->m_pPrev = m_pPrev;	// 自身の次に前のポインタを覚えさせる
+		}
+		if (m_pPrev != nullptr)
+		{
+			m_pPrev->m_pNext = m_pNext;	// 自身の前に次のポインタを覚えさせる
+		}
+	}
 
 	//サウンドの情報を取得
 	CSound *pSound = CManager::Getinstance()->GetSound();
@@ -233,18 +301,29 @@ void CEnemy::Update(void)
 		}
 	}
 
-	if (m_pMotion->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_DETH) && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_HEAT)
+	if (GetMotion()->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_PAINFULDAMAGE) && m_Info.state != STATE_GETUP)
 	{
-		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
+		m_Info.state = STATE_GETUP;
+		GetMotion()->Set(TYPE_GETUP);
+	}
+	else if (GetMotion()->IsFinish() == true)
+	{
+		m_Info.state = STATE_NEUTRAL;
+		GetMotion()->Set(TYPE_NEUTRAL);
 
-		m_nBiriBiriCount = 0;
+		if (m_Chase != CHASE_ON)
+		{
+			m_Chase = CHASE_ON;
+		}
 	}
 
 	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_DETH)
 	{
-		CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-		int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
-		CGame::GetEnemyManager()->SetDefeatCounter(nNum);
+		int nNum = CGame::GetEnemyManager()->GetNum() - 1;
+		CGame::GetEnemyManager()->SetNum(nNum);
+		Uninit();
+
+		return;
 	}
 }
 
@@ -313,73 +392,58 @@ void CEnemy::Draw(void)
 //==============================================================================
 void CEnemy::Controll(void)
 {
-	//int nNum = 0;
-	//CEnemy **ppEnemy = nullptr;
+	int nNum = 0;
+	CEnemy **ppEnemy = nullptr;
 
-	//if (CGame::GetEnemyManager() != nullptr)
-	//{
-	//	ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-	//	nNum = CGame::GetEnemyManager()->GetNum();
-	//}
+	if (m_Info.state == STATE_DAMEGE)
+	{
+		m_nDamegeCounter--;
 
-	//for (int nCount = 0; nCount < nNum; nCount++)
-	//{
-	//	if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
-	//	{
-	//		//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
-	//	}
-	//}
+		if (m_nDamegeCounter <= 0)
+		{
+			m_Info.state = STATE_NONE;
+			m_nDamegeCounter = DAMEGECOUNT;
+		}
+	}
+	else
+	{
+		if (m_Info.state != STATE_GRAP)
+		{
+			Move();
+		}
+	}
 
-	//if (m_Info.state == STATE_DAMEGE)
-	//{
-	//	m_nDamegeCounter--;
+	if (m_Info.nLife <= 0)
+	{
+		m_Info.state = STATE_DETH;
+		GetMotion()->Set(TYPE_DETH);
+		return;
+	}
 
-	//	if (m_nDamegeCounter <= 0)
-	//	{
-	//		m_Info.state = STATE_NONE;
-	//		m_nDamegeCounter = DAMEGECOUNT;
-	//	}
-	//}
-	//else
-	//{
-	//	if (m_Info.state != STATE_GRAP)
-	//	{
-	//		Move();
-	//	}
-	//}
+	if (m_Info.state != STATE_GRAP)
+	{
+		m_Info.move.y -= 0.9f;
 
-	//if (m_Info.nLife <= 0)
-	//{
-	//	CGame::GetEnemyManager()->Release(m_Info.nIdxID);
-	//	int nNum = CGame::GetEnemyManager()->GetDefeatCounter() - 1;
-	//	CGame::GetEnemyManager()->SetDefeatCounter(nNum);
-	//	return;
-	//}
+		// 移動量
+		m_Info.pos.x += m_Info.move.x;
+		m_Info.pos.y += m_Info.move.y;
+		m_Info.pos.z += m_Info.move.z;
 
-	//if (m_Info.state != STATE_GRAP)
-	//{
-	//	m_Info.move.y -= 0.9f;
+		if (m_Info.pos.y <= 0.0f)
+		{
+			m_Info.pos.y = 0.0f;
+		}
+	}
 
-	//	// 移動量
-	//	m_Info.pos.x += m_Info.move.x;
-	//	m_Info.pos.y += m_Info.move.y;
-	//	m_Info.pos.z += m_Info.move.z;
+	
+	
 
-	//	if (m_Info.pos.y <= 0.0f)
-	//	{
-	//		m_Info.pos.y = 0.0f;
-	//	}
-	//}
-
-	//
-	//
-
-	////デバッグプロックの情報を取得
-	//CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	//pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	//pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	//pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-	//pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
+	//デバッグプロックの情報を取得
+	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	pDebugProc->Print("敵の体力：%d\n", m_Info.nLife);
+	pDebugProc->Print("敵の番号：%d\n", m_Info.nIdxID);
 }
 
 //==============================================================================
@@ -440,6 +504,7 @@ void CEnemy::MicroWave(void)
 		{
 			m_Info.state = STATE_FAINTING;
 			GetMotion()->Set(TYPE_FAINTING);
+			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
 		}
 
 		m_nBiriBiriCount = 0;

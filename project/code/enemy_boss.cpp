@@ -147,72 +147,72 @@ CEnemyBoss * CEnemyBoss::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 //==============================================================================
 // 制御処理
 //==============================================================================
-void CEnemyBoss::Controll(void)
-{
-	int nNum = 0;
-	CEnemy **ppEnemy = nullptr;
-
-	if (CGame::GetEnemyManager() != nullptr)
-	{
-		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-		nNum = CGame::GetEnemyManager()->GetNum();
-	}
-
-	for (int nCount = 0; nCount < nNum; nCount++)
-	{
-		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
-		{
-			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
-		}
-	}
-
-	if (m_Info.state == STATE_DAMEGE)
-	{
-		m_nDamegeCounter--;
-
-		if (m_nDamegeCounter <= 0)
-		{
-			m_Info.state = STATE_NONE;
-			m_nDamegeCounter = DAMEGECOUNT;
-		}
-	}
-	else
-	{
-		if (m_Info.state != STATE_GRAP)
-		{
-			Move();
-		}
-	}
-
-	if (m_Info.nLife <= 0)
-	{
-		m_Info.state = STATE_DETH;
-		GetMotion()->Set(TYPE_DETH);
-		return;
-	}
-
-	if (m_Info.state != STATE_GRAP)
-	{
-		m_Info.move.y -= 0.9f;
-
-		// 移動量
-		m_Info.pos.x += m_Info.move.x;
-		m_Info.pos.y += m_Info.move.y;
-		m_Info.pos.z += m_Info.move.z;
-
-		if (m_Info.pos.y <= 0.0f)
-		{
-			m_Info.pos.y = 0.0f;
-		}
-	}
-
-	//デバッグプロックの情報を取得
-	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
-}
+//void CEnemyBoss::Controll(void)
+//{
+//	int nNum = 0;
+//	CEnemy **ppEnemy = nullptr;
+//
+//	if (CGame::GetEnemyManager() != nullptr)
+//	{
+//		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+//		nNum = CGame::GetEnemyManager()->GetNum();
+//	}
+//
+//	for (int nCount = 0; nCount < nNum; nCount++)
+//	{
+//		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
+//		{
+//			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
+//		}
+//	}
+//
+//	if (m_Info.state == STATE_DAMEGE)
+//	{
+//		m_nDamegeCounter--;
+//
+//		if (m_nDamegeCounter <= 0)
+//		{
+//			m_Info.state = STATE_NONE;
+//			m_nDamegeCounter = DAMEGECOUNT;
+//		}
+//	}
+//	else
+//	{
+//		if (m_Info.state != STATE_GRAP)
+//		{
+//			Move();
+//		}
+//	}
+//
+//	if (m_Info.nLife <= 0)
+//	{
+//		m_Info.state = STATE_DETH;
+//		GetMotion()->Set(TYPE_DETH);
+//		return;
+//	}
+//
+//	if (m_Info.state != STATE_GRAP)
+//	{
+//		m_Info.move.y -= 0.9f;
+//
+//		// 移動量
+//		m_Info.pos.x += m_Info.move.x;
+//		m_Info.pos.y += m_Info.move.y;
+//		m_Info.pos.z += m_Info.move.z;
+//
+//		if (m_Info.pos.y <= 0.0f)
+//		{
+//			m_Info.pos.y = 0.0f;
+//		}
+//	}
+//
+//	//デバッグプロックの情報を取得
+//	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+//	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+//	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+//	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
+//	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
+//}
 
 //==============================================================================
 // 制御処理
@@ -578,9 +578,12 @@ HRESULT CEnemyBoss::Init(void)
 	CEnemy::Init();
 	ReadText(ENEMY_TEXT);
 
-	m_pLife2D = CGage2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.25f, 650.0f, 0.0f), 40.0f, (float)((m_Info.nLife * 0.05f) * 20), CGage2D::TYPE_LIFE);
-	m_pLife2D->GetObj2D()->SetEdgeCenterTex((float)((m_Info.nLife * 0.03f) * 20));
-
+	if (m_pLife2D == nullptr)
+	{
+		m_pLife2D = CGage2D::Create(D3DXVECTOR3((SCREEN_WIDTH * 0.25f) + 4.0f, 650.0f, 0.0f), 40.0f, (float)((m_Info.nLife * 0.01f) * 20.0f), CGage2D::TYPE_LIFE);
+		m_pLife2D->GetObj2D()->SetEdgeCenterTex((float)((m_Info.nLife * 0.03f) * 20));
+	}
+	
 	return S_OK;
 }
 
@@ -617,7 +620,7 @@ void CEnemyBoss::Update(void)
 
 	if (m_pLife2D != nullptr)
 	{
-		m_pLife2D->GetObj2D()->SetEdgeCenterTex((float)((m_Info.nLife * 0.03f) * 20));
+		m_pLife2D->GetObj2D()->SetEdgeCenterTex((float)((m_Info.nLife * 0.1f) * 20.0f));
 	}
 }
 

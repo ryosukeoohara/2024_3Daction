@@ -103,15 +103,15 @@ HRESULT CTitle::Init(void)
 		m_pMap = CMap::Create();
 	}
 
-	CObject2D *pBg = new CObject2D;
+	//CObject2D *pBg = new CObject2D;
 
-	if (pBg != nullptr)
+	if (m_pBg == nullptr)
 	{
-		pBg->Init();
-		pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\aaa.png"));
-		pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		pBg->SetSize(200.0f, 200.0f);
-		pBg->SetDraw(true);
+		m_pBg = CObject2D::Create();
+		m_pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\aaa.png"));
+		m_pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+		m_pBg->SetSize(200.0f, 200.0f);
+		m_pBg->SetDraw(true);
 	}
 
 	/*if (m_pPlayer == nullptr)
@@ -180,7 +180,7 @@ void CTitle::Update(void)
 		if (pFade->Get() != pFade->FADE_OUT)
 		{
 			//ƒV[ƒ“‚ðƒQ[ƒ€‚É‘JˆÚ
-			pFade->Set(CScene::MODE_GAME);
+			pFade->Set(CScene::MODE_TUTORIAL);
 		}
 	}
 

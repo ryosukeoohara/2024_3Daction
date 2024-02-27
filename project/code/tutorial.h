@@ -9,8 +9,16 @@
 
 #include "main.h"
 #include "manager.h"
+#include "game.h"
 
-class CTutorial : public CScene
+class CField;
+class CObject2D;
+class CMap;
+class CPlayer;
+class CEnemy;
+class CItemManager;
+
+class CTutorial : public CGame
 {
 public:
 
@@ -23,9 +31,16 @@ public:
 	void Draw(void);
 
 	static CTutorial *Create(void);
+	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 
 private:
-
+	CField *m_pField;
+	CObject2D *m_pBg;
+	CMap *m_pMap;
+	CEnemy *m_pEnemy;
+	CItemManager *m_pItemManager;
+	static CEnemyManager *m_pEnemyManager;
+	static CPlayer *m_pPlayer;
 
 };
 

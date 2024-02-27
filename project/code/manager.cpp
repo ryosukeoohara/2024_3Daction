@@ -205,7 +205,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{//使用されていなかったら
 
 		//シーンの生成
-		m_pScene = CScene::Create(CScene::MODE_TITLE);
+		m_pScene = CScene::Create(CScene::MODE_TUTORIAL);
 
 		//初期化処理
 		m_pScene->Init();
@@ -520,7 +520,8 @@ HRESULT CScene::Init(void)
 
 			m_Tutorial->Init();
 
-			//CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_TUTORIAL);
+			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_TUTORIAL);
+			CManager::Getinstance()->GetCamera()->Reset();
 		}
 
 		break;

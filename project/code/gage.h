@@ -48,6 +48,7 @@ private:
 
 	CGAGE2DTYPE m_Type;          // 種類
 	CObject2D *m_pObject2D;    // オブジェクト2Dへのポインタ
+	CObject2D *m_pObjGage;
 };
 
 // ゲージクラス
