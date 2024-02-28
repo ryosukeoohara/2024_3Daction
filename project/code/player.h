@@ -162,6 +162,7 @@ public:
 	void SetLife(int nlife) { m_Info.nLife = nlife; }                // ‘Ì—Í
 	void SetMobile(void) { m_Mobility = Mobile; }                    // “®‚¯‚é‚æ‚¤‚É‚·‚é
 	void SetImmobile(void) { m_Mobility = Immobile; }                // “®‚¯‚È‚¢‚æ‚¤‚É‚·‚é
+	void SetDefeat(int nValue) { m_nDefeat = nValue; }
 
 	// æ“¾Œn
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // ˆÊ’uæ“¾
@@ -178,6 +179,7 @@ public:
 	CEnemy *GetGrapEnemy(void) { return m_Grap.pEnemy; }
 	CItem *GetGrapItem(void) { return m_Grap.pItem; }
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
+	int GetDefeat(void) { return m_nDefeat; }
 
 private:
 
@@ -222,6 +224,7 @@ private:
 	CObject2D *m_pBotton;
 	CObject2D *m_pGekiatu;
 	static CPlayer *m_pPlayer;
+	int m_nDefeat;  // “G‚ğ“|‚µ‚½”
 	int m_nIdxEne;
 	int m_nIdxItem;
 	int m_nDamageCounter;

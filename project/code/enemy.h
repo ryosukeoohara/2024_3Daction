@@ -114,6 +114,7 @@ public:
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }  // 親のマトリックス
 	void SetIdx(int idx) { m_Info.nIdxID = idx; }
 	void SetType(TYPE type) { m_Type = type; }
+	void SetNumAll(int nNum) { m_nNumAll = nNum; }
 	virtual void SetChase(CHASE cha);
 	void SetDraw(bool value) { m_Info.bDraw = value; }
 	void SetMobile(void) { m_Mobility = Mobile; }                    // 動けるようにする

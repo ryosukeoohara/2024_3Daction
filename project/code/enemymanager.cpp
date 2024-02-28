@@ -14,6 +14,7 @@
 #include "enemy_boss.h"
 #include "manager.h"
 #include "input.h"
+#include "debugproc.h"
 
 //*============================================================================
 // 静的メンバ変数
@@ -54,6 +55,15 @@ CEnemyManager::~CEnemyManager()
 //=============================================================================
 HRESULT CEnemyManager::Init(void)
 {
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	{
+		ReadText(ENEMYINFO_TEXT);
+	}
+	else if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		ReadText(TUTORIALENEMY_TEXT);
+	}
+
 	return S_OK;
 }
 
@@ -62,22 +72,22 @@ HRESULT CEnemyManager::Init(void)
 //=============================================================================
 void CEnemyManager::Uninit(void)
 {
-	if (m_appEnemy != nullptr)
-	{
-		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
-		{
-			if (m_appEnemy[nCount] != nullptr)
-			{// 使用されていたら
+	//if (m_appEnemy != nullptr)
+	//{
+	//	for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
+	//	{
+	//		if (m_appEnemy[nCount] != nullptr)
+	//		{// 使用されていたら
 
-				// 終了処理
-				m_appEnemy[nCount]->Uninit();
-				m_appEnemy[nCount] = nullptr;
-			}
-		}
+	//			// 終了処理
+	//			m_appEnemy[nCount]->Uninit();
+	//			m_appEnemy[nCount] = nullptr;
+	//		}
+	//	}
 
-		delete m_appEnemy;
-		m_appEnemy = nullptr;
-	}
+	//	delete m_appEnemy;
+	//	m_appEnemy = nullptr;
+	//}
 }
 
 //=============================================================================
@@ -96,6 +106,10 @@ void CEnemyManager::Update(void)
 			}
 		}
 	}
+
+	//デバッグプロックの情報を取得
+	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
+	pDebugProc->Print("敵の数：%d\n", m_nNum);
 }
 
 //=============================================================================
@@ -111,7 +125,7 @@ CEnemyManager * CEnemyManager::Create(void)
 
 		pEnemyManager->Init();
 
-		pEnemyManager->ReadText(ENEMYINFO_TEXT);
+		//pEnemyManager->ReadText(ENEMYINFO_TEXT);
 	}
 
 	return pEnemyManager;
@@ -140,7 +154,6 @@ void CEnemyManager::ReadText(const char *text)
 {
 	int nLife = 0;
 	int nType = -1;
-	int nCntEnemy = 0;
 	char aString[128] = {};
 
 	FILE *pFile;   //ファイルポインタを宣言
@@ -162,8 +175,7 @@ void CEnemyManager::ReadText(const char *text)
 				fscanf(pFile, "%d", &m_nEnemyAll);  //モデルの総数
 
 				m_appEnemy = new CEnemy*[m_nEnemyAll];
-				SetNum(m_nEnemyAll);
-				m_nNum = m_nEnemyAll;
+				//m_nNum = m_nEnemyAll;
 
 			}  //NUM_MODELのかっこ
 
@@ -207,24 +219,18 @@ void CEnemyManager::ReadText(const char *text)
 
 					}//ENEMYSET_ENDのかっこ 
 
-					m_appEnemy[nCntEnemy] = nullptr;
-
-					if (m_appEnemy[nCntEnemy] == nullptr)
+					if (nType == CEnemy::TYPE_WEAK)
 					{
-						if (nType == CEnemy::TYPE_WEAK)
-						{
-							CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
-							
-						}
-						else if (nType == CEnemy::TYPE_BOSS)
-						{
-							CEnemyBoss::Create(m_Readpos, m_Readrot, nLife);
-							
-						}
+						CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
 
-						nCntEnemy++;
+					}
+					else if (nType == CEnemy::TYPE_BOSS)
+					{
+						CEnemyBoss::Create(m_Readpos, m_Readrot, nLife);
 					}
 
+					m_nNum++;
+					
 				}//ENEMYSETのかっこ 
 			}
 		}

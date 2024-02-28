@@ -177,31 +177,31 @@ void CItem::Update(void)
 {
 	CObjectX::Update();
 
-	if (CGame::GetCollision()->Circle(&GetPosition(), &CPlayer::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
-	{// 範囲内
+	//if (CGame::GetCollision()->Circle(&GetPosition(), &CPlayer::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
+	//{// 範囲内
 
-		if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE /*&& CPlayer::GetPlayer()->GetGrapItem()->GetID() != m_nID*/)
-		{// 種類が電子レンジかつテーブル以外
+	//	if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE /*&& CPlayer::GetPlayer()->GetGrapItem()->GetID() != m_nID*/)
+	//	{// 種類が電子レンジかつテーブル以外
 
-			if (m_pBill == nullptr)
-			{
-				// 生成して位置、サイズ、描画するかどうか、使用するテクスチャ設定
-				m_pBill = CBillBoard::Create();
-				m_pBill->SetPosition(D3DXVECTOR3(GetPosition().x, GetPosition().y + 40.0f, GetPosition().z));
-				m_pBill->SetSize(TEXSIZE.x, TEXSIZE.y);
-				m_pBill->SetDraw();
-				m_pBill->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEX_GRAP));
-			}
-		}
-	}
-	else
-	{// 範囲外
+	//		if (m_pBill == nullptr)
+	//		{
+	//			// 生成して位置、サイズ、描画するかどうか、使用するテクスチャ設定
+	//			m_pBill = CBillBoard::Create();
+	//			m_pBill->SetPosition(D3DXVECTOR3(GetPosition().x, GetPosition().y + 40.0f, GetPosition().z));
+	//			m_pBill->SetSize(TEXSIZE.x, TEXSIZE.y);
+	//			m_pBill->SetDraw();
+	//			m_pBill->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEX_GRAP));
+	//		}
+	//	}
+	//}
+	//else
+	//{// 範囲外
 
-		if (m_pBill != nullptr)
-		{
-			// 終了
-			m_pBill->Uninit();
-			m_pBill = nullptr;
-		}
-	}
+	//	if (m_pBill != nullptr)
+	//	{
+	//		// 終了
+	//		m_pBill->Uninit();
+	//		m_pBill = nullptr;
+	//	}
+	//}
 }

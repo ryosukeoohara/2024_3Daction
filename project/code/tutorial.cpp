@@ -18,12 +18,16 @@
 #include "enemymanager.h"
 #include "enemy_weak.h"
 #include "itemmanager.h"
+#include "collision.h"
+#include "tutorialUI.h"
 
 //===========================================================
 //　静的メンバ変数
 //===========================================================
 CPlayer *CTutorial::m_pPlayer = nullptr;
 CEnemyManager *CTutorial::m_pEnemyManager = nullptr;
+CMap *CTutorial::m_pMap = nullptr;
+CTutorialUI *CTutorial::m_pUI = nullptr;
 
 //===============================================================
 //コンストラクタ
@@ -75,21 +79,38 @@ HRESULT CTutorial::Init(void)
 		m_pField->SetDraw(true);
 	}
 
+	// 当たり判定
+	if (m_Collision == nullptr)
+	{
+		m_Collision = CCollision::Create();
+	}
+
 	// マップの生成
 	if (m_pMap == nullptr)
 	{
 		m_pMap = CMap::Create();
 	}
 
-	if (m_pEnemy == nullptr)
+	/*if (m_pEnemy == nullptr)
 	{
 		m_pEnemy = CEnemyWeak::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 100);
 		m_pEnemy->SetType(CEnemy::TYPE_WEAK);
+	}*/
+
+	// 敵マネージャの生成
+	if (m_pEnemyManager == nullptr)
+	{
+		m_pEnemyManager = CEnemyManager::Create();
 	}
 
 	if (m_pItemManager == nullptr)
 	{
 		m_pItemManager = CItemManager::Create();
+	}
+
+	if (m_pUI == nullptr)
+	{
+		m_pUI = CTutorialUI::Create();
 	}
 	
 	// プレイヤーの生成
@@ -136,11 +157,24 @@ void CTutorial::Uninit(void)
 		m_pEnemy = nullptr;
 	}
 
+	// 敵の破棄
+	if (m_pEnemyManager != nullptr)
+	{
+		m_pEnemyManager->Uninit();
+		m_pEnemyManager = nullptr;
+	}
+
 	// アイテムの破棄
 	if (m_pItemManager != nullptr)
 	{
 		m_pItemManager->Uninit();
 		m_pItemManager = nullptr;
+	}
+
+	if (m_pUI != nullptr)
+	{
+		m_pUI->Uninit();
+		m_pUI = nullptr;
 	}
 
 	// プレイヤー
@@ -177,14 +211,18 @@ void CTutorial::Update(void)
 		}
 	}
 
-	if (CEnemyManager::GetNum() <= 0)
+	if (m_pEnemyManager != nullptr)
 	{
-		m_pEnemy = nullptr;
+		m_pEnemyManager->Update();
 
-		m_pEnemy = CEnemyWeak::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), 100);
-		m_pEnemy->SetType(CEnemy::TYPE_WEAK);
+		if (CEnemyManager::GetNum() <= 0)
+		{
+			m_pEnemyManager = nullptr;
+
+			m_pEnemyManager = CEnemyManager::Create();
+		}
 	}
-
+	
 	// すべて更新
 	CObject::UpdateAll();
 }

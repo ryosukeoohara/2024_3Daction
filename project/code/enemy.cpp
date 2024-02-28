@@ -44,7 +44,7 @@ int CEnemy::m_nIdx = 0;
 // 無名名前空間を定義
 namespace
 {
-	const int DAMEGECOUNT = 25;  // ダメージ状態
+	const int DAMEGECOUNT = 15;  // ダメージ状態
 
 	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] =
 	{
@@ -178,6 +178,8 @@ HRESULT CEnemy::Init(void)
 
 	m_nDamegeCounter = DAMEGECOUNT;
 
+	m_nNumAll++;
+
 	if (m_Type == TYPE_WEAK)
 	{
 		
@@ -271,16 +273,13 @@ void CEnemy::Update(void)
 {
 	if (m_Info.bDraw == true)
 	{
-		if (m_Mobility == Mobile)
+		if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING && m_Info.state != STATE_DETH)
 		{
-			if (m_Info.state != STATE_BIRIBIRI && m_Info.state != STATE_BIRI && m_Info.state != STATE_FAINTING && m_Info.state != STATE_DETH)
-			{
-				Controll();
-			}
-			else if (m_Info.state != STATE_DETH)
-			{
-				MicroWave();
-			}
+			Controll();
+		}
+		else if (m_Info.state != STATE_DETH)
+		{
+			MicroWave();
 		}
 		
 		if (m_pMotion != nullptr)
@@ -306,6 +305,20 @@ void CEnemy::Update(void)
 		m_Info.state = STATE_GETUP;
 		GetMotion()->Set(TYPE_GETUP);
 	}
+	else if (m_pMotion->IsFinish() == true && m_Info.state == STATE_DETH)
+	{
+		int nNum = CEnemyManager::GetNum() - 1;
+		CEnemyManager::SetNum(nNum);
+		Uninit();
+
+		if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+		{
+			int nDefeat = CPlayer::GetPlayer()->GetDefeat() + 1;
+			CPlayer::GetPlayer()->SetDefeat(nDefeat);
+		}
+
+		return;
+	}
 	else if (GetMotion()->IsFinish() == true)
 	{
 		m_Info.state = STATE_NEUTRAL;
@@ -315,15 +328,6 @@ void CEnemy::Update(void)
 		{
 			m_Chase = CHASE_ON;
 		}
-	}
-
-	if (m_pMotion->IsFinish() == true && m_Info.state == STATE_DETH)
-	{
-		int nNum = CGame::GetEnemyManager()->GetNum() - 1;
-		CGame::GetEnemyManager()->SetNum(nNum);
-		Uninit();
-
-		return;
 	}
 }
 
@@ -407,7 +411,7 @@ void CEnemy::Controll(void)
 	}
 	else
 	{
-		if (m_Info.state != STATE_GRAP)
+		if (m_Info.state != STATE_GRAP && m_Mobility == Mobile)
 		{
 			Move();
 		}
@@ -434,9 +438,6 @@ void CEnemy::Controll(void)
 			m_Info.pos.y = 0.0f;
 		}
 	}
-
-	
-	
 
 	//デバッグプロックの情報を取得
 	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
@@ -504,6 +505,7 @@ void CEnemy::MicroWave(void)
 		{
 			m_Info.state = STATE_FAINTING;
 			GetMotion()->Set(TYPE_FAINTING);
+			m_Info.nLife -= 300;
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
 		}
 

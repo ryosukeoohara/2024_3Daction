@@ -207,6 +207,10 @@ void CCamera::Mode(void)
 
 	case MODE_TUTORIAL:
 
+		m_OldposR = m_posR;
+		m_OldposV = m_posV;
+		m_Oldrot = m_rot;
+		m_fOldLen = m_fLen;
 		Tutorial();
 		break;
 
@@ -274,7 +278,7 @@ void CCamera::Heat(void)
 	m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
 	m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
 
-	D3DXVECTOR3 pos = CGame::GetPlayer()->GetPosition();
+	D3DXVECTOR3 pos = CPlayer::GetPlayer()->GetPosition();
 
 	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
 	m_posR = D3DXVECTOR3(pos.x, 50.0f, pos.z + 10.0f);
@@ -317,15 +321,25 @@ void CCamera::Return(void)
 	}
 	else
 	{
-		// カメラモードをゲーム
-		m_mode = MODE_GAME;
-
 		// カウンターをリセット
 		m_nCounter = 0;
 
-		CGame::GetPlayer()->SetMobile();
+		if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+		{
+			// カメラモードをゲーム
+			m_mode = MODE_GAME;
 
-		CGame::GetEnemyManager()->SetMobility();
+			CGame::GetPlayer()->SetMobile();
+
+			CGame::GetEnemyManager()->SetMobility();
+		}
+		else if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+		{
+			// カメラモードをゲーム
+			m_mode = MODE_TUTORIAL;
+
+			CTutorial::GetPlayer()->SetMobile();
+		}
 	}
 }
 

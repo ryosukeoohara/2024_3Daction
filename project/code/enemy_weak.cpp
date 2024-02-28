@@ -39,7 +39,7 @@
 // 無名名前空間を定義
 namespace
 {
-	const int DAMEGECOUNT = 25;  // ダメージ状態
+	const int DAMEGECOUNT = 10;  // ダメージ状態
 
 	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] =
 	{
@@ -309,7 +309,7 @@ void CEnemyWeak::Attack(void)
 void CEnemyWeak::Move(void)
 {
 	//プレイヤーの情報取得
-	CPlayer *pPlayer = CGame::GetPlayer();
+	CPlayer *pPlayer = CPlayer::GetPlayer();
 	
 	if (m_Chase == CHASE_ON)
 	{
@@ -385,8 +385,6 @@ void CEnemyWeak::Move(void)
 			m_Info.move.z = 0.0f;
 		}
 	}
-
-	
 }
 
 //==============================================================================

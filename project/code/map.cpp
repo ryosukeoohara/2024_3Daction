@@ -151,11 +151,11 @@ void CMap::TextLoad(void)
 
 					if (nType >= 43 && nType <= 51 || nType == 56)
 					{
-						m_appObjectX[nCntItem]->SetbColli(false);
+						m_appObjectX[nCntItem]->SetbEnable(false);
 					}
 					else
 					{
-						m_appObjectX[nCntItem]->SetbColli(true);
+						m_appObjectX[nCntItem]->SetbEnable(true);
 					}
 
 					nCntItem++;

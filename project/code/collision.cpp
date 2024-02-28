@@ -27,12 +27,19 @@
 #include "motion.h"
 #include "particle.h"
 #include "animation.h"
+#include "tutorial.h"
+
+//=============================================================================
+// 静的メンバ変数
+//=============================================================================
+CCollision *CCollision::m_pColli = nullptr;
 
 //=============================================================================
 //コンストラクタ
 //=============================================================================
 CCollision::CCollision()
 {
+	m_pColli = this;
 	m_bColli = false;
 }
 
@@ -57,7 +64,11 @@ HRESULT CCollision::Init(void)
 //=============================================================================
 void CCollision::Uninit(void)
 {
-	
+	if (m_pColli != nullptr)
+	{
+		delete m_pColli;
+		m_pColli = nullptr;
+	}
 }
 
 //=============================================================================
@@ -157,6 +168,12 @@ void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius)
 		pMap = CGame::GetMap()->GetObjectX();
 	}
 
+	if (CTutorial::GetMap() != nullptr)
+	{
+		nNum = CTutorial::GetMap()->GetNum();
+		pMap = CTutorial::GetMap()->GetObjectX();
+	}
+
 	for (int nCount = 0; nCount < nNum; nCount++)
 	{
 		if (pMap[nCount] != nullptr)
@@ -168,7 +185,7 @@ void CCollision::Map(D3DXVECTOR3 *pos, D3DXVECTOR3 *posOld, float fRadius)
 			vtxMax = pMap[nCount]->GetVtxMax();
 		}
 
-		if (pMap[nCount]->GetbColli() == true)
+		if (pMap[nCount]->IsEnable() == true)
 		{
 			if (pos->z + fRadius > Mappos.z + vtxMin.z
 				&& pos->z + -fRadius < Mappos.z + vtxMax.z)
@@ -407,7 +424,7 @@ bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float 
 		{
 			// 敵の番号を保存
 			//CGame::GetEnemyManager()->SetTarget(nCount);
-			pEnemy->Damege(CGame::GetPlayer()->GetMotion()->GetAttackDamege(), CGame::GetPlayer()->GetMotion()->GetKnockBack(), CGame::GetPlayer()->GetActType());
+			pEnemy->Damege(CPlayer::GetPlayer()->GetMotion()->GetAttackDamege(), CPlayer::GetPlayer()->GetMotion()->GetKnockBack(), CPlayer::GetPlayer()->GetActType());
 
 			CParticle *pPar = CParticle::Create(pEnemy->GetPosition(), CParticle::TYPE_BLOOD);
 

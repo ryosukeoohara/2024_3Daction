@@ -21,6 +21,7 @@ class CEnemy;
 //*============================================================================
 #define MAX_ENEMY   (64)    //敵の最大数
 #define ENEMYINFO_TEXT   ("data\\TEXT\\enemy\\enemyinformation.txt")    // 最初に出てくる敵
+#define TUTORIALENEMY_TEXT ("data\\TEXT\\enemy\\tutorialenemyinformation.txt") // チュートリアルの敵
 #define ENEMYBOSS_TEXT   ("data\\TEXT\\enemy\\enemyboss.txt")           // ボス
 
 //*============================================================================
@@ -41,7 +42,7 @@ public:
 	void ReadText(const char *text);           //テキストファイル読み込み
 
 	// 設定系
-	void SetNum(int num) { m_nNum = num; }
+	static void SetNum(int num) { m_nNum = num; }
 	void SetTarget(int idx);
 	void SetTrue(int idx);
 	void SetMobility(void);

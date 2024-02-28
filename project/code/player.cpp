@@ -120,6 +120,7 @@ CPlayer::CPlayer()
 	m_pGekiatu = nullptr;
 	m_nIdxEne = 0;
 	m_nIdxItem = -1;
+	m_nDefeat = 0;
 	m_nDamageCounter = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
@@ -179,6 +180,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_pGekiatu = nullptr;
 	m_nIdxEne = 0;
 	m_nIdxItem = -1;
+	m_nDefeat = 0;
 	m_nDamageCounter = 0;
 	m_fDest = 0.0f;
 	m_fDestOld = 0.0f;
@@ -571,6 +573,7 @@ void CPlayer::Control(void)
 
 	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CManager::Getinstance()->GetDebugProc()->Print("プレイヤーの向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	CManager::Getinstance()->GetDebugProc()->Print("倒した数：%d\n", m_nDefeat);
 }
 
 //================================================================
@@ -651,6 +654,9 @@ void CPlayer::Move(void)
 			}
 
 			m_bDesh = true;
+
+			// チュートリアル判別
+			m_bPushW = true;
 		}
 		//下に移動----------------------------------------------
 		else if (InputKeyboard->GetPress(DIK_S) == true || pInputJoyPad->GetLYStick(CInputJoyPad::STICK_LY, 0) < 0)
@@ -688,6 +694,9 @@ void CPlayer::Move(void)
 			}
 
 			m_bDesh = true;
+
+			// チュートリアル判別
+			m_bPushS = true;
 		}
 		//右に移動----------------------------------------------
 		else if (InputKeyboard->GetPress(DIK_D) == true || pInputJoyPad->GetLXStick(CInputJoyPad::STICK_LX, 0) > 0)
@@ -698,6 +707,9 @@ void CPlayer::Move(void)
 			m_Info.move.z -= cosf(CameraRot.y + (D3DX_PI * 0.5f)) * fSpeed;
 
 			m_bDesh = true;
+
+			// チュートリアル判別
+			m_bPushD = true;
 
 			// 向き
 			m_fDest = (CameraRot.y + (D3DX_PI * 0.5f));
@@ -711,6 +723,9 @@ void CPlayer::Move(void)
 			m_Info.move.z += cosf(CameraRot.y + (D3DX_PI * 0.5f)) * fSpeed;
 
 			m_bDesh = true;
+
+			// チュートリアル判別
+			m_bPushA = true;
 
 			// 向き
 			m_fDest = (CameraRot.y + (D3DX_PI * -0.5f));
@@ -756,7 +771,7 @@ void CPlayer::Move(void)
 	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
 
-	CGame::GetCollision()->Map(&m_Info.pos, &m_Info.posOld, 40.0f);
+	CCollision::GetColl()->Map(&m_Info.pos, &m_Info.posOld, 40.0f);
 }
 
 //================================================================
@@ -951,7 +966,7 @@ void CPlayer::Grap(void)
 	// 敵を掴む
 	if (InputKeyboard->GetTrigger(DIK_E) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_Y, 0) == true)
 	{
-		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID)
+		if (m_Info.state != STATE_THROW && m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_AVOID && m_Info.state != STATE_HEAT)
 		{
 			if (m_Grap.pEnemy == nullptr && m_Grap.pItem == nullptr)
 			{
@@ -1085,7 +1100,8 @@ void CPlayer::Avoid(void)
 	{
 		if (m_Info.state != STATE_AVOID && m_Info.state != STATE_LIFT &&
 			m_Info.state != STATE_THROW && m_Info.state != STATE_GRAP && 
-			m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_GRAPWALK)
+			m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_GRAPWALK && 
+			m_Info.state != STATE_HEAT)
 		{
 			if (m_fStamina >= LOSTSTMINA)
 			{// 消費量より多かったら
@@ -1851,7 +1867,7 @@ bool CPlayer::StartHeatAction(void)
 	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
 	{// ヒートアクションする
 
-		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
+		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME || CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_TUTORIAL)
 		{// カメラのモードがゲームのときかつアイテムを手に持っているとき
 
 			// ボタン消す
