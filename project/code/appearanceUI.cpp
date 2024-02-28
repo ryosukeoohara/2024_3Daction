@@ -9,6 +9,8 @@
 #include "manager.h"
 #include "texture.h"
 #include "camera.h"
+#include "number.h"
+#include "utility.h"
 
 namespace
 {
@@ -17,6 +19,7 @@ namespace
 		"",
 		"data\\TEXTURE\\underling.png", // ザコ
 		"data\\TEXTURE\\ishii.png",     // ボス
+		"data\\TEXTURE\\number002.png", // 数字
 	};  // テクスチャの名前
 }
 
@@ -29,6 +32,7 @@ CAppearanceUI::CAppearanceUI()
 	m_type = TYPE_NONE;
 	m_pFrontObj2D = nullptr;
 	m_pBackObj2D = nullptr;
+	m_pNumber = nullptr;
 }
 
 //===========================================================
@@ -40,6 +44,7 @@ CAppearanceUI::CAppearanceUI(TYPE type)
 	m_type = type;
 	m_pFrontObj2D = nullptr;
 	m_pBackObj2D = nullptr;
+	m_pNumber = nullptr;
 }
 
 //===========================================================
@@ -55,24 +60,52 @@ CAppearanceUI::~CAppearanceUI()
 //===========================================================
 HRESULT CAppearanceUI::Init(void)
 {
-	// それぞれ生成して、位置、サイズ、テクスチャ、描画状態を設定
-	if (m_pBackObj2D == nullptr)
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
 	{
-		m_pBackObj2D = CObject2D::Create();
-		m_pBackObj2D->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_pBackObj2D->SetSize(0.0f, 0.0f);
-		m_pBackObj2D->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[m_type]));
-		m_pBackObj2D->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f));
-		m_pBackObj2D->SetDraw(false);
-	}
+		// それぞれ生成して、位置、サイズ、テクスチャ、描画状態を設定
+		if (m_pBackObj2D == nullptr)
+		{
+			m_pBackObj2D = CObject2D::Create();
+			m_pBackObj2D->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+			m_pBackObj2D->SetSize(0.0f, 0.0f);
+			m_pBackObj2D->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[m_type]));
+			m_pBackObj2D->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			m_pBackObj2D->SetDraw(false);
+		}
 
-	if (m_pFrontObj2D == nullptr)
+		if (m_pFrontObj2D == nullptr)
+		{
+			m_pFrontObj2D = CObject2D::Create();
+			m_pFrontObj2D->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+			m_pFrontObj2D->SetSize(1200.0f, 600.0f);
+			m_pFrontObj2D->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[m_type]));
+			m_pFrontObj2D->SetDraw();
+		}
+	}
+	
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_RESULT)
 	{
-		m_pFrontObj2D = CObject2D::Create();
-		m_pFrontObj2D->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_pFrontObj2D->SetSize(1200.0f, 600.0f);
-		m_pFrontObj2D->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[m_type]));
-		m_pFrontObj2D->SetDraw();
+		// それぞれ生成して、位置、サイズ、テクスチャ、描画状態を設定
+		if (m_pBackObj2D == nullptr)
+		{
+			m_pBackObj2D = CObject2D::Create();
+			m_pBackObj2D->SetPosition(D3DXVECTOR3(750.0f, 225.0f, 0.0f));
+			m_pBackObj2D->SetSize(0.0f, 0.0f);
+			m_pBackObj2D->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[m_type]));
+			m_pBackObj2D->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			m_pBackObj2D->SetTex((float)CManager::Getinstance()->GetDefeat());
+			m_pBackObj2D->SetDraw(false);
+		}
+
+		if (m_pNumber == nullptr)
+		{
+			m_pNumber = CObject2D::Create();
+			m_pNumber->SetPosition(D3DXVECTOR3(750.0f, 225.0f, 0.0f));
+			m_pNumber->SetSize(200.0f, 200.0f);
+			m_pNumber->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[m_type]));
+			m_pNumber->SetTex((float)CManager::Getinstance()->GetDefeat());
+			m_pNumber->SetDraw();
+		}
 	}
 
 	return S_OK;
@@ -96,6 +129,12 @@ void CAppearanceUI::Uninit(void)
 		m_pBackObj2D = nullptr;
 	}
 
+	if (m_pNumber != nullptr)
+	{
+		m_pNumber->Uninit();
+		m_pNumber = nullptr;
+	}
+
 	Release();
 }
 
@@ -114,43 +153,25 @@ void CAppearanceUI::Update(void)
 		if (m_pFrontObj2D->GetHeight() >= 100.0f && m_pFrontObj2D->GetWidth() >= 30.0f)
 		{// この数値以下になるまで小さくする
 
-			fHeight = fHeight - 25.0f;
-			fWidth = fWidth - 50.0f;
+			// ポリゴンを小さくする
+			CManager::Getinstance()->GetUtility()->Shrink(m_pFrontObj2D, 25.0f, 50.0f);
 
-			// サイズ設定
-			m_pFrontObj2D->SetSize(fWidth, fHeight);
-			m_pBackObj2D->SetSize(fWidth, fHeight);
 		}
 		else
 		{// 小さくなった
 
-			// 描画させる
-			m_pBackObj2D->SetDraw(true);
+			// ポリゴンを大きくする
+			CManager::Getinstance()->GetUtility()->Enlarge(m_pBackObj2D, 5.0f, 10.0f);
 
-			// 幅と高さ取得
-			float fHeight = m_pBackObj2D->GetHeight();
-			float fWidth = m_pBackObj2D->GetWidth();
-
-			fHeight = fHeight + 5.0f;
-			fWidth = fWidth + 10.0f;
-
-			// 透明度取得
-			float fColor_a = m_pBackObj2D->GetColor().a;
-
-			fColor_a = fColor_a - 0.03f;
-
-			// サイズ設定
-			m_pBackObj2D->SetSize(fWidth, fHeight);
-
-			// 色設定
-			m_pBackObj2D->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, fColor_a));
+			// ポリゴンを透明にする
+			CManager::Getinstance()->GetUtility()->Color_A2D(m_pBackObj2D, -0.03f);
 		}
 
 		if (CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
 		{
 			D3DXVECTOR3 pos = m_pFrontObj2D->GetPosition();
 
-			pos.x = pos.x + 20.0f;
+			pos.x = pos.x + 60.0f;
 
 			m_pFrontObj2D->SetPosition(D3DXVECTOR3(pos.x, pos.y, pos.z));
 
@@ -161,6 +182,29 @@ void CAppearanceUI::Update(void)
 			{
 				Uninit();
 			}
+		}
+	}
+
+	if (m_pNumber != nullptr && m_pBackObj2D != nullptr)
+	{
+		// 幅と高さ取得
+		float fHeight = m_pNumber->GetHeight();
+		float fWidth = m_pNumber->GetWidth();
+
+		if (m_pNumber->GetHeight() >= 50.0f && m_pNumber->GetWidth() >= 50.0f)
+		{// この数値以下になるまで小さくする
+
+			// ポリゴンを小さくする
+			CManager::Getinstance()->GetUtility()->Shrink(m_pNumber, 10.0f, 10.0f);
+		}
+		else
+		{// 小さくなった
+
+			// ポリゴンを大きくする
+			CManager::Getinstance()->GetUtility()->Enlarge(m_pBackObj2D, 5.0f, 10.0f);
+
+			// ポリゴンを透明にする
+			CManager::Getinstance()->GetUtility()->Color_A2D(m_pBackObj2D, -0.03f);
 		}
 	}
 }

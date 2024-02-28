@@ -178,6 +178,7 @@ HRESULT CEnemy::Init(void)
 
 	m_nDamegeCounter = DAMEGECOUNT;
 
+	m_Info.nIdxID = m_nNumAll;
 	m_nNumAll++;
 
 	if (m_Type == TYPE_WEAK)
@@ -193,6 +194,8 @@ HRESULT CEnemy::Init(void)
 //==============================================================================
 void CEnemy::Uninit(void)
 {
+	m_nNumAll = 0;
+
 	m_bDeath = true;
 
 	// ƒŠƒXƒg‚©‚çŽ©•ªŽ©g‚ðíœ‚·‚é
@@ -306,13 +309,17 @@ void CEnemy::Update(void)
 		GetMotion()->Set(TYPE_GETUP);
 	}
 	else if (m_pMotion->IsFinish() == true && m_Info.state == STATE_DETH)
-	{
+	{// Ž€–S
+
+		// “G‚Ì‘”‚ðŒ¸‚ç‚·
 		int nNum = CEnemyManager::GetNum() - 1;
 		CEnemyManager::SetNum(nNum);
 		Uninit();
 
 		if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
-		{
+		{// ƒQ[ƒ€‚ÌŽž
+
+			// “G‚ð“|‚µ‚½”‚ð‘‚â‚·
 			int nDefeat = CPlayer::GetPlayer()->GetDefeat() + 1;
 			CPlayer::GetPlayer()->SetDefeat(nDefeat);
 		}
@@ -507,6 +514,9 @@ void CEnemy::MicroWave(void)
 			GetMotion()->Set(TYPE_FAINTING);
 			m_Info.nLife -= 300;
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
+			CPlayer::GetPlayer()->SetState(CPlayer::STATE_NEUTRAL);
+			CGame::GetEnemyManager()->SetTrue(CPlayer::GetPlayer()->GetGrapEnemy()->GetIdxID());
+			CPlayer::GetPlayer()->SetGrapEnemy(nullptr);
 		}
 
 		m_nBiriBiriCount = 0;
@@ -516,7 +526,7 @@ void CEnemy::MicroWave(void)
 	{
 		if (m_nBiriBiriCount % 20 == 0)
 		{
-			CParticle::Create(CGame::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
+			CParticle::Create(CPlayer::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
 		}
 	}
 }

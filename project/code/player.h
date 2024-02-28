@@ -158,7 +158,8 @@ public:
 	void SetRotition(D3DXVECTOR3 rot) { m_Info.rot = rot; }         // Œü‚«İ’è
 	void SetMove(D3DXVECTOR3 move) { m_Info.move = move; }           // ˆÚ“®—Êİ’è
 	void SetState(STATE state) { m_Info.state = state; }             // ó‘Ô
-	void SetGrapItem(CItem *obj) { m_Grap.pItem = obj; }
+	void SetGrapItem(CItem *obj) { m_Grap.pItem = obj; }             // ƒAƒCƒeƒ€
+	void SetGrapEnemy(CEnemy *enemy) { m_Grap.pEnemy = enemy; }      // “G
 	void SetLife(int nlife) { m_Info.nLife = nlife; }                // ‘Ì—Í
 	void SetMobile(void) { m_Mobility = Mobile; }                    // “®‚¯‚é‚æ‚¤‚É‚·‚é
 	void SetImmobile(void) { m_Mobility = Immobile; }                // “®‚¯‚È‚¢‚æ‚¤‚É‚·‚é

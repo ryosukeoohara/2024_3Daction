@@ -11,6 +11,7 @@
 
 // 前方宣言
 class CObject2D;
+class CNumber;
 
 //*==========================================================
 // クラス定義
@@ -25,6 +26,7 @@ public:
 		TYPE_NONE = 0,   // なんもない
 		TYPE_WEAKNAME,   // ザコ
 		TYPE_BOSSNAME,   // ボス
+		TYPE_NUMBER,     // リザルト
 		TYPE_MAX
 	};
 
@@ -45,6 +47,7 @@ private:
 	TYPE m_type;
 	CObject2D *m_pFrontObj2D;  // 前に出る色が濃い奴
 	CObject2D *m_pBackObj2D;   // 後ろに出る色が薄いやつ
+	CObject2D *m_pNumber;
 	
 };
 

@@ -21,6 +21,7 @@ CObject2D::CObject2D()
 	m_pVtxBuff = NULL;  //頂点情報を格納
 	m_nCounterAnimPlayer = 0;
 	m_nPatternAnimPlayer = 0;
+	m_Number = 0;
 	m_bDraw = false;
 }
 
@@ -35,6 +36,7 @@ CObject2D::CObject2D(D3DXVECTOR3 pos)
 	m_pVtxBuff = NULL;  //頂点情報を格納
 	m_nCounterAnimPlayer = 0;
 	m_nPatternAnimPlayer = 0;
+	m_Number = 0;
 	m_bDraw = false;
 }
 
@@ -305,6 +307,35 @@ void CObject2D::SetEdgeCenterTex(float ftex)
 	pVtx[3].pos.x = m_pos.x + ftex;
 	pVtx[3].pos.y = m_pos.y + m_fHeight;
 	pVtx[3].pos.z = 0.0f;
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//================================================================
+// 描画処理
+//================================================================
+void CObject2D::SetTex(float fTex)
+{
+	m_Number = (int)fTex;
+
+	if (m_Number >= 10)
+	{
+		m_Number = 0;
+	}
+
+	if (m_Number < 0)
+	{
+		m_Number = 9;
+	}
+
+	VERTEX_2D * pVtx;     //頂点情報へのポインタ
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);        //頂点バッファをロックし、頂点情報へポインタを取得
+
+	pVtx[0].tex = D3DXVECTOR2(0.0f + 0.1f * m_Number, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(0.1f + 0.1f * m_Number, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(0.0f + 0.1f * m_Number, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(0.1f + 0.1f * m_Number, 1.0f);
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

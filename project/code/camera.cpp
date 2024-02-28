@@ -422,6 +422,19 @@ void CCamera::OnStage(void)
 
 		m_nCounter++;
 	}
+	/*else if (m_nCounter <= 80 && m_nCounter <= 140)
+	{
+		if (CGame::GetWave() == CGame::WAVE_00)
+		{
+			CAppearanceUI::Create(CAppearanceUI::TYPE_WEAKNAME);
+		}
+		else if (CGame::GetWave() == CGame::WAVE_01)
+		{
+			CAppearanceUI::Create(CAppearanceUI::TYPE_BOSSNAME);
+		}
+
+		m_nCounter++;
+	}*/
 	else
 	{
 		// カメラモードをゲーム
@@ -439,22 +452,6 @@ void CCamera::OnStage(void)
 			CAppearanceUI::Create(CAppearanceUI::TYPE_BOSSNAME);
 		}
 	}
-
-	//m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
-	//m_posR = D3DXVECTOR3(0.0f, 50.0f, 0.0f);
-	//m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
-
-	////目標の注視点を設定
-	//m_posRDest.x = 0.0f;
-	//m_posRDest.z = 0.0f;
-
-	////カメラの移動量
-	//m_move.x = m_posRDest.x - m_posR.x;
-	//m_move.z = m_posRDest.z - m_posR.z;
-
-	////位置に移動量を保存
-	//m_posR.x += m_move.x;
-	//m_posR.z += m_move.z;
 }
 
 //================================================================

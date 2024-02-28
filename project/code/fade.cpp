@@ -174,10 +174,18 @@ void CFade::Update(void)
 
 				m_fade = FADE_IN;
 
-				if (m_modeNext != m_modeOld)
-				{
-					CManager::Getinstance()->SetMode(m_modeNext);
-				}
+				CManager::Getinstance()->SetMode(m_modeNext);
+			}
+		}
+		else if (m_fade == FADE_BLACK)
+		{
+			m_Color.a += 0.015f;
+
+			if (m_Color.a >= 1.0f)
+			{
+				m_Color.a = 1.0f;
+
+				m_fade = FADE_IN;
 			}
 		}
 	}
@@ -235,7 +243,7 @@ void CFade::Draw(void)
 void CFade::Set(CScene::MODE modeNext)
 {
 	m_fade = FADE_OUT;
-	m_modeOld = m_modeNext;
+	//m_modeOld = m_modeNext;
 	m_modeNext = modeNext;
 	m_Color = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 }
@@ -247,7 +255,7 @@ void CFade::Set(void)
 {
 	if (m_bFade == false)
 	{
-		m_fade = FADE_OUT;
+		m_fade = FADE_BLACK;
 		m_bFade = true;
 		m_modeOld = m_modeNext;
 		m_Color = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);

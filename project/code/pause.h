@@ -55,12 +55,14 @@ public:
 	static CPause *Create(void);               // 生成処理
 
 	void SetDraw(bool bPause);                 // 描画するかどうか
+	void SetCol(void);
 							                   
 private:
 	CObject2D *m_pBg;                           // 黒い背景用のポインタ
 	CObject2D *m_pFrame;                        // 枠用のポインタ
 	PAUSE m_aMenu[MENU_MAX];                    // メニュー
-	static const char *m_apTexName[TYPE_MAX];    // テクスチャのお名前
+	int m_nSelect;                              // 選択している番号
+	static const char *m_apTexName[TYPE_MAX];   // テクスチャのお名前
 };
 
 #endif

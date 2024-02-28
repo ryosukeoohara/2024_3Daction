@@ -199,6 +199,7 @@
     <ClCompile Include="code\tutorial.cpp" />
     <ClCompile Include="code\tutorialUI.cpp" />
     <ClCompile Include="code\UImanager.cpp" />
+    <ClCompile Include="code\userrankUI.cpp" />
     <ClCompile Include="code\utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +248,7 @@
     <ClInclude Include="code\tutorial.h" />
     <ClInclude Include="code\tutorialUI.h" />
     <ClInclude Include="code\UImanager.h" />
+    <ClInclude Include="code\userrankUI.h" />
     <ClInclude Include="code\utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

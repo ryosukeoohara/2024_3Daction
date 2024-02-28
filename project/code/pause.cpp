@@ -22,7 +22,7 @@ namespace
 		D3DXVECTOR3(640.0f, 650.0f, 0.0f),
 	};
 
-	const D3DXVECTOR2 TEXSIZE = { 130.0f, 45.0f };  // サイズ
+	const D3DXVECTOR2 TEXSIZE = { 140.0f, 45.0f };  // サイズ
 }
 
 //===========================================================
@@ -50,6 +50,7 @@ CPause::CPause()
 
 	m_pBg = nullptr;
 	m_pFrame = nullptr;
+	m_nSelect = 0;
 }
 
 //===========================================================
@@ -65,21 +66,12 @@ CPause::~CPause()
 //===========================================================
 HRESULT CPause::Init(void)
 {
-	if (m_pBg == nullptr)
-	{
-		m_pBg = CObject2D::Create();
-		m_pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(m_apTexName[TYPE_BACK]));
-		m_pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_pBg->SetSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-		m_pBg->SetDraw(false);
-	}
-
 	if (m_pFrame == nullptr)
 	{
 		m_pFrame = CObject2D::Create();
 		m_pFrame->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(m_apTexName[TYPE_FRAME]));
 		m_pFrame->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_pFrame->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+		m_pFrame->SetSize(270.0f, 270.0f);
 		m_pFrame->SetDraw(false);
 	}
 
@@ -111,7 +103,64 @@ void CPause::Uninit(void)
 //===========================================================
 void CPause::Update(void)
 {
-	
+	//キーボードを取得
+	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
+
+	//ゲームパッドを取得
+	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	//サウンドを取得
+	CSound *pSound = CManager::Getinstance()->GetSound();
+
+	//フェードの情報を取得
+	CFade *pFade = CManager::Getinstance()->GetFade();
+
+	//上に移動----------------------------------------------
+	if (InputKeyboard->GetPress(DIK_S) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_DOWN, 0) == true)
+	{//Wキーが押された
+
+		m_nSelect = (m_nSelect + 1) % MENU_MAX;
+		SetCol();
+	}
+	else if (InputKeyboard->GetPress(DIK_W) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_UP, 0) == true)
+	{
+		m_nSelect = (m_nSelect - 1 + MENU_MAX) % MENU_MAX;
+		SetCol();
+	}
+
+	//上に移動----------------------------------------------
+	if (InputKeyboard->GetPress(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	{//Wキーが押された
+
+		switch (m_nSelect)
+		{
+		case MENU_COUTINUE:
+			break;
+
+		case MENU_RETRY:
+
+			if (pFade->Get() != pFade->FADE_OUT)
+			{
+				//シーンをゲームに遷移
+				pFade->Set(CScene::MODE_GAME);
+			}
+			break;
+
+		case MENU_QUIT:
+
+			if (pFade->Get() != pFade->FADE_OUT)
+			{
+				//シーンをタイトル遷移
+				pFade->Set(CScene::MODE_TITLE);
+			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	SetCol();
 }
 
 //===========================================================
@@ -167,6 +216,29 @@ void CPause::SetDraw(bool bPause)
 		if (m_aMenu[nCount].Object2D != nullptr)
 		{
 			m_aMenu[nCount].Object2D->SetDraw(bPause);
+		}
+	}
+}
+
+//===========================================================
+// 描画処理
+//===========================================================
+void CPause::SetCol(void)
+{
+	for (int nCount = 0; nCount < MENU_MAX; nCount++)
+	{
+		if (m_nSelect != nCount)
+		{
+			m_aMenu[nCount].col = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+		}
+		else
+		{
+			m_aMenu[nCount].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		}
+
+		if (m_aMenu[nCount].Object2D != nullptr)
+		{
+			m_aMenu[nCount].Object2D->SetColor(m_aMenu[nCount].col);
 		}
 	}
 }

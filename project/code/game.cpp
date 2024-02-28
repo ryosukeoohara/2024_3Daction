@@ -93,6 +93,10 @@ void CGame::WaveControll(void)
 		m_Wave = WAVE_01;
 		m_pEnemyManager->ReadText(ENEMYBOSS_TEXT);
 	}
+	else if(m_Wave == WAVE_01)
+	{
+		m_Wave = MAVE_CLEAR;
+	}
 }
 
 //===========================================================
@@ -101,7 +105,7 @@ void CGame::WaveControll(void)
 HRESULT CGame::Init(void)
 {
 	m_Wave = WAVE_00;
-
+	m_bPause = false;
 	CField *pField = new CField;
 	pField->Init();
 	pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
@@ -109,12 +113,6 @@ HRESULT CGame::Init(void)
 	pField->SetSize(5000.0f, 5000.0f);
 	pField->SetDraw(true);
 	
-	// ポーズの生成
-	if (m_pPause == nullptr)
-	{
-		m_pPause = CPause::Create();
-	}
-
 	// マップの生成
 	if (m_pMap == nullptr)
 	{
@@ -145,6 +143,12 @@ HRESULT CGame::Init(void)
 		m_pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
 	}
 
+	// ポーズの生成
+	if (m_pPause == nullptr)
+	{
+		m_pPause = CPause::Create();
+	}
+
 	//CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	return S_OK;
@@ -155,6 +159,10 @@ HRESULT CGame::Init(void)
 //===========================================================
 void CGame::Uninit(void)
 {
+	// 敵を倒した数取得
+	int m = CPlayer::GetPlayer()->GetDefeat();
+	CManager::Getinstance()->SetDefeat(CPlayer::GetPlayer()->GetDefeat());
+
 	CManager::Getinstance()->GetSound()->Stop();
 
 	// ポーズの破棄
@@ -212,31 +220,41 @@ void CGame::Update(void)
 	//フェードの情報を取得
 	CFade *pFade = CManager::Getinstance()->GetFade();
 
-	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_P) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
+	if ((CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_P) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
+	  && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
 	{
 		m_bPause = m_bPause ? false : true;
 
 		if (m_pPause != nullptr)
 		{
-			//m_pPause->SetDraw(m_bPause);
+			m_pPause->SetDraw(m_bPause);
 		}
 	}
 
 	if (m_bPause == true)
 	{
-		/*if (m_pPause != nullptr)
+		if (m_pPause != nullptr)
 		{
 			m_pPause->Update();
 			m_pPause->SetDraw(m_bPause);
-		}*/
+		}
 
 		return;
 	}
 
-	if (pFade->Get() != pFade->FADE_OUT &&  pFade->GetCol() == 0.0f && m_bOnStage == false && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
+	if (pFade->Get() != pFade->FADE_BLACK &&  pFade->GetCol() == 0.0f && m_bOnStage == false && CManager::Getinstance()->GetCamera()->GetMode() == CCamera::MODE_GAME)
 	{
 		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_ONSTAGE);
 		m_bOnStage = true;
+	}
+
+	if (m_Wave == MAVE_CLEAR)
+	{
+		m_Wave = WAVE_00;
+		//シーンをゲームに遷移
+		pFade->Set(CScene::MODE_RESULT);
+
+		return;
 	}
 
 	if (InputKeyboard->GetTrigger(DIK_RETURN) == true /*|| pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true*/)
@@ -247,6 +265,8 @@ void CGame::Update(void)
 			m_Wave = WAVE_00;
 			//シーンをゲームに遷移
 			pFade->Set(CScene::MODE_RESULT);
+
+			return;
 		}
 	}
 
@@ -267,7 +287,7 @@ void CGame::Update(void)
 				m_bOnStage = false;
 			}
 			
-			if (pFade->Get() != pFade->FADE_OUT)
+			if (pFade->Get() != pFade->FADE_BLACK)
 			{
 				pFade->Set();
 			}

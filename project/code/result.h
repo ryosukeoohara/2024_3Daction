@@ -12,6 +12,8 @@
 // 前方宣言
 class CField;
 class CMap;
+class CAppearanceUI;
+class CUserRankUI;
 
 //リザルトクラス
 class CResult : public CScene
@@ -30,6 +32,10 @@ public:
 private:
 	CMap *m_pMap;
 	CField *m_pField;
+	CAppearanceUI *m_pNumber;
+	CUserRankUI *m_pUserRank;
+
+	int m_nCounter;
 };
 
 #endif // !_TITLE_H_

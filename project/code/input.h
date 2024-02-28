@@ -166,6 +166,8 @@ public:
 	float GetRXStick(PADBUTTON nKey, int nCntPlayer);
 	float GetRYStick(PADBUTTON nKey, int nCntPlayer);
 
+	float GetLYTriggerStick(PADBUTTON nKey, int nCntPlayer);
+
 private:
 	XINPUT_STATE m_State[MAX_PLAYER];
 	XINPUT_STATE m_StateTrigger[MAX_PLAYER];

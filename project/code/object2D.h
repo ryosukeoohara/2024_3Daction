@@ -34,6 +34,7 @@ public:		//誰でもアクセスできる
 	void SetSize(float fWidth, float fHeight);                  // サイズ
 	void SetEdgeCenter(float fWidth, float fHeight);            // サイズ
 	void SetEdgeCenterTex(float ftex);
+	void SetTex(float fTex);
 	void SetDraw(bool bverdict = true) { m_bDraw = bverdict; }         // 描画するかどうか
 	
 	// 取得系
@@ -53,6 +54,7 @@ private:	//自分だけがアクセスできる
 	int m_nIdxTexture;                    // テクスチャのインデックス番号
 	int m_nCounterAnimPlayer = 0;         // カウンターを初期化する
 	int m_nPatternAnimPlayer = 0;         // パターンNo.を初期化する
+	int m_Number;
 	float m_fHeight;                      // 高さ
 	float m_fWidth;                       // 幅
 	bool m_bDraw;                          // 描画するかどうか

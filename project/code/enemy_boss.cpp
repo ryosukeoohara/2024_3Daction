@@ -600,15 +600,6 @@ void CEnemyBoss::Uninit(void)
 		m_pLife2D->Uninit();
 		m_pLife2D = nullptr;
 	}
-
-	//フェードの情報を取得
-	CFade *pFade = CManager::Getinstance()->GetFade();
-
-	if (pFade->Get() != pFade->FADE_OUT)
-	{
-		//シーンをゲームに遷移
-		pFade->Set(CScene::MODE_RESULT);
-	}
 }
 
 //==============================================================================

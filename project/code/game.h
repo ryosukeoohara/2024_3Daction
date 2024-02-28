@@ -24,6 +24,7 @@ public:
 	{
 		WAVE_00 = 0,
 		WAVE_01,
+		MAVE_CLEAR,
 		WAVE_MAX
 	};
 

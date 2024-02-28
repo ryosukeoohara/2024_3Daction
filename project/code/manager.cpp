@@ -94,6 +94,7 @@ HRESULT CManager::Release(void)
 CManager::CManager()
 {
 	m_ResetCounter = 0;
+	m_nDefeat = 0;
 	m_bPause = false;
 	m_pUtility = nullptr;
 }

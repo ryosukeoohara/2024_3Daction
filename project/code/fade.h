@@ -19,6 +19,7 @@ public:
 		FADE_NONE = 0,
 		FADE_IN,
 		FADE_OUT,
+		FADE_BLACK,
 		FADE_MAX
 
 	}FADE;

@@ -1350,6 +1350,11 @@ void CPlayer::State(void)
 			m_pMotion->Set(TYPE_GRAPNEUTRAL);
 			m_bGrap = true;
 		}
+
+		/*if (CGame::GetEnemyManager() != nullptr && m_pEnemy != nullptr)
+		{
+			CGame::GetEnemyManager()->SetTrue(m_pEnemy->GetIdxID());
+		}*/
 	}
 }
 
@@ -1670,20 +1675,20 @@ void CPlayer::Fire(void)
 
 	if (m_Grap.pEnemy != nullptr)
 	{
-		if (m_Grap.pEnemy->GetMotion()->IsFinish() == true)
-		{
-			m_Grap.pEnemy->SetCurrent(nullptr);
-			m_Grap.pEnemy->SetPosition(D3DXVECTOR3(m_pItemMicro->GetPosition().x, 0.0f, m_pItemMicro->GetPosition().z));
-			m_Grap.pEnemy->Damege(300, 0.0f, m_Info.Atc);
-			m_Info.state = STATE_NEUTRAL;
+		//if (m_Grap.pEnemy->GetMotion()->IsFinish() == true)
+		//{
+		//	m_Grap.pEnemy->SetCurrent(nullptr);
+		//	m_Grap.pEnemy->SetPosition(D3DXVECTOR3(m_pItemMicro->GetPosition().x, 0.0f, m_pItemMicro->GetPosition().z));
+		//	m_Grap.pEnemy->Damege(300, 0.0f, m_Info.Atc);
+		//	m_Info.state = STATE_NEUTRAL;
 
-			// 
-			{
-				CGame::GetEnemyManager()->SetTrue(m_nIdxEne);
-			}
+		//	// 
+		//	{
+		//		CGame::GetEnemyManager()->SetTrue(m_nIdxEne);
+		//	}
 
-			m_Grap.pEnemy = nullptr;
-		}
+		//	m_Grap.pEnemy = nullptr;
+		//}
 	}
 }
 
@@ -1893,6 +1898,12 @@ bool CPlayer::StartHeatAction(void)
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
 			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[m_HeatAct].x, CAMERAROT[m_HeatAct].y, CAMERAROT[m_HeatAct].z));
 			CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
+
+			if (CGame::GetEnemyManager() != nullptr)
+			{
+				CGame::GetEnemyManager()->SetTarget(m_pEnemy->GetIdxID());
+			}
+			
 			m_Info.state = STATE_HEAT;
 
 			return true;

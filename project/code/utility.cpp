@@ -4,8 +4,8 @@
 // Author 大原怜将
 //
 //===========================================================
-
 #include "utility.h"
+#include "object2D.h"
 
 //===========================================================
 // コンストラクタ
@@ -98,4 +98,54 @@ D3DXVECTOR3 CUtility::Distance(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos)
 int CUtility::Nearest(D3DXVECTOR3 MyPos, D3DXVECTOR3 TargetPos)
 {
 	return 0;
+}
+
+//===========================================================
+// ポリゴンの拡大
+//===========================================================
+void CUtility::Enlarge(CObject2D * pObj, float fHei, float fWid)
+{
+	// 描画させる
+	pObj->SetDraw(true);
+
+	// 幅と高さ取得
+	float fHeight = pObj->GetHeight();
+	float fWidth = pObj->GetWidth();
+
+	fHeight = fHeight + fHei;
+	fWidth = fWidth + fWid;
+
+	// サイズ設定
+	pObj->SetSize(fWidth, fHeight);
+}
+
+//===========================================================
+// ポリゴンの縮小
+//===========================================================
+void CUtility::Shrink(CObject2D * pObj, float fHei, float fWid)
+{
+	// 幅と高さ取得
+	float fHeight = pObj->GetHeight();
+	float fWidth = pObj->GetWidth();
+
+	fHeight = fHeight - fHei;
+	fWidth = fWidth - fWid;
+
+	// サイズ設定
+	pObj->SetSize(fWidth, fHeight);
+	pObj->SetSize(fWidth, fHeight);
+}
+
+//===========================================================
+// ポリゴンの色
+//===========================================================
+void CUtility::Color_A2D(CObject2D * pObj, float fValue)
+{
+	// 透明度取得
+	float fColor_a = pObj->GetColor().a;
+
+	fColor_a = fColor_a + fValue;
+
+	// 色設定
+	pObj->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, fColor_a));
 }

@@ -249,19 +249,20 @@ void CEnemyManager::ReadText(const char *text)
 //=============================================================================
 void CEnemyManager::SetTarget(int idx)
 {
-	if (m_appEnemy != nullptr)
-	{
-		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
-		{
-			if (nCount != idx)
-			{
-				if (m_appEnemy[nCount] != nullptr)
-				{// 使用されていたら
+	CEnemy *pEnemy = CEnemy::GetTop();
 
-					m_appEnemy[nCount]->SetDraw(false);
-				}
-			}
+	while (pEnemy != nullptr)
+	{
+		CEnemy *pEnemyNext = pEnemy->GetNext();
+
+		int n = pEnemy->GetIdxID();
+
+		if (n != idx)
+		{
+			pEnemy->SetDraw(false);
 		}
+
+		pEnemy = pEnemyNext;
 	}
 }
 
@@ -270,19 +271,18 @@ void CEnemyManager::SetTarget(int idx)
 //=============================================================================
 void CEnemyManager::SetTrue(int idx)
 {
-	if (m_appEnemy != nullptr)
-	{
-		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
-		{
-			if (nCount != idx)
-			{
-				if (m_appEnemy[nCount] != nullptr)
-				{// 使用されていたら
+	CEnemy *pEnemy = CEnemy::GetTop();
 
-					m_appEnemy[nCount]->SetDraw(true);
-				}
-			}
+	while (pEnemy != nullptr)
+	{
+		CEnemy *pEnemyNext = pEnemy->GetNext();
+
+		if (pEnemy->GetID() != idx)
+		{
+			pEnemy->SetDraw(true);
 		}
+
+		pEnemy = pEnemyNext;
 	}
 }
 
