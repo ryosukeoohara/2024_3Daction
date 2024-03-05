@@ -93,6 +93,8 @@ HRESULT CResult::Init(void)
 		pBg->SetDraw(true);
 	}
 
+	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_RESULT);
+
 	return S_OK;
 }
 
@@ -101,6 +103,8 @@ HRESULT CResult::Init(void)
 //===========================================================
 void CResult::Uninit(void)
 {
+	CManager::Getinstance()->GetSound()->Stop();
+
 	if (m_pField != nullptr)
 	{
 		m_pField->Uninit();
@@ -134,7 +138,7 @@ void CResult::Update(void)
 	//フェードの情報を取得
 	CFade *pFade = CManager::Getinstance()->GetFade();
 
-	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
 	{//ENTERキーを押したかつシーンがタイトルのとき
 
 		if (pFade->Get() != pFade->FADE_OUT)

@@ -34,7 +34,10 @@ CTutorialUI *CTutorial::m_pUI = nullptr;
 //===============================================================
 CTutorial::CTutorial()
 {
-	
+	m_pField = nullptr;
+	m_pEnemy = nullptr;
+	m_pItemManager = nullptr;
+	m_pStart = nullptr;
 }
 
 //===============================================================
@@ -42,9 +45,7 @@ CTutorial::CTutorial()
 //===============================================================
 CTutorial::~CTutorial()
 {
-	m_pField = nullptr;
-	m_pEnemy = nullptr;
-	m_pItemManager = nullptr;
+	
 }
 
 //===============================================================
@@ -85,6 +86,15 @@ HRESULT CTutorial::Init(void)
 		m_Collision = CCollision::Create();
 	}
 
+	if (m_pStart == nullptr)
+	{
+		m_pStart = CObject2D::Create();
+		m_pStart->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\start.png"));
+		m_pStart->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.9f, 0.0f));
+		m_pStart->SetSize(200.0f, 50.0f);
+		m_pStart->SetDraw(true);
+	}
+
 	// マップの生成
 	if (m_pMap == nullptr)
 	{
@@ -121,6 +131,8 @@ HRESULT CTutorial::Init(void)
 		m_pPlayer->SetMobile();
 	}
 
+	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_TUTORIAL);
+
 	return S_OK;
 }
 
@@ -129,6 +141,8 @@ HRESULT CTutorial::Init(void)
 //===============================================================
 void CTutorial::Uninit(void)
 {
+	CManager::Getinstance()->GetSound()->Stop();
+
 	// 破棄
 	// フィールド
 	if (m_pField != nullptr)
@@ -201,7 +215,7 @@ void CTutorial::Update(void)
 	//フェードの情報を取得
 	CFade *pFade = CManager::Getinstance()->GetFade();
 
-	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true)
 	{//ENTERキーを押したかつシーンがタイトルのとき
 
 		if (pFade->Get() != pFade->FADE_OUT)

@@ -135,30 +135,32 @@ int CObject::m_nNumAll = 0;
 //	m_pTexture = m_Texture;
 //}
 
-CObject *CObject::m_pTop = NULL;
-CObject *CObject::m_pCur = NULL;
+CObject *CObject::m_pTop[NUM_PRIORITY] = {};
+CObject *CObject::m_pCur[NUM_PRIORITY] = {};
 
 //================================================================
 //コンストラクタ
 //================================================================
-CObject::CObject()
+CObject::CObject(int nPriority)
 {
 	m_bDeath = false;
 
-	CObject *pObject = m_pTop;
+	this->SetPriority(nPriority);
 
-	if (m_pTop != nullptr)
+	CObject *pObject = m_pTop[nPriority];
+
+	if (m_pTop[nPriority] != nullptr)
 	{// 先頭が存在している場合
 
-		m_pCur->m_pNext = this;
-		m_pPrev = m_pCur;
-		m_pCur = this;
+		m_pCur[nPriority]->m_pNext = this;
+		m_pPrev = m_pCur[nPriority];
+		m_pCur[nPriority] = this;
 	}
 	else
 	{// 存在しない場合
 
-		m_pTop = this;
-		m_pCur = this;
+		m_pTop[nPriority] = this;
+		m_pCur[nPriority] = this;
 	}
 }
 
@@ -175,15 +177,18 @@ CObject::~CObject()
 //================================================================
 void CObject::ReleaseAll(void)
 {
-	CObject *pObject = m_pTop;
-
-	while (pObject != NULL)
+	for (int i = 0; i < NUM_PRIORITY; i++)
 	{
-		CObject *pObjectNext = pObject->m_pNext;
+		CObject *pObject = m_pTop[i];
 
-		pObject->Uninit();
+		while (pObject != nullptr)
+		{
+			CObject *pObjectNext = pObject->m_pNext;
 
-		pObject = pObjectNext;
+			pObject->Uninit();
+
+			pObject = pObjectNext;
+		}
 	}
 }
 
@@ -194,14 +199,17 @@ void CObject::UpdateAll(void)
 {
 	DeadChuck();
 
-	CObject *pObject = m_pTop;
-
-	while (pObject != NULL)
+	for (int i = 0; i < NUM_PRIORITY; i++)
 	{
-		CObject *pObjectNext = pObject->m_pNext;
+		CObject *pObject = m_pTop[i];
 
-		pObject->Update();
-		pObject = pObjectNext;
+		while (pObject != nullptr)
+		{
+			CObject *pObjectNext = pObject->m_pNext;
+
+			pObject->Update();
+			pObject = pObjectNext;
+		}
 	}
 
 	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
@@ -221,14 +229,17 @@ void CObject::DrawAll(void)
 	//カメラの設定
 	pCamera->SetCamera();
 
-	CObject *pObject = m_pTop;
-
-	while (pObject != NULL)
+	for (int i = 0; i < NUM_PRIORITY; i++)
 	{
-		CObject *pObjectNext = pObject->m_pNext;
+		CObject *pObject = m_pTop[i];
 
-		pObject->Draw();
-		pObject = pObjectNext;
+		while (pObject != nullptr)
+		{
+			CObject *pObjectNext = pObject->m_pNext;
+
+			pObject->Draw();
+			pObject = pObjectNext;
+		}
 	}
 }
 
@@ -237,11 +248,8 @@ void CObject::DrawAll(void)
 //================================================================
 void CObject::Release(void)
 {
-	CObject *pObject = this;
-
 	// 死んだ
-	pObject->m_bDeath = true;
-	
+	m_bDeath = true;
 }
 
 //================================================================
@@ -257,54 +265,63 @@ CObject *CObject::Getobject(int nIdx)
 //================================================================
 void CObject::DeadChuck(void)
 {
-	CObject *pObject = m_pTop;
-
-	while (pObject != nullptr)
+	for (int i = 0; i < NUM_PRIORITY; i++)
 	{
-		CObject *pObjectNext = pObject->m_pNext;
+		CObject *pObject = m_pTop[i];
 
-		if (pObject->m_bDeath == true)
+		while (pObject != nullptr)
 		{
-			// リストから自分自身を削除する
-			if (m_pTop == pObject)
-			{// 自身が先頭
-				if (pObject->m_pNext != nullptr)
-				{// 次が存在している
-					m_pTop = pObject->m_pNext;	// 次を先頭にする
-					pObject->m_pNext->m_pPrev = nullptr;	// 次の前のポインタを覚えていないようにする
-				}
-				else
-				{// 存在していない
-					m_pTop = nullptr;	// 先頭がない状態にする
-					m_pCur = nullptr;	// 最後尾がない状態にする
-				}
-			}
-			else if (m_pCur == pObject)
-			{// 自身が最後尾
-				if (pObject->m_pPrev != nullptr)
-				{// 次が存在している
-					m_pCur = pObject->m_pPrev;			// 前を最後尾にする
-					pObject->m_pPrev->m_pNext = nullptr;	// 前の次のポインタを覚えていないようにする
-				}
-				else
-				{// 存在していない
-					m_pTop = nullptr;	// 先頭がない状態にする
-					m_pCur = nullptr;	// 最後尾がない状態にする
-				}
-			}
-			else
-			{
-				if (pObject->m_pNext != nullptr)
-				{
-					pObject->m_pNext->m_pPrev = pObject->m_pPrev;	// 自身の次に前のポインタを覚えさせる
-				}
-				if (pObject->m_pPrev != nullptr)
-				{
-					pObject->m_pPrev->m_pNext = pObject->m_pNext;	// 自身の前に次のポインタを覚えさせる
-				}
-			}
-		}
+			CObject *pObjectNext = pObject->m_pNext;
 
-		pObject = pObjectNext;
+			if (pObject->m_bDeath == true)
+			{
+				// リストから自分自身を削除する
+				if (m_pTop[i] == pObject)
+				{// 自身が先頭
+
+					if (pObject->m_pNext != nullptr)
+					{// 次が存在している
+
+						m_pTop[i] = pObject->m_pNext;	// 次を先頭にする
+						pObject->m_pNext->m_pPrev = nullptr;	// 次の前のポインタを覚えていないようにする
+					}
+					else
+					{// 存在していない
+
+						m_pTop[i] = nullptr;	// 先頭がない状態にする
+						m_pCur[i] = nullptr;	// 最後尾がない状態にする
+					}
+				}
+				else if (m_pCur[i] == pObject)
+				{// 自身が最後尾
+
+					if (pObject->m_pPrev != nullptr)
+					{// 次が存在している
+
+						m_pCur[i] = pObject->m_pPrev;			// 前を最後尾にする
+						pObject->m_pPrev->m_pNext = nullptr;	// 前の次のポインタを覚えていないようにする
+					}
+					else
+					{// 存在していない
+
+						m_pTop[i] = nullptr;	// 先頭がない状態にする
+						m_pCur[i] = nullptr;	// 最後尾がない状態にする
+					}
+				}
+				else
+				{
+					if (pObject->m_pNext != nullptr)
+					{
+						pObject->m_pNext->m_pPrev = pObject->m_pPrev;	// 自身の次に前のポインタを覚えさせる
+					}
+					if (pObject->m_pPrev != nullptr)
+					{
+						pObject->m_pPrev->m_pNext = pObject->m_pNext;	// 自身の前に次のポインタを覚えさせる
+					}
+				}
+			}
+
+			pObject = pObjectNext;
+		}
 	}
 }

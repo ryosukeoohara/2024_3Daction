@@ -17,6 +17,7 @@
 #include "UImanager.h"
 #include "appearanceUI.h"
 #include "tutorial.h"
+#include "enemy.h"
 
 //マクロ定義
 #define CAMERA_DISTNCE    (300.0f)
@@ -302,7 +303,7 @@ void CCamera::Heat(void)
 //================================================================
 void CCamera::Return(void)
 {
-	if (m_nCounter <= 80)
+	if (m_nCounter <= 90)
 	{
 		// カメラを目標の向きまで回転させる
 		D3DXVECTOR3 rotDest = m_Oldrot - m_rot;
@@ -543,7 +544,7 @@ void CCamera::Tutorial(void)
 		m_rot.y -= 0.05f;
 	}
 
-	//m_rot.y += MousePos.x * 0.005f;
+	m_rot.y += MousePos.x * 0.005f;
 
 	if (m_rot.y > D3DX_PI)
 	{
@@ -589,11 +590,25 @@ void CCamera::CameraR(void)
 //================================================================
 void CCamera::Title(void)
 {
-	m_rot.y -= 0.002f;
+	/*m_rot.y -= 0.002f;
 
 	m_posV.x = m_posR.x - sinf(m_rot.y) * -300.0f;
 	m_posV.z = m_posR.z - cosf(m_rot.y) * -300.0f;
 
 	m_posV = D3DXVECTOR3(m_posV.x, 50.0f, 30.0f + m_posV.z);
-	m_posR = D3DXVECTOR3(0.0f, 50.0f, 500.0f);
+	m_posR = D3DXVECTOR3(0.0f, 50.0f, 500.0f);*/
+
+	m_posV.x = m_posR.x - sinf(m_rot.y) * -m_fLen;
+	m_posV.z = m_posR.z - cosf(m_rot.y) * -m_fLen;
+
+	CPlayer *pPlayer = CPlayer::GetPlayer();
+
+	if (pPlayer != nullptr)
+	{
+		D3DXVECTOR3 pos = pPlayer->GetPosition();
+
+		m_posV = D3DXVECTOR3(100.0f, 50.0f, 100.0f);
+		m_posR = D3DXVECTOR3(50.0f, 50.0f, 10.0f);
+		m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
+	}
 }

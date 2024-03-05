@@ -43,10 +43,10 @@ public:
 	static CGame *Create(void);
 
 	// 設定系
-	void SetbPause(bool bpause) { m_bPause = bpause; }
+	static void SetbPause(bool bpause) { m_bPause = bpause; }
 
 	// 取得系
-	bool GetbPause(void) { return m_bPause; }
+	static bool GetbPause(void) { return m_bPause; }
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 	static CEnemy *GetEnemy(void) { return m_pEnemy; }
 	static CEnemyManager *GetEnemyManager(void) { return m_pEnemyManager; }
@@ -67,9 +67,9 @@ private:
 	static CItemManager *m_pItemManager;
 	static CMap *m_pMap;
 	int m_nOnStageCounter;
-	bool m_bPause;
+	static bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか
-	bool m_bOnStage;
+	static bool m_bOnStage;
 	static int m_nCounter;
 };
 

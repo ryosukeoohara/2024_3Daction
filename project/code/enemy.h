@@ -65,8 +65,9 @@ public:
 	// 敵の種類
 	enum TYPE
 	{
-		TYPE_WEAK = 0,  // ザコ
-		TYPE_BOSS,      // ボス
+		WEAK = 0,  // ザコ
+		BOSS,      // ボス
+		MAX
 	};
 
 	// 追尾
@@ -81,7 +82,7 @@ public:
 	{
 		Mobile = 0,  // 動ける
 		Immobile,    // 動けない
-		MAX
+		MOBILITY_MAX
 	};
 
 	MOBILITY m_Mobility;
@@ -91,7 +92,7 @@ public:
 public:
 
 	CEnemy();                                  //コンストラクタ
-	CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife);                   //コンストラクタ
+	CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife, int nPriority = 5);                   //コンストラクタ
 	~CEnemy();                                 //デストラクタ
 										       
 	virtual HRESULT Init(void);                        //初期化
@@ -99,7 +100,7 @@ public:
 	virtual void Update(void);                         //更新
 	virtual void Draw(void);                           //描画
 
-	static CEnemy *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife);    //生成
+	static CEnemy *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife, int nPriority = 5);    //生成
 	void ReadText(char *fliename);             //テキストファイル読み込み
 
 	//　設定系
@@ -113,7 +114,7 @@ public:
 	void SetLife(int nLife) { m_Info.nLife = nLife; }               // 体力
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }  // 親のマトリックス
 	void SetIdx(int idx) { m_Info.nIdxID = idx; }
-	void SetType(TYPE type) { m_Type = type; }
+	void SetType(TYPE type) { m_Type = type; }                      // 種類
 	void SetNumAll(int nNum) { m_nNumAll = nNum; }
 	virtual void SetChase(CHASE cha);
 	void SetDraw(bool value) { m_Info.bDraw = value; }
@@ -127,6 +128,7 @@ public:
 	STATE GetState(void) { return m_Info.state; }              // 状態
 	int GetLife(void) { return m_Info.nLife; }                 // 体力
 	int GetIdxID(void) { return m_Info.nIdxID; }
+	TYPE GetType(void) { return m_Type; }
 	CCharacter **GetCharcter(void) { return m_apModel; }
 	static int GetNumAll(void) { return m_nNumAll; }
  	CMotion *GetMotion(void) { return m_pMotion; }

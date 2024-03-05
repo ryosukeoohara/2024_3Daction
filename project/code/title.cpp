@@ -52,6 +52,7 @@ CTitle::CTitle()
 	m_pField = nullptr;
 	m_pBg = nullptr;
 	m_pMap = nullptr;
+	m_pStart = nullptr;
 	m_nCnt = 0;
 	m_nCntPos = 0;
 }
@@ -103,22 +104,32 @@ HRESULT CTitle::Init(void)
 		m_pMap = CMap::Create();
 	}
 
-	//CObject2D *pBg = new CObject2D;
+	if (m_pPlayer == nullptr)
+	{
+		m_pPlayer = CPlayer::Create();
+		m_pPlayer->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_pPlayer->SetRotition(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+	}
+
+	if (m_pStart == nullptr)
+	{
+		m_pStart = CObject2D::Create();
+		m_pStart->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\any.png"));
+		m_pStart->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.7f, 0.0f));
+		m_pStart->SetSize(200.0f, 50.0f);
+		m_pStart->SetDraw(true);
+	}
 
 	if (m_pBg == nullptr)
 	{
 		m_pBg = CObject2D::Create();
 		m_pBg->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\aaa.png"));
-		m_pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_pBg->SetSize(200.0f, 200.0f);
+		m_pBg->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.3f, SCREEN_HEIGHT * 0.3f, 0.0f));
+		m_pBg->SetSize(300.0f, 200.0f);
 		m_pBg->SetDraw(true);
 	}
 
-	/*if (m_pPlayer == nullptr)
-	{
-		m_pPlayer = CPlayer::Create();
-		m_pPlayer->SetPosition(TEXPOS[0]);
-	}*/
+	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_TITLE);
 	
 	return S_OK;
 }
@@ -128,6 +139,8 @@ HRESULT CTitle::Init(void)
 //===========================================================
 void CTitle::Uninit(void)
 {
+	CManager::Getinstance()->GetSound()->Stop();
+
 	if (m_pField != nullptr)
 	{
 		m_pField->Uninit();
@@ -145,6 +158,12 @@ void CTitle::Uninit(void)
 	{
 		m_pMap->Uninit();
 		m_pMap = nullptr;
+	}
+
+	if (m_pStart != nullptr)
+	{
+		m_pStart->Uninit();
+		m_pStart = nullptr;
 	}
 
 	// プレイヤーの破棄
@@ -184,30 +203,10 @@ void CTitle::Update(void)
 		}
 	}
 
-	/*if (m_pPlayer != nullptr)
+	if (m_pPlayer != nullptr)
 	{
 		m_pPlayer->TitleWalk();
 	}
-
-	m_nCnt++;
-
-	if (m_nCnt >= 120)
-	{
-		m_nCnt = 0;
-
-		if (m_pPlayer != nullptr)
-		{
-			m_nCntPos++;
-			
-			if (m_nCntPos >= 3)
-			{
-				m_nCntPos = 0;
-			}
-
-			m_pPlayer->SetPosition(TEXPOS[m_nCntPos]);
-			CManager::Getinstance()->GetCamera()->SetPositionR(CAMERAPOS[m_nCntPos]);
-		}
-	}*/
 
 	CManager::Getinstance()->GetDebugProc()->Print("現在のシーン：タイトル");
 }

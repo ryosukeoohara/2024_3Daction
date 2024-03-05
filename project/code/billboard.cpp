@@ -30,7 +30,7 @@ namespace
 //================================================================
 //コンストラクタ
 //================================================================
-CBillBoard::CBillBoard()
+CBillBoard::CBillBoard(int nPriority) : CObject(nPriority)
 {
 	//値をクリア
 	m_pTexture = NULL;  //テクスチャへのポインタ
@@ -70,6 +70,26 @@ CBillBoard *CBillBoard::Create(void)
 	{
 		//オブジェクト2Dの生成
 		pBillBoard = new CBillBoard();
+
+		//初期化処理
+		pBillBoard->Init();
+	}
+
+	return pBillBoard;
+}
+
+//================================================================
+//生成処理
+//================================================================
+CBillBoard * CBillBoard::Create(int nPriority)
+{
+	//オブジェクト2Dのポインタ
+	CBillBoard *pBillBoard = nullptr;
+
+	if (pBillBoard == nullptr)
+	{
+		//オブジェクト2Dの生成
+		pBillBoard = new CBillBoard(nPriority);
 
 		//初期化処理
 		pBillBoard->Init();

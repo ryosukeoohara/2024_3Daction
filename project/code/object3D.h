@@ -15,7 +15,7 @@
 class CObject3D : public CObject
 {
 public:
-	CObject3D();
+	CObject3D(int nPriority = 3);
 	CObject3D(D3DXVECTOR3 pos);  //コンストラクタ(overdose)
 	~CObject3D();
 
@@ -42,7 +42,8 @@ public:
 	D3DXCOLOR GetColor(void) { return m_col; }          // 色
 	int GetIdxTex(void) { return m_nIdxTexture; }       // テクスチャのインデックス番号
 	
-	static CObject3D *Create(void);  //生成
+	static CObject3D *Create(int nPriority = 3);  //生成
+	static CObject3D *Create(D3DXVECTOR3 pos);    //生成
 	
 //	float GetHeight(D3DXVECTOR3 pos);
 

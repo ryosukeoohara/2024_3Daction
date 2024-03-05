@@ -29,6 +29,7 @@
 #include "camera.h"
 #include "particle.h"
 #include "item.h"
+#include "animation.h"
 #include <assert.h>
 
 //*=============================================================================
@@ -60,20 +61,6 @@ CEnemyBoss::CEnemyBoss()
 	m_nBiriBiriCount = 0;
 	m_nReceivedAttack = 0;
 	m_nAttackType = -1;
-	/*CEnemyBoss *pEnemy = m_pTop;
-
-	if (m_pTop == nullptr)
-	{
-	m_pTop = this;
-
-	m_pCur = this;
-	}
-	else if (m_pTop != nullptr)
-	{
-	m_pPrev = m_pCur;
-	m_pPrev->m_pNext = this;
-	m_pCur = this;
-	}*/
 }
 
 //==============================================================================
@@ -82,16 +69,6 @@ CEnemyBoss::CEnemyBoss()
 CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 {
 	// ’l‚ðƒNƒŠƒA
-	/*m_Info.pos = pos;
-	m_Info.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.rot = rot;
-	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXMatrixIdentity(&m_Info.mtxWorld);
-	m_Info.state = STATE_NONE;
-	m_Info.nLife = nlife;
-	m_Info.nIdxID = -1;
-	m_nDamegeCounter = 0;*/
-
 	SetPosition(pos);
 	SetRotition(rot);
 	SetLife(nlife);
@@ -102,21 +79,6 @@ CEnemyBoss::CEnemyBoss(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_nBiriBiriCount = 0;
 	m_nReceivedAttack = 0;
 	m_nAttackType = -1;
-
-	/*CEnemyBoss *pEnemy = m_pTop;
-
-	if (m_pTop == nullptr)
-	{
-	m_pTop = this;
-
-	m_pCur = this;
-	}
-	else if (m_pTop != nullptr)
-	{
-	m_pPrev = m_pCur;
-	m_pPrev->m_pNext = this;
-	m_pCur = this;
-	}*/
 }
 
 //==============================================================================
@@ -265,14 +227,14 @@ void CEnemyBoss::Attack(void)
 		switch (m_nAttackType)
 		{
 		case ATTACKTYPE_GURUGURU:
-			NormalPunch();
 			
-
+			
+			RollingPunch();
 			break;
 
 		case ATTACKTYPE_PUNCH:
 
-			RollingPunch();
+			NormalPunch();
 
 			break;
 
@@ -371,7 +333,8 @@ void CEnemyBoss::Move(void)
 //==============================================================================
 void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
-	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE && (m_Info.state != STATE_ATTACK || CGame::GetPlayer()->GetState() == CPlayer::STATE_HEAT))
+	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE 
+	 && m_Info.state != STATE_DETH && (m_Info.state != STATE_ATTACK || CGame::GetPlayer()->GetState() == CPlayer::STATE_HEAT))
 	{
 		m_Info.nLife -= damege;
 
@@ -392,7 +355,7 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 				// —”‚ÌŽí‚ðÝ’è
 				srand((unsigned int)time(0));
 
-				int a = rand() % 60;
+				int a = rand() % 50;
 				int n = m_Info.nLife / 3;
 				if (a >= n && CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
 				{
@@ -409,6 +372,9 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 				}
 			}
 		}
+
+		CAnimation::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y + 60.0f, m_Info.pos.z), 30.0f, CBillBoard::TYPE_HIT);
+		CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_PUNCH);
 	}
 }
 
@@ -576,6 +542,7 @@ void CEnemyBoss::Fly(void)
 HRESULT CEnemyBoss::Init(void)
 {
 	CEnemy::Init();
+	SetType(BOSS);
 	ReadText(ENEMY_TEXT);
 
 	if (m_pLife2D == nullptr)

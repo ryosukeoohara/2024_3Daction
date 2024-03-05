@@ -52,7 +52,7 @@ HRESULT CTutorialUI::Init(void)
 		{// 使用していなかったら
 
 			// 生成して、位置、サイズ、テクスチャ、描画するか設定
-			m_apObject2D[nCount] = CObject2D::Create();
+			m_apObject2D[nCount] = CObject2D::Create(7);
 			m_apObject2D[nCount]->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.85f, 150.0f + nCount * 40, 0.0f));
 			m_apObject2D[nCount]->SetSize(150.0f, 20.0f);
 			m_apObject2D[nCount]->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEXTURENAME[nCount]));

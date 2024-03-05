@@ -39,6 +39,7 @@ public:
 private:
 	CField *m_pField;
 	CObject2D *m_pBg;
+	CObject2D *m_pStart;
 	static CMap *m_pMap;
 	CEnemy *m_pEnemy;
 	CItemManager *m_pItemManager;

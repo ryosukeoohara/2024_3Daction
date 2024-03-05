@@ -23,7 +23,7 @@ public:
 		TYPE_MAX
 	};
 
-	CBillBoard();
+	CBillBoard(int nPriority = 3);
 	~CBillBoard();
 
 	HRESULT Init(void);  // 初期化処理    
@@ -32,6 +32,7 @@ public:
 	void Draw(void);     // 描画処理
 	 
 	static CBillBoard *Create(void);  //生成
+	static CBillBoard *Create(int nPriority = 3);  //生成
 
 	// 設定系
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }        // 親のマトリックス

@@ -33,6 +33,7 @@ public:
 private:
 	CField *m_pField;
 	CObject2D *m_pBg;
+	CObject2D *m_pStart;
 	CMap *m_pMap;
 	static CPlayer *m_pPlayer;
 	int m_nCnt;

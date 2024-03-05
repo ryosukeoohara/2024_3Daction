@@ -28,6 +28,7 @@
 #include "camera.h"
 #include "particle.h"
 #include "item.h"
+#include "animation.h"
 #include <time.h>
 #include  <assert.h>
 
@@ -58,20 +59,6 @@ CEnemyWeak::CEnemyWeak()
 	m_pLife3D = nullptr;
 	m_nBiriBiriCount = 0;
 	m_Chase = CHASE_ON;
-	/*CEnemyWeak *pEnemy = m_pTop;
-
-	if (m_pTop == nullptr)
-	{
-	m_pTop = this;
-
-	m_pCur = this;
-	}
-	else if (m_pTop != nullptr)
-	{
-	m_pPrev = m_pCur;
-	m_pPrev->m_pNext = this;
-	m_pCur = this;
-	}*/
 }
 
 //==============================================================================
@@ -80,16 +67,6 @@ CEnemyWeak::CEnemyWeak()
 CEnemyWeak::CEnemyWeak(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 {
 	// ’l‚ðƒNƒŠƒA
-	/*m_Info.pos = pos;
-	m_Info.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.rot = rot;
-	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXMatrixIdentity(&m_Info.mtxWorld);
-	m_Info.state = STATE_NONE;
-	m_Info.nLife = nlife;
-	m_Info.nIdxID = -1;
-	m_nDamegeCounter = 0;*/
-
 	SetPosition(pos);
 	SetRotition(rot);
 	SetLife(nlife);
@@ -97,21 +74,6 @@ CEnemyWeak::CEnemyWeak(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 	m_pLife3D = nullptr;
 	m_nBiriBiriCount = 0;
 	m_Chase = CHASE_ON;
-
-	/*CEnemyWeak *pEnemy = m_pTop;
-
-	if (m_pTop == nullptr)
-	{
-	m_pTop = this;
-
-	m_pCur = this;
-	}
-	else if (m_pTop != nullptr)
-	{
-	m_pPrev = m_pCur;
-	m_pPrev->m_pNext = this;
-	m_pCur = this;
-	}*/
 }
 
 //==============================================================================
@@ -145,6 +107,7 @@ CEnemyWeak * CEnemyWeak::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
 HRESULT CEnemyWeak::Init(void)
 {
 	CEnemy::Init();
+	SetType(WEAK);
 
 	ReadText(ENETEXT);
 
@@ -290,14 +253,7 @@ void CEnemyWeak::Attack(void)
 
 			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
 			{
-				if (CGame::GetPlayer()->GetState() != CPlayer::STATE_DAMEGE)
-				{
-					CGame::GetPlayer()->SetState(CPlayer::STATE_DAMEGE);
-					CGame::GetPlayer()->SetMove(D3DXVECTOR3(sinf(m_Info.rot.y) * -5.0f, 10.0f, cosf(m_Info.rot.y) * -5.0f));
-					int nLife = CGame::GetPlayer()->GetLife();
-					nLife--;
-					CGame::GetPlayer()->SetLife(nLife);
-				}
+				CGame::GetPlayer()->Damage(10, 5.0f);
 			}
 		}
 	}
@@ -392,7 +348,7 @@ void CEnemyWeak::Move(void)
 //==============================================================================
 void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 {
-	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
+	if (m_Info.state != STATE_DAMEGE && m_Info.state != STATE_HEATDAMEGE && m_Info.state != STATE_PAINFULDAMAGE && m_Info.state != STATE_DETH)
 	{
 		m_Info.nLife -= damege;
 		m_Info.move = D3DXVECTOR3(sinf(CPlayer::GetPlayer()->GetRotition().y) * -blowaway, blowaway, cosf(CPlayer::GetPlayer()->GetRotition().y) * -blowaway);
@@ -426,6 +382,9 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 				}
 			}
 		}
+
+		CAnimation::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y + 60.0f, m_Info.pos.z), 30.0f, CBillBoard::TYPE_HIT);
+		CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_PUNCH);
 	}
 }
 

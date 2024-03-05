@@ -101,7 +101,7 @@ CEnemy::CEnemy()
 //==============================================================================
 // コンストラクタ
 //==============================================================================
-CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
+CEnemy::CEnemy(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife, int nPriority)
 {
 	// 値をクリア
 	m_Info.pos = pos;
@@ -147,7 +147,7 @@ CEnemy::~CEnemy()
 //==============================================================================
 // 生成処理
 //==============================================================================
-CEnemy * CEnemy::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife)
+CEnemy * CEnemy::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, int nlife, int nPriority)
 {
 	CEnemy *pEnemy = nullptr;
 
@@ -180,11 +180,6 @@ HRESULT CEnemy::Init(void)
 
 	m_Info.nIdxID = m_nNumAll;
 	m_nNumAll++;
-
-	if (m_Type == TYPE_WEAK)
-	{
-		
-	}
 
 	return S_OK;
 }
@@ -303,10 +298,11 @@ void CEnemy::Update(void)
 		}
 	}
 
-	if (GetMotion()->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_PAINFULDAMAGE) && m_Info.state != STATE_GETUP)
+	if (GetMotion()->IsFinish() == true && (m_Info.state == STATE_HEATDAMEGE || m_Info.state == STATE_PAINFULDAMAGE || m_Info.state == STATE_FAINTING) && m_Info.state != STATE_GETUP)
 	{
 		m_Info.state = STATE_GETUP;
 		GetMotion()->Set(TYPE_GETUP);
+		
 	}
 	else if (m_pMotion->IsFinish() == true && m_Info.state == STATE_DETH)
 	{// 死亡
@@ -498,7 +494,7 @@ void CEnemy::MicroWave(void)
 		{
 			m_Info.state = STATE_BIRI;
 			GetMotion()->Set(TYPE_BIRI);
-
+			CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_FIRE);
 			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[2].x, CAMERAROT[2].y, CAMERAROT[2].z));
 			//CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
 		}
@@ -512,11 +508,14 @@ void CEnemy::MicroWave(void)
 		{
 			m_Info.state = STATE_FAINTING;
 			GetMotion()->Set(TYPE_FAINTING);
-			m_Info.nLife -= 300;
+			m_Info.nLife -= 100;
 			CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
 			CPlayer::GetPlayer()->SetState(CPlayer::STATE_NEUTRAL);
+			CPlayer::GetPlayer()->SetUseMicroCount(3600);
 			CGame::GetEnemyManager()->SetTrue(CPlayer::GetPlayer()->GetGrapEnemy()->GetIdxID());
 			CPlayer::GetPlayer()->SetGrapEnemy(nullptr);
+			m_Info.pos = D3DXVECTOR3(D3DXVECTOR3(CPlayer::GetPlayer()->GetItem()->GetPosition().x, 0.0f, CPlayer::GetPlayer()->GetItem()->GetPosition().z));
+			m_pCurrent = nullptr;
 		}
 
 		m_nBiriBiriCount = 0;
@@ -668,6 +667,8 @@ void CEnemy::ReadText(char *fliename)
 
 		//初期化処理
 		m_pMotion->ReadText(fliename);
+
+		m_pMotion->Set(CEnemy::TYPE_NEUTRAL);
 	}
 }
 

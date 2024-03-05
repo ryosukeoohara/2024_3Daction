@@ -22,7 +22,7 @@ public:
 		TYPE_MAX
 	};
 
-	CGage2D();      // コンストラクタ
+	CGage2D(int nPriority = 6);      // コンストラクタ
 	~CGage2D();     // デストラクタ
 
 	HRESULT Init(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE2DTYPE type);          // 初期化処理
@@ -64,7 +64,7 @@ public:
 		TYPE_MAX
 	};
 
-	CGage3D();      // コンストラクタ
+	CGage3D(int nPriority = 6);      // コンストラクタ
 	~CGage3D();     // デストラクタ
 
 	HRESULT Init(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE3DTYPE type);          // 初期化処理

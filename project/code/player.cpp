@@ -29,6 +29,7 @@
 #include "itemmanager.h"
 #include "particle.h"
 #include "effect2D.h"
+#include "animation.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -65,6 +66,8 @@ namespace
 {
 	const int DAMAGECOUNT = 15;
 
+	const int MICROWAVE = 3600;
+
 	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] = 
 	{ 
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
@@ -76,10 +79,16 @@ namespace
 	const float CAMERADISTNCE[CPlayer::HEAT_MAX] =
 	{
 		300.0f,
-		100.0f,
+		300.0f,
 		200.0f,
 
 	};  // ヒートアクション時のカメラの距離
+
+	const D3DXVECTOR3 ENEMYGRAPPOS[CEnemy::MAX] =
+	{
+		D3DXVECTOR3(-10.0f, -10.0f, 60.0f),
+		D3DXVECTOR3(-15.0f, -10.0f, 80.0f),
+	};
 }
 
 //================================================================
@@ -106,6 +115,7 @@ CPlayer::CPlayer()
 	m_nIdxShaadow = -1;
 	m_nCntColi = 0;
 	m_nDamegeCounter = 0;
+	m_nUseCounter = 0;
 	m_Readpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Readrot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -127,6 +137,7 @@ CPlayer::CPlayer()
 	m_fDiff = 0.0f;
 	m_fGrapRot = 0.0f;
 	m_fStamina = 0.0f;
+	m_nCntSound = 0;
 	m_bDesh = false;
 	m_bAttack = false;
 	m_bAvoid = false;
@@ -148,7 +159,7 @@ CPlayer::CPlayer()
 //================================================================
 // コンストラクタ(オーバーロード)
 //================================================================
-CPlayer::CPlayer(D3DXVECTOR3 pos)
+CPlayer::CPlayer(D3DXVECTOR3 pos, int nPriority) : CObject(nPriority)
 {
 	// 初期化
 	m_Info.pos = pos;
@@ -166,6 +177,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_nIdxShaadow = -1;
 	m_nCntColi = 0;
 	m_nDamegeCounter = 0;
+	m_nUseCounter = 0;
 	m_Readpos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Readrot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_posOrigin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -187,6 +199,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos)
 	m_fDiff = 0.0f;
 	m_fGrapRot = 0.0f;
 	m_fStamina = 0.0f;
+	m_nCntSound = 0;
 	m_bDesh = false;
 	m_bAttack = false;
 	m_bAvoid = false;
@@ -216,7 +229,7 @@ CPlayer::~CPlayer()
 //================================================================
 // 生成処理
 //================================================================
-CPlayer *CPlayer::Create(D3DXVECTOR3 pos)
+CPlayer *CPlayer::Create(D3DXVECTOR3 pos, int nPriority)
 {
 	//オブジェクト2Dのポインタ
 	CPlayer *pPlayer = nullptr;
@@ -226,7 +239,7 @@ CPlayer *CPlayer::Create(D3DXVECTOR3 pos)
 		if (pPlayer == nullptr)
 		{
 			//オブジェクト2Dの生成
-			pPlayer = new CPlayer(pos);
+			pPlayer = new CPlayer(pos, nPriority);
 
 			//初期化処理
 			pPlayer->Init();
@@ -267,8 +280,9 @@ void CPlayer::Damage(int nDamage, float fKnockBack)
 	if (m_Info.state != STATE_DAMEGE && m_bInvi == false)
 	{
 		m_Info.state = STATE_DAMEGE;
-		m_pMotion->Set(TYPE_AVOID);
-
+		m_pMotion->Set(TYPE_DAMAGE);
+		CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_PUNCH);
+		CAnimation::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y + 60.0f, m_Info.pos.z), 30.0f, CBillBoard::TYPE_HIT);
 		m_Info.nLife -= nDamage;
 		m_Info.move = D3DXVECTOR3(sinf(CManager::Getinstance()->GetCamera()->GetRotation().y) * -fKnockBack, fKnockBack, cosf(CManager::Getinstance()->GetCamera()->GetRotation().y) * -fKnockBack);
 	}
@@ -294,10 +308,10 @@ void CPlayer::TitleWalk(void)
 		m_pMotion->Update();
 	}
 
-	if (m_Info.state != STATE_MOVE)
+	if (m_Info.state != STATE_OTA)
 	{
-		m_Info.state = STATE_MOVE;
-		m_pMotion->Set(TYPE_MOVE);
+		m_Info.state = STATE_OTA;
+		m_pMotion->Set(TYPE_OTA);
 	}
 
 	//位置に移動量加算----------------------------------------------------
@@ -341,6 +355,8 @@ HRESULT CPlayer::Init(void)
 	m_fGrapRot = 1.0f;
 	m_fStamina = 40.0f;
 	m_Info.nLife = 200;
+	m_nCntSound = 35;
+	m_nDamegeCounter = DAMAGECOUNT;
 
 	ReadText(PLAYER01_TEXT);
 
@@ -470,6 +486,19 @@ void CPlayer::Update(void)
 		}
 	}
 
+	if (m_nUseCounter > 0)
+	{
+		m_nUseCounter--;
+
+		if (m_nUseCounter % 20 == 0)
+		{
+			if (m_pItemMicro != nullptr)
+			{
+				CParticle::Create(m_pItemMicro->GetPosition(), CParticle::TYPE_SMOOK);
+			}
+		}
+	}
+
 	// 体力
 	if (m_pLife != nullptr)
 	{
@@ -478,6 +507,8 @@ void CPlayer::Update(void)
 
 	if (m_Info.nLife <= 0)
 	{
+		Uninit();
+
 		//フェードの情報を取得
 		CFade *pFade = CManager::Getinstance()->GetFade();
 
@@ -486,6 +517,23 @@ void CPlayer::Update(void)
 			//シーンをゲームに遷移
 			pFade->Set(CScene::MODE_RESULT);
 		}
+	}
+
+	if (m_Info.pos.x >= 800.0f)
+	{
+		m_Info.pos.x = 800.0f;
+	}
+	if (m_Info.pos.x <= -850.0f)
+	{
+		m_Info.pos.x = -850.0f;
+	}
+	if (m_Info.pos.z >= 1000.0f)
+	{
+		m_Info.pos.z = 1000.0f;
+	}
+	if (m_Info.pos.z <= -670.0f)
+	{
+		m_Info.pos.z = -670.0f;
 	}
 }
 
@@ -772,6 +820,17 @@ void CPlayer::Move(void)
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
 
 	CCollision::GetColl()->Map(&m_Info.pos, &m_Info.posOld, 40.0f);
+
+	/*if (m_bDesh == true && m_nCntSound == 0)
+	{
+		m_nCntSound = 35;
+
+		CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_MOVE);
+	}
+	else if (m_bDesh == true)
+	{
+		m_nCntSound--;
+	}*/
 }
 
 //================================================================
@@ -1003,7 +1062,7 @@ void CPlayer::Grap(void)
 		}
 	}
 
-	if (m_fStamina > 0.0f && m_bGrap == true)
+	if (m_fStamina > 0.0f && m_bGrap == true && m_Info.state != STATE_HEAT)
 	{// 敵を掴んでいたらスタミナを減らす
 
 		m_fStamina -= GRAPSTMINA;
@@ -1054,6 +1113,8 @@ void CPlayer::Grap(void)
 						m_Grap.pItem->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
 						m_Grap.pEnemy = nullptr;
 						m_bLift = true;
+
+						// 抽象度をそろえる
 					}
 				}
 			}
@@ -1066,11 +1127,11 @@ void CPlayer::Grap(void)
 						&& m_pEnemy->GetState() == CEnemy::STATE_PAINFULDAMAGE || m_pEnemy->GetState() == CEnemy::STATE_GETUP)
 					{// 範囲内かつ敵がコケている
 
-						m_Grap.pEnemy = m_pEnemy;
+						m_Grap.pEnemy = m_pEnemy; 
 
 						// 親、位置、向き、状態、追尾、モーションを設定し、掴んでいることにする
 						m_Grap.pEnemy->SetCurrent(m_ppCharacter[9]->GetMtxWorld());
-						m_Grap.pEnemy->SetPosition(D3DXVECTOR3(-10.0f, -10.0f, 60.0f));
+						m_Grap.pEnemy->SetPosition(ENEMYGRAPPOS[m_Grap.pEnemy->GetType()]);
 						m_Grap.pEnemy->SetRotition(D3DXVECTOR3(-0.2f, 1.27f, -1.4f));
 						m_Grap.pEnemy->SetState(CEnemy::STATE_GRAP);
 						m_Grap.pEnemy->SetChase(CEnemy::CHASE_OFF);
@@ -1425,14 +1486,14 @@ void CPlayer::Heat(void)
 						//CEffect2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.7f, 0.0f), D3DXVECTOR3(0.0f, -1.0f, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30.0f, 30, CEffect2D::TYPE_SMOOK);
 					}
 
-					if (m_pGekiatu == nullptr)
+					/*if (m_pGekiatu == nullptr)
 					{
 						m_pGekiatu = CObject2D::Create();
 						m_pGekiatu->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.7f, 0.0f));
 						m_pGekiatu->SetSize(30.0f, 30.0f);
 						m_pGekiatu->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\gekiatu.png"));
 						m_pGekiatu->SetDraw(true);
-					}
+					}*/
 
 					if (m_pGekiatu != nullptr)
 					{
@@ -1479,8 +1540,10 @@ void CPlayer::Heat(void)
 		}
 	}
 
+	m_nUseCounter;
+
 	// 電子レンジ
-	if (m_bGrap == true)
+	if (m_bGrap == true && m_nUseCounter == 0)
 	{// 敵を掴んでいる
 
 		CItem *pItem = CItem::GetTop();
@@ -1518,19 +1581,14 @@ void CPlayer::Heat(void)
 					
 				}
 
-				if (m_pGekiatu == nullptr)
+				/*if (m_pGekiatu == nullptr)
 				{
 					m_pGekiatu = CObject2D::Create();
 					m_pGekiatu->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.7f, 0.0f));
 					m_pGekiatu->SetSize(30.0f, 30.0f);
 					m_pGekiatu->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\gekiatu.png"));
 					m_pGekiatu->SetDraw(true);
-				}
-
-				if (m_pGekiatu != nullptr)
-				{
-					CEffect2D::Create(m_pGekiatu->GetPosition(), D3DXVECTOR3(0.0f, 1.0f, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30.0f, 30, CEffect2D::TYPE_SMOOK);
-				}
+				}*/
 			}
 
 			if (StartHeatAction() == true)
@@ -1622,6 +1680,10 @@ void CPlayer::Smash(CEnemy *pEnemy)
 
 					// 持っていたアイテムを消す
 					CGame::GetItemManager()->Release(m_Grap.pItem->GetID());
+					if (CGame::GetEnemyManager() != nullptr)
+					{
+						CGame::GetEnemyManager()->SetTrue(m_pEnemy->GetIdxID());
+					}
 					m_Grap.pItem = nullptr;
 				}
 			}
@@ -1643,9 +1705,9 @@ void CPlayer::Fire(void)
 	if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
 	{
 		// 
-		{
+		/*{
 			CGame::GetEnemyManager()->SetTarget(m_nIdxEne);
-		}
+		}*/
 
 		// プレイヤーとの関係を切る
 		{
@@ -1667,7 +1729,7 @@ void CPlayer::Fire(void)
 			{
 				m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
 				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
-
+				CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_GRASS);
 				CParticle::Create(m_pItemMicro->GetPosition(), CParticle::TYPE_GLASS);
 			}
 		}
@@ -1959,18 +2021,21 @@ D3DXVECTOR3 CPlayer::ItemDistance(void)
 	{
 		CItem *pItemNext = pItem->GetNext();
 
-		// 距離測定
-		Distance = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, pItem->GetPosition());
+		if (pItem->GetType() != CItem::TYPE_TABLE && pItem->GetType() != CItem::TYPE_MICROWAVE && pItem->GetType() != CItem::TYPE_POSTER)
+		{
+			// 距離測定
+			Distance = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, pItem->GetPosition());
 
-		if (Distance.x <= OldDistance.x && Distance.y <= OldDistance.y && Distance.z <= OldDistance.z)
-		{// 今回と前回の距離を比較して近かったら
+			if (Distance.x <= OldDistance.x && Distance.y <= OldDistance.y && Distance.z <= OldDistance.z)
+			{// 今回と前回の距離を比較して近かったら
 
-			OldDistance = Distance;
+				OldDistance = Distance;
 
-			// 一時的に覚える
-			m_pItem = pItem;
+				// 一時的に覚える
+				m_pItem = pItem;
+			}
 		}
-
+		
 		pItem = pItemNext;
 	}
 

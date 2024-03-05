@@ -51,6 +51,7 @@ public:
 		STATE_DAMEGE,       // ダメージ
 		STATE_INVINCIBE,    // 無敵
 		STATE_DEHT,         // 死Smash
+		STATE_OTA,
 		STATE_MAX
 	};
 
@@ -76,8 +77,6 @@ public:
 		TYPEMAX_ATTACK
 	};
 
-private:
-
 	//モーション
 	enum MOTIONTYPE
 	{
@@ -95,8 +94,14 @@ private:
 		TYPE_ENEMYGRAP,                  // 敵を掴んで投げる
 		TYPE_GRAPWALK,                   // 掴んで歩く
 		TYPE_POWERFUL,                   // 地面たたきつけ
+		TYPE_DAMAGE,                     // ダメージ
+		TYPE_OTA,
 		TYPE_MAX
-	} ;
+	};
+
+private:
+
+	
 
 	enum DAMEGESTATE
 	{
@@ -140,7 +145,7 @@ private:
 	
 public:
 	CPlayer();  //コンストラクタ
-	CPlayer(D3DXVECTOR3 pos);  //コンストラクタ(オーバーロード)
+	CPlayer(D3DXVECTOR3 pos, int nPriority = 2);  //コンストラクタ(オーバーロード)
 	~CPlayer();  //デストラクタ
 
 	HRESULT Init(void);        // 初期化処理    
@@ -148,7 +153,7 @@ public:
 	void Update(void);         // 更新処理
 	void Draw(void);           // 描画処理
 
-	static CPlayer *Create(D3DXVECTOR3 pos);  // 生成
+	static CPlayer *Create(D3DXVECTOR3 pos, int nPriority = 2);  // 生成
 	static CPlayer *Create(void);
 	void Damage(int nDamage, float fKnockBack);			              // 攻撃をくらった時の処理
 	void TitleWalk(void);                     // タイトル
@@ -164,6 +169,7 @@ public:
 	void SetMobile(void) { m_Mobility = Mobile; }                    // 動けるようにする
 	void SetImmobile(void) { m_Mobility = Immobile; }                // 動けないようにする
 	void SetDefeat(int nValue) { m_nDefeat = nValue; }
+	void SetUseMicroCount(int nValue) { m_nUseCounter = nValue; }
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置取得
@@ -210,6 +216,7 @@ private:
 	int m_nParent;
 	int m_nCntColi;
 	int m_nDamegeCounter;
+	int m_nUseCounter;
 	char m_filename[128] = {};
 
 	D3DXVECTOR3 m_Readpos;
@@ -229,6 +236,7 @@ private:
 	int m_nIdxEne;
 	int m_nIdxItem;
 	int m_nDamageCounter;
+	int m_nCntSound;
 	float m_fDest;
 	float m_fDestOld;
 	float m_fDiff;

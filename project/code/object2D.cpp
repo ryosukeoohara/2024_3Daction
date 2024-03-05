@@ -14,7 +14,7 @@
 //================================================================
 // コンストラクタ
 //================================================================
-CObject2D::CObject2D()
+CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 {
 	//値をクリア
 	m_nIdxTexture = -1;
@@ -28,7 +28,7 @@ CObject2D::CObject2D()
 //================================================================
 // コンストラクタ(オーバーロード)
 //================================================================
-CObject2D::CObject2D(D3DXVECTOR3 pos)
+CObject2D::CObject2D(D3DXVECTOR3 pos, int nPriority)
 {
 	//値をクリア
 	m_pos = pos;
@@ -51,7 +51,7 @@ CObject2D::~CObject2D()
 //================================================================
 // 生成処理
 //================================================================
-CObject2D * CObject2D::Create(void)
+CObject2D * CObject2D::Create(int nPriority)
 {
 	//オブジェクト2Dのポインタ
 	CObject2D *pObject2D = nullptr;
@@ -74,7 +74,7 @@ CObject2D * CObject2D::Create(void)
 //================================================================
 // 生成処理
 //================================================================
-CObject2D *CObject2D::Create(D3DXVECTOR3 pos)
+CObject2D *CObject2D::Create(D3DXVECTOR3 pos, int nPriority)
 {
 	//オブジェクト2Dのポインタ
 	CObject2D *pObject2D = nullptr;
@@ -84,7 +84,7 @@ CObject2D *CObject2D::Create(D3DXVECTOR3 pos)
 		if (pObject2D == NULL)
 		{
 			//オブジェクト2Dの生成
-			pObject2D = new CObject2D(pos);
+			pObject2D = new CObject2D(pos, nPriority);
 
 			//初期化処理
 			pObject2D->Init();
@@ -336,6 +336,33 @@ void CObject2D::SetTex(float fTex)
 	pVtx[1].tex = D3DXVECTOR2(0.1f + 0.1f * m_Number, 0.0f);
 	pVtx[2].tex = D3DXVECTOR2(0.0f + 0.1f * m_Number, 1.0f);
 	pVtx[3].tex = D3DXVECTOR2(0.1f + 0.1f * m_Number, 1.0f);
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//================================================================
+// 透明度設定
+//================================================================
+void CObject2D::SetColorA(float fCola)
+{
+	m_col.a += fCola;
+
+	if (m_col.a >= 1.0f || m_col.a < 0.3f)
+	{
+		m_col.a *= -1;
+	}
+
+	VERTEX_2D *pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点カラーの設定
+	pVtx[0].col = D3DXCOLOR(m_col.r, m_col.g, m_col.b, m_col.a);
+	pVtx[1].col = D3DXCOLOR(m_col.r, m_col.g, m_col.b, m_col.a);
+	pVtx[2].col = D3DXCOLOR(m_col.r, m_col.g, m_col.b, m_col.a);
+	pVtx[3].col = D3DXCOLOR(m_col.r, m_col.g, m_col.b, m_col.a);
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

@@ -11,13 +11,14 @@
 
 //マクロ定義
 #define MAX_OBJECT    (2048)  //オブジェクトの最大数
+#define NUM_PRIORITY  (8)     // 優先順位
 
 //オブジェクトクラス
 class CObject
 {
 public:		//誰でもアクセスできる
 
-	CObject();             //コンストラクタ
+	CObject(int nPriority = 3);             //コンストラクタ
 	virtual ~CObject();    //デストラクタ
 
 	typedef enum
@@ -35,29 +36,33 @@ public:		//誰でもアクセスできる
 		TYPE_MAX
 	} TYPE;
 
+	/*enum Priority
+	{
+		Priority
+	};*/
+
 	virtual HRESULT Init(void) = 0;   //初期化処理
 	virtual void Uninit(void) = 0;    //終了処理
 	virtual void Update(void) = 0;    //更新処理
 	virtual void Draw(void) = 0;      //描画処理
 
-	static void ReleaseAll(void);  //すべてを終了
-	static void UpdateAll(void);   //すべてを更新
-	static void DrawAll(void);     //すべてを描画
+	static void ReleaseAll(void);     //すべてを終了
+	static void UpdateAll(void);      //すべてを更新
+	static void DrawAll(void);        //すべてを描画
 	void Release(void);
 
-	void BindTexture(LPDIRECT3DTEXTURE9 m_Texture);  //テクスチャをバインド
-	static CObject *Getobject(int nIdx);
-	int GetID(void) 
-	{ 
-		return m_nID;
-	}
+	
 
-	void SetType(TYPE type) { m_ntype = type;  }   //種類設定
-	TYPE GetType(void) { return m_ntype; }         //種類取得
+	// 設定系
+	void SetType(TYPE type) { m_ntype = type; }        // 種類
+	void SetPriority(int nPriority) { m_nPriority = nPriority; }  //　優先順位
 
-	static int GetNumAll(void) { return m_nNumAll; }
-
-	CObject *m_pNext;       //次のオブジェクトへのポインタ
+	// 取得系
+	TYPE GetType(void) { return m_ntype; }             // 種類
+	static CObject *Getobject(int nIdx);               // 
+	static int GetNumAll(void) { return m_nNumAll; }   // 総数
+	int GetID(void) { return m_nID; }                  // ID
+	
 	
 private:	//自分だけがアクセスできる
 
@@ -67,11 +72,11 @@ private:	//自分だけがアクセスできる
 	static CObject *m_apObjct[MAX_OBJECT];
 	static int m_nNumAll;   //オブジェクトの総数
 	int m_nID;  //自分自身のID
-	static CObject *m_pTop;  //先頭のオブジェクトへのポインタ
-	static CObject *m_pCur; //最後尾のオブジェクトへのポインタ
-	static CObject *m_pSNext;
+	int m_nPriority;  // 優先順位
+	static CObject *m_pTop[NUM_PRIORITY];  //先頭のオブジェクトへのポインタ
+	static CObject *m_pCur[NUM_PRIORITY];  //最後尾のオブジェクトへのポインタ
+	CObject *m_pNext;       //次のオブジェクトへのポインタ
 	CObject *m_pPrev;       //前のオブジェクトへのポインタ
-	//CObject *m_pNext;       //次のオブジェクトへのポインタ
 	bool m_bDeath;          //死亡フラグ
 
 	TYPE m_ntype;        //種類

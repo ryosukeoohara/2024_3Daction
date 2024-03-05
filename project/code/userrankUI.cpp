@@ -37,7 +37,7 @@ CUserRankUI::CUserRankUI()
 //===========================================================
 // コンストラクタ
 //===========================================================
-CUserRankUI::CUserRankUI(TYPE type)
+CUserRankUI::CUserRankUI(TYPE type, int nPriority)
 {
 	// 初期化
 	m_type = type;

@@ -34,7 +34,7 @@ public:
 public:
 
 	CUserRankUI();                  // コンストラクタ
-	CUserRankUI(TYPE type);         // コンストラクタ
+	CUserRankUI(TYPE type, int nPriority = 7);         // コンストラクタ
 	~CUserRankUI();                 // デストラクタ
 
 	HRESULT Init(void);             // 初期化処理

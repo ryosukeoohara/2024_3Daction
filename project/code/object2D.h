@@ -14,8 +14,8 @@
 class CObject2D : public CObject
 {
 public:		//誰でもアクセスできる
-	CObject2D();  //コンストラクタ
-	CObject2D(D3DXVECTOR3 pos);  //コンストラクタ(overdose)
+	CObject2D(int nPriority = 3);  //コンストラクタ
+	CObject2D(D3DXVECTOR3 pos, int nPriority = 3);  //コンストラクタ(overdose)
 	~CObject2D(); //デストラクタ
 
 	HRESULT Init(void);   //初期化処理
@@ -23,8 +23,8 @@ public:		//誰でもアクセスできる
 	void Update(void);    //更新処理
 	void Draw(void);      //描画処理
 
-	static CObject2D *Create(void);             //生成
-	static CObject2D *Create(D3DXVECTOR3 pos);  //生成
+	static CObject2D *Create(int nPriority = 3);             //生成
+	static CObject2D *Create(D3DXVECTOR3 pos, int nPriority = 3);  //生成
 
 	// 設定系
 	void SetPosition(D3DXVECTOR3 pos) { m_pos = pos; }          // 位置
@@ -36,6 +36,7 @@ public:		//誰でもアクセスできる
 	void SetEdgeCenterTex(float ftex);
 	void SetTex(float fTex);
 	void SetDraw(bool bverdict = true) { m_bDraw = bverdict; }         // 描画するかどうか
+	void SetColorA(float fCola);
 	
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }     // 位置

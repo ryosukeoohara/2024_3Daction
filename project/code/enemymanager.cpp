@@ -72,22 +72,7 @@ HRESULT CEnemyManager::Init(void)
 //=============================================================================
 void CEnemyManager::Uninit(void)
 {
-	//if (m_appEnemy != nullptr)
-	//{
-	//	for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
-	//	{
-	//		if (m_appEnemy[nCount] != nullptr)
-	//		{// 使用されていたら
-
-	//			// 終了処理
-	//			m_appEnemy[nCount]->Uninit();
-	//			m_appEnemy[nCount] = nullptr;
-	//		}
-	//	}
-
-	//	delete m_appEnemy;
-	//	m_appEnemy = nullptr;
-	//}
+	
 }
 
 //=============================================================================
@@ -95,18 +80,6 @@ void CEnemyManager::Uninit(void)
 //=============================================================================
 void CEnemyManager::Update(void)
 {
-	if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_K) == true)
-	{
-		for (int nCount = 0; nCount < m_nEnemyAll; nCount++)
-		{
-			if (m_appEnemy[nCount] != nullptr)
-			{// 使用されていたら
-
-				m_appEnemy[nCount]->SetLife(0);
-			}
-		}
-	}
-
 	//デバッグプロックの情報を取得
 	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
 	pDebugProc->Print("敵の数：%d\n", m_nNum);
@@ -124,27 +97,9 @@ CEnemyManager * CEnemyManager::Create(void)
 		pEnemyManager = new CEnemyManager();
 
 		pEnemyManager->Init();
-
-		//pEnemyManager->ReadText(ENEMYINFO_TEXT);
 	}
 
 	return pEnemyManager;
-}
-
-//=============================================================================
-// 消す
-//=============================================================================
-void CEnemyManager::Release(int idx)
-{
-	//if (m_appEnemy[idx] != nullptr)
-	//{
-	//	if (m_appEnemy[idx]->GetLife() <= 0)
-	//	{
-	//		// 終了処理
-	//		m_appEnemy[idx]->Uninit();
-	//		m_appEnemy[idx] = nullptr;
-	//	}
-	//}
 }
 
 //=============================================================================
@@ -219,12 +174,12 @@ void CEnemyManager::ReadText(const char *text)
 
 					}//ENEMYSET_ENDのかっこ 
 
-					if (nType == CEnemy::TYPE_WEAK)
+					if (nType == CEnemy::WEAK)
 					{
 						CEnemyWeak::Create(m_Readpos, m_Readrot, nLife);
 
 					}
-					else if (nType == CEnemy::TYPE_BOSS)
+					else if (nType == CEnemy::BOSS)
 					{
 						CEnemyBoss::Create(m_Readpos, m_Readrot, nLife);
 					}
@@ -255,7 +210,7 @@ void CEnemyManager::SetTarget(int idx)
 	{
 		CEnemy *pEnemyNext = pEnemy->GetNext();
 
-		int n = pEnemy->GetIdxID();
+ 		int n = pEnemy->GetIdxID();
 
 		if (n != idx)
 		{
@@ -277,7 +232,7 @@ void CEnemyManager::SetTrue(int idx)
 	{
 		CEnemy *pEnemyNext = pEnemy->GetNext();
 
-		if (pEnemy->GetID() != idx)
+		if (pEnemy->GetIdxID() != idx)
 		{
 			pEnemy->SetDraw(true);
 		}
@@ -299,12 +254,4 @@ void CEnemyManager::SetMobility(void)
 		pEnem->SetMobile();
 		pEnem = pEnemNext;
 	}
-}
-
-//=============================================================================
-// コンストラクタ
-//=============================================================================
-void CEnemyManager::ListOut(void)
-{
-	
 }

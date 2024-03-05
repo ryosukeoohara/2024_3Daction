@@ -38,7 +38,6 @@ public:
 	void Update(void);             //更新処理
 
 	static CEnemyManager *Create(void);   // 生成処理
-	void Release(int idx);
 	void ReadText(const char *text);           //テキストファイル読み込み
 
 	// 設定系
@@ -52,8 +51,7 @@ public:
 	static int GetNum(void) { return m_nNum; }
 							       
 private:
-	void ListOut(void);
-
+	
 	int m_nEnemyAll;               // 敵の総数
 	static int m_nNum;
 	int m_nCntWave;

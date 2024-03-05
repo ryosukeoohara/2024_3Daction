@@ -11,6 +11,7 @@
 #include "camera.h"
 #include "number.h"
 #include "utility.h"
+#include "sound.h"
 
 namespace
 {
@@ -33,18 +34,20 @@ CAppearanceUI::CAppearanceUI()
 	m_pFrontObj2D = nullptr;
 	m_pBackObj2D = nullptr;
 	m_pNumber = nullptr;
+	m_bSound = false;
 }
 
 //===========================================================
 // コンストラクタ
 //===========================================================
-CAppearanceUI::CAppearanceUI(TYPE type)
+CAppearanceUI::CAppearanceUI(TYPE type, int nPriority) : CObject(nPriority)
 {
 	// 初期化
 	m_type = type;
 	m_pFrontObj2D = nullptr;
 	m_pBackObj2D = nullptr;
 	m_pNumber = nullptr;
+	m_bSound = false;
 }
 
 //===========================================================
@@ -160,6 +163,12 @@ void CAppearanceUI::Update(void)
 		else
 		{// 小さくなった
 
+			if (m_bSound == false)
+			{
+				CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_IMPACT);
+				m_bSound = true;
+			}
+
 			// ポリゴンを大きくする
 			CManager::Getinstance()->GetUtility()->Enlarge(m_pBackObj2D, 5.0f, 10.0f);
 
@@ -220,10 +229,10 @@ void CAppearanceUI::Draw(void)
 //===========================================================
 // 生成処理
 //===========================================================
-CAppearanceUI * CAppearanceUI::Create(TYPE type)
+CAppearanceUI * CAppearanceUI::Create(TYPE type, int nPriority)
 {
 	CAppearanceUI *pAppearUI = nullptr;
-	pAppearUI = new CAppearanceUI(type);
+	pAppearUI = new CAppearanceUI(type, nPriority);
 
 	if (pAppearUI != nullptr)
 	{

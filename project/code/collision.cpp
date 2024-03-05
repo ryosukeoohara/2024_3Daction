@@ -28,6 +28,7 @@
 #include "particle.h"
 #include "animation.h"
 #include "tutorial.h"
+#include "sound.h"
 
 //=============================================================================
 // Ã“Iƒƒ“ƒo•Ï”
@@ -135,7 +136,6 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 		if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= pEnemy->GetPosition().y && pMyPos->y <= pEnemy->GetPosition().y + fHeight) && pEnemy->GetState() != CEnemy::STATE_DAMEGE)
 		{
 			pEnemy->Damege(CPlayer::GetPlayer()->GetMotion()->GetAttackDamege(), CPlayer::GetPlayer()->GetMotion()->GetKnockBack(), CPlayer::GetPlayer()->GetActType());
-			CAnimation::Create(*pMyPos, 30.0f, CBillBoard::TYPE_HIT);
 		}
 
 		pEnemy = pEnemyNext;

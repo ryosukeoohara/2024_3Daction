@@ -22,7 +22,7 @@ namespace
 //===========================================================
 // コンストラクタ
 //===========================================================
-CGage2D::CGage2D()
+CGage2D::CGage2D(int nPriority)
 {
 	// 値をクリア
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -146,7 +146,7 @@ void CGage2D::SetCol(void)
 //===========================================================
 // コンストラクタ
 //===========================================================
-CGage3D::CGage3D()
+CGage3D::CGage3D(int nPriority)
 {
 	// 値をクリア
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -171,7 +171,7 @@ CGage3D::~CGage3D()
 CGage3D * CGage3D::Create(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE3DTYPE type)
 {
 	CGage3D *pGage = nullptr;
-	pGage = new CGage3D;
+	pGage = new CGage3D(5);
 
 	if (pGage != nullptr)
 	{
@@ -191,7 +191,7 @@ HRESULT CGage3D::Init(D3DXVECTOR3 pos, float fHei, float fWid, CGAGE3DTYPE type)
 
 	if (m_pBillBoard == nullptr)
 	{
-		m_pBillBoard = CBillBoard::Create();
+		m_pBillBoard = CBillBoard::Create(6);
 		m_pBillBoard->SetPosition(pos);
 		m_pBillBoard->SetSize(fHei, fWid);
 		m_pBillBoard->SetDraw(true);

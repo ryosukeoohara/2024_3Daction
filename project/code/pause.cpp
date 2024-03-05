@@ -34,7 +34,7 @@ const char *CPause::m_apTexName[TYPE_MAX] =
 	"data\\TEXTURE\\pause001.png",     // やり直す
 	"data\\TEXTURE\\pause002.png",     // タイトル画面に戻る
 	"data\\TEXTURE\\iron000.jpg",      // 黒い背景
-	"data\\TEXTURE\\pause_bg000.png",  // 枠
+	"data\\TEXTURE\\fream.png",		   // 枠
 };
 
 //===========================================================
@@ -116,25 +116,26 @@ void CPause::Update(void)
 	CFade *pFade = CManager::Getinstance()->GetFade();
 
 	//上に移動----------------------------------------------
-	if (InputKeyboard->GetPress(DIK_S) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_DOWN, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_S) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_DOWN, 0) == true)
 	{//Wキーが押された
 
 		m_nSelect = (m_nSelect + 1) % MENU_MAX;
 		SetCol();
 	}
-	else if (InputKeyboard->GetPress(DIK_W) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_UP, 0) == true)
+	else if (InputKeyboard->GetTrigger(DIK_W) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_UP, 0) == true)
 	{
 		m_nSelect = (m_nSelect - 1 + MENU_MAX) % MENU_MAX;
 		SetCol();
 	}
 
 	//上に移動----------------------------------------------
-	if (InputKeyboard->GetPress(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
+	if (InputKeyboard->GetTrigger(DIK_RETURN) == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_A, 0) == true)
 	{//Wキーが押された
 
 		switch (m_nSelect)
 		{
 		case MENU_COUTINUE:
+			CGame::SetbPause(false);
 			break;
 
 		case MENU_RETRY:

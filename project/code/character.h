@@ -18,7 +18,7 @@
 class CCharacter
 {
 public:
-	CCharacter();
+	CCharacter(void);
 	CCharacter(const char *aModelFliename);
 	~CCharacter();
 

@@ -26,6 +26,8 @@
 #include "collision.h"
 #include "itemmanager.h"
 #include "map.h"
+#include "audience.h"
+#include "motion.h"
 
 //================================================================
 //　静的メンバ変数
@@ -38,6 +40,8 @@ CCollision *CGame::m_Collision = nullptr;
 CItemManager *CGame::m_pItemManager = nullptr;
 CMap *CGame::m_pMap = nullptr;
 CGame::WAVE CGame::m_Wave = WAVE_00;
+bool CGame::m_bPause = false;
+bool CGame::m_bOnStage = false;
 
 //===========================================================
 //　コンストラクタ
@@ -86,16 +90,68 @@ CGame *CGame::Create(void)
 	return pGame;
 }
 
+//===========================================================
+// ウェーブ
+//===========================================================
 void CGame::WaveControll(void)
 {
-	if (m_Wave == WAVE_00)
+	//フェードの情報を取得
+	CFade *pFade = CManager::Getinstance()->GetFade();
+
+	if (m_pEnemyManager != nullptr)
 	{
-		m_Wave = WAVE_01;
-		m_pEnemyManager->ReadText(ENEMYBOSS_TEXT);
+		m_pEnemyManager->Update();
+
+		int n = m_pEnemyManager->GetNum();
+
+		if (n <= 0)
+		{
+			if (pFade->GetCol() >= 0.9f && pFade->FADE_IN)
+			{
+				if (m_Wave == WAVE_00)
+				{
+					m_Wave = WAVE_01;
+					if (m_pPlayer != nullptr)
+					{
+						m_pPlayer->SetLife(200);
+						m_pPlayer->SetImmobile();
+						m_pPlayer->SetState(CPlayer::STATE_NEUTRAL);
+						m_pPlayer->SetUseMicroCount(0);
+						m_pPlayer->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
+						m_pPlayer->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+						if (m_pPlayer->GetMotion() != nullptr)
+						{
+							m_pPlayer->GetMotion()->Set(CPlayer::TYPE_NEUTRAL);
+						}
+					}
+					
+					CManager::Getinstance()->GetCamera()->Reset();
+					
+					m_pEnemyManager->ReadText(ENEMYBOSS_TEXT);
+				}
+				
+				m_bOnStage = false;
+			}
+
+			if (pFade->Get() != pFade->FADE_BLACK)
+			{
+				if (m_Wave == WAVE_01)
+				{
+					m_Wave = MAVE_CLEAR;
+				}
+				else
+				{
+					pFade->Set();
+				}
+			}
+		}
 	}
-	else if(m_Wave == WAVE_01)
+
+	if (m_Wave == MAVE_CLEAR)
 	{
-		m_Wave = MAVE_CLEAR;
+		//シーンをゲームに遷移
+		pFade->Set(CScene::MODE_RESULT);
 	}
 }
 
@@ -112,6 +168,8 @@ HRESULT CGame::Init(void)
 	pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	pField->SetSize(5000.0f, 5000.0f);
 	pField->SetDraw(true);
+
+	//CAudience::Create();
 	
 	// マップの生成
 	if (m_pMap == nullptr)
@@ -149,7 +207,7 @@ HRESULT CGame::Init(void)
 		m_pPause = CPause::Create();
 	}
 
-	//CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
+	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	return S_OK;
 }
@@ -248,14 +306,14 @@ void CGame::Update(void)
 		m_bOnStage = true;
 	}
 
-	if (m_Wave == MAVE_CLEAR)
-	{
-		m_Wave = WAVE_00;
-		//シーンをゲームに遷移
-		pFade->Set(CScene::MODE_RESULT);
+	//if (m_Wave == MAVE_CLEAR)
+	//{
+	//	m_Wave = WAVE_00;
+	//	//シーンをゲームに遷移
+	//	pFade->Set(CScene::MODE_RESULT);
 
-		return;
-	}
+	//	return;
+	//}
 
 	if (InputKeyboard->GetTrigger(DIK_RETURN) == true /*|| pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_START, 0) == true*/)
 	{//ENTERキーを押したかつシーンがタイトルのとき
@@ -270,28 +328,9 @@ void CGame::Update(void)
 		}
 	}
 
-	if (m_pEnemyManager != nullptr)
+	if (m_Wave != MAVE_CLEAR)
 	{
-		m_pEnemyManager->Update();
-
-		int n = m_pEnemyManager->GetNum();
-
-		if (n <= 0)
-		{
-			if (pFade->GetCol() >= 0.9f && pFade->FADE_IN)
-			{
-				CManager::Getinstance()->GetCamera()->Reset();
-				m_pPlayer->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 500.0f));
-				m_pPlayer->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-				WaveControll();
-				m_bOnStage = false;
-			}
-			
-			if (pFade->Get() != pFade->FADE_BLACK)
-			{
-				pFade->Set();
-			}
-		}
+		WaveControll();
 	}
 
 	//すべての更新処理

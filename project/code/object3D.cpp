@@ -15,7 +15,7 @@
 //================================================================
 //コンストラクタ
 //================================================================
-CObject3D::CObject3D()
+CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 {
 	//値をクリア
 	m_pTexture = NULL;  //テクスチャへのポインタ
@@ -59,17 +59,40 @@ CObject3D::~CObject3D()
 //================================================================
 //生成処理
 //================================================================
-CObject3D *CObject3D::Create(void)
+CObject3D *CObject3D::Create(int nPriority)
 {
 	//オブジェクト2Dのポインタ
-	CObject3D *pObject3D = NULL;
+	CObject3D *pObject3D = nullptr;
 
 	if (CObject::GetNumAll() < MAX_OBJECT)
 	{
-		if (pObject3D == NULL)
+		if (pObject3D == nullptr)
 		{
 			//オブジェクト2Dの生成
-			pObject3D = new CObject3D();
+			pObject3D = new CObject3D(nPriority);
+
+			//初期化処理
+			pObject3D->Init();
+		}
+	}
+
+	return pObject3D;
+}
+
+//================================================================
+//コンストラクタ(オーバーロード)
+//================================================================
+CObject3D * CObject3D::Create(D3DXVECTOR3 pos)
+{
+	//オブジェクト2Dのポインタ
+	CObject3D *pObject3D = nullptr;
+
+	if (CObject::GetNumAll() < MAX_OBJECT)
+	{
+		if (pObject3D == nullptr)
+		{
+			//オブジェクト2Dの生成
+			pObject3D = new CObject3D(pos);
 
 			//初期化処理
 			pObject3D->Init();
@@ -310,3 +333,5 @@ void CObject3D::SetEdgeCenter(float fWidth, float fHeight)
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();
 }
+
+

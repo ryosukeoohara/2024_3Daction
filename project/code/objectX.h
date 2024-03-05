@@ -34,17 +34,17 @@ private:
 
 public:
 	CObjectX();
-	CObjectX(const char *aModelFliename);
+	CObjectX(const char *aModelFliename, int nPriority = 3);
 	~CObjectX();
 
-	HRESULT Init(void);           //モデルの初期化処理    
-	void Uninit(void);            //モデルの終了処理
-	void Update(void);            //モデルの更新処理
-	void Draw(void);              //モデルの描画処理
+	HRESULT Init(void);           // 初期化処理    
+	void Uninit(void);            // 終了処理
+	void Update(void);            // 更新処理
+	void Draw(void);              // 描画処理
 						          
 	void ReadText(void);          //テキストファイル読み込み
 
-	static CObjectX *Create(const char *aModelFliename);  //生成
+	static CObjectX *Create(const char *aModelFliename, int nPriority = 3);  //生成
 
 	void BindModel(INFO pObjX);
 
@@ -64,7 +64,7 @@ public:
 	D3DXVECTOR3 GetRotition(void) { return  m_Info.rot; }        // 向き
 	D3DXVECTOR3 GetRotOrigin(void) { return m_rotOrigin; }       // 原点の向き
 	D3DXCOLOR GetColor(void) { return  m_Info.col; }             // 色
-	D3DXMATRIX *GetMtxWorld(void) { return &m_Info.mtxWorld; }     // マトリックス取得
+	D3DXMATRIX *GetMtxWorld(void) { return &m_Info.mtxWorld; }   // マトリックス取得
 	D3DXVECTOR3 GetVtxMin(void) { return m_Info.vtxMini; }       // モデルの最小値
 	D3DXVECTOR3 GetVtxMax(void) { return m_Info.vtxMax; }        // モデルの最大値
 	int GetIdxModel(void) { return m_Info.nIdxModel; }           // モデルのインデックス番号

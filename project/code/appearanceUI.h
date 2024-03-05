@@ -33,7 +33,7 @@ public:
 public:
 
 	CAppearanceUI();                                   // コンストラクタ
-	CAppearanceUI(TYPE type);         // コンストラクタ
+	CAppearanceUI(TYPE type, int nPriority = 3);         // コンストラクタ
 	~CAppearanceUI();                                  // デストラクタ
 
 	HRESULT Init(void);                             // 初期化処理
@@ -41,13 +41,14 @@ public:
 	void Update(void);                              // 更新処理
 	void Draw(void);                                // 描画処理
 
-	static CAppearanceUI *Create(TYPE type); // 生成処理
+	static CAppearanceUI *Create(TYPE type, int nPriority = 3); // 生成処理
 
 private:
 	TYPE m_type;
 	CObject2D *m_pFrontObj2D;  // 前に出る色が濃い奴
 	CObject2D *m_pBackObj2D;   // 後ろに出る色が薄いやつ
 	CObject2D *m_pNumber;
+	bool m_bSound;
 	
 };
 

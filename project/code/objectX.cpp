@@ -44,7 +44,7 @@ CObjectX::CObjectX()
 //================================================================
 //コンストラクタ(オーバーロード)
 //================================================================
-CObjectX::CObjectX(const char *aModelFliename)
+CObjectX::CObjectX(const char *aModelFliename, int nPriority) : CObject(nPriority)
 {
 	//値をクリア
 	m_Info.vtxMax = D3DXVECTOR3(-900000.0f, -900000.0f, -900000.0f);
@@ -67,7 +67,7 @@ CObjectX::~CObjectX()
 //================================================================
 //生成処理
 //================================================================
-CObjectX *CObjectX::Create(const char *aModelFliename)
+CObjectX *CObjectX::Create(const char *aModelFliename, int nPriority)
 {
 	//オブジェクトXのポインタ
 	CObjectX *pObjectX = NULL;
@@ -80,7 +80,7 @@ CObjectX *CObjectX::Create(const char *aModelFliename)
 		if (pObjectX == NULL)
 		{
 			//オブジェクト2Dの生成
-			pObjectX = new CObjectX(aModelFliename);
+			pObjectX = new CObjectX(aModelFliename, nPriority);
 
 			//初期化処理
 			pObjectX->Init();

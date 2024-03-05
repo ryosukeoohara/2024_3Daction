@@ -15,15 +15,9 @@ MODEL_FILENAME = data/MODEL/poster.x       # ４番目
 # 配置
 #============================================================================================
 ITEMSET # 冷蔵庫
-    TYPE = 0
-    POS = -1100.0 0.0 400.0
+    TYPE = 1
+    POS = -400.0 0.0 -460.0
     ROT = 0.0 0.0 0.0
-END_ITEMSET
-
-ITEMSET # 冷蔵庫
-    TYPE = 0
-    POS = -1000.0 10.0 400.0
-    ROT = 0.0 0.0 0.8
 END_ITEMSET
 
 ITEMSET # 自転車
@@ -34,7 +28,7 @@ END_ITEMSET
 
 ITEMSET # 自転車
     TYPE = 1
-    POS = 1000.0 0.0 429.0
+    POS = 750.0 0.0 429.0
     ROT = 0.0 1.57 0.0
 END_ITEMSET
 
