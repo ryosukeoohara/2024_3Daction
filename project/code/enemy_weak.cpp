@@ -358,7 +358,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 			if (m_Info.state != STATE_HEATDAMEGE)
 			{
 				m_Info.state = STATE_HEATDAMEGE;
-				GetMotion()->Set(TYPE_HEATDAMEGE);
+				GetMotion()->Set(TYPE_HEATACTDAMEGE);
 			}
 		}
 		else
@@ -372,7 +372,7 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 				if (m_Info.nLife <= a && CPlayer::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
 				{
 					m_Info.state = STATE_PAINFULDAMAGE;
-					GetMotion()->Set(TYPE_HEATDAMEGE);
+					GetMotion()->Set(TYPE_HEATACTDAMEGE);
 					m_Chase = CHASE_OFF;
 				}
 				else

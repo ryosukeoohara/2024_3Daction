@@ -47,6 +47,8 @@ private:
 		int m_nAttackDamege;  // 攻撃力
 		int m_nInvincibleStart;  // 完全無敵状態開始
 		int m_nInvincibleEnd;    // 完全無敵終了
+		int nCancellFrame;   // キャンセル可能フレーム
+		int nCancellFrameEnd;  // キャンセル可能フレーム
 		float m_nKnockBack;      // 吹っ飛び
 		bool m_bLoop;     // ループするかどうか
 		bool m_bFinish;   // 終了したかどうか
@@ -82,6 +84,8 @@ public:
 	int GetAttackDamege(void);
 	int GetInvincibleStrat(void);
 	int GetInvincibleEnd(void);
+	int GetCancellFrame(void);
+	int GetCancellFrameEnd(void);
 	float GetKnockBack(void);
 	INFO GetInfo(void);
 

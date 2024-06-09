@@ -62,6 +62,8 @@ public:
 	// Žæ“¾Œn
 	MODE GetMode(void);
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
+	D3DXMATRIX GetView(void) { return m_mtxView; }
+	D3DXMATRIX GetProjection(void) { return m_mtxProjection; }
 
 private:
 	void Mode(void);

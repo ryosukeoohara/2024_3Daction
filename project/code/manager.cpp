@@ -23,6 +23,7 @@
 #include "result.h"
 #include "tutorial.h"
 #include "utility.h"
+#include "MyEffekseer.h"
 
 //================================================================
 //静的メンバ変数
@@ -53,7 +54,7 @@ CGame  *CScene::m_Game = NULL;
 CTutorial *CScene::m_Tutorial = NULL;
 CTitle *CScene::m_Title = NULL;
 CResult *CScene::m_Result = NULL;
-CScene::MODE CScene::m_mode = CScene::MODE_TITLE;
+CScene::MODE CScene::m_mode = CScene::MODE_TUTORIAL;
 //bool CManager::m_bPause = NULL;
 
 //================================================================
@@ -206,7 +207,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{//使用されていなかったら
 
 		//シーンの生成
-		m_pScene = CScene::Create(CScene::MODE_TITLE);
+		m_pScene = CScene::Create(CScene::MODE_TUTORIAL);
 
 		//初期化処理
 		m_pScene->Init();
@@ -220,6 +221,16 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 		//初期化処理
 		m_Fade->Init();
+	}
+
+	if (m_pMyEffekseer == nullptr)
+	{// 使用されていなかったら
+
+		// エフェクシアの生成
+		m_pMyEffekseer = new CMyEffekseer;
+
+		// 初期化処理
+		m_pMyEffekseer->Init();
 	}
 
 	if (m_pUtility == nullptr)
@@ -867,6 +878,14 @@ CPause *CManager::GetPause(void)
 CUtility * CManager::GetUtility(void)
 {
 	return m_pUtility;
+}
+
+//================================================================
+// エフェクシアの取得
+//================================================================
+CMyEffekseer* CManager::GetMyEffekseer(void)
+{
+	return m_pMyEffekseer;
 }
 
 //================================================================

@@ -423,16 +423,9 @@ bool CCollision::ItemEnemy(CItem *pItem, CEnemy *pEnemy, float fMyRadius, float 
 		if (c <= fMyRadius + fTargetRadius && (pItem->GetPosition().y >= pEnemy->GetPosition().y && pItem->GetPosition().y <= pEnemy->GetPosition().y + fHeight) && pEnemy->GetState() != CEnemy::STATE_DAMEGE && pEnemy->GetState() != CEnemy::STATE_HEATDAMEGE)
 		{
 			// “G‚Ì”Ô†‚ð•Û‘¶
-			//CGame::GetEnemyManager()->SetTarget(nCount);
 			pEnemy->Damege(CPlayer::GetPlayer()->GetMotion()->GetAttackDamege(), CPlayer::GetPlayer()->GetMotion()->GetKnockBack(), CPlayer::GetPlayer()->GetActType());
 
 			CParticle *pPar = CParticle::Create(pEnemy->GetPosition(), CParticle::TYPE_BLOOD);
-
-			/*CParticle *pParticle = CParticle::Create(ppEnemy[nCount]->GetPosition(), CParticle::TYPEPAR_GROUND);
-			pParticle->Ground();
-			pParticle->Uninit();
-			delete pParticle;
-			pParticle = nullptr;*/
 
 			return true;
 		}

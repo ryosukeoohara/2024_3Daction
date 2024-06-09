@@ -24,6 +24,7 @@ class CBillBoard;
 class CEnemy;
 class CObject2D;
 class CItem;
+class CHeatAction;
 
 //*==========================================================
 // プレイヤークラス
@@ -66,8 +67,7 @@ public:
 	// 連撃
 	enum ATTACKTYPE
 	{
-		TYPE_NONE = 0,          // なんもない
-		TYPE_ATTACK1,           // 一段目
+		TYPE_ATTACK1 = 0,       // 一段目
 		TYPE_ATTACK2,           // 二段目
 		TYPE_ATTACK3,           // 三段目
 		TYPE_HEATACTBIKE,       // ヒートアクション・バイク
@@ -170,6 +170,7 @@ public:
 	void SetImmobile(void) { m_Mobility = Immobile; }                // 動けないようにする
 	void SetDefeat(int nValue) { m_nDefeat = nValue; }
 	void SetUseMicroCount(int nValue) { m_nUseCounter = nValue; }
+	void SetbHeatActFlag(bool bValue) { m_bHeatActFlag = bValue; }
 
 	// 取得系
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }       // 位置取得
@@ -187,6 +188,7 @@ public:
 	CItem *GetGrapItem(void) { return m_Grap.pItem; }
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 	int GetDefeat(void) { return m_nDefeat; }
+	HEAT GetHeatAct(void) { return m_HeatAct; }
 
 private:
 
@@ -231,6 +233,7 @@ private:
 	CItem *m_pItem;                       // 一時保存用
 	CObject2D *m_pBotton;
 	CObject2D *m_pGekiatu;
+	CHeatAction *m_pHeatAct;
 	static CPlayer *m_pPlayer;
 	int m_nDefeat;  // 敵を倒した数
 	int m_nIdxEne;
@@ -248,6 +251,7 @@ private:
 	bool m_bLift;                         // 持ち上げる
 	bool m_bGrap;                         // 投げ
 	bool m_bInvi;                         // 無敵かどうか
+	bool m_bHeatActFlag;                  // ヒートアクションしているかどうか
 
 	//チュートリアルで使う関数,変数
 	void ControlTutorial(void);          // チュートリアルのプレイヤーの制御

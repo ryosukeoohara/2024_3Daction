@@ -30,6 +30,7 @@
 #include "particle.h"
 #include "effect2D.h"
 #include "animation.h"
+#include "heataction.h"
 
 #include<stdio.h>
 #include<time.h>
@@ -58,8 +59,7 @@ CPlayer *CPlayer::m_pPlayer = nullptr;
 #define LOSTSTMINA    (10.0f)                                     // ダッシュのスタミナ消費量
 #define GRAPSTMINA    (0.1f)                                      // 敵を掴んでいる時のスタミナ消費量
 #define HAND          (9)                                         // 右手の番号
-#define PLAYER01_TEXT ("data\\TEXT\\motion_neet2.txt")            // プレイヤーのテキストファイル
-#define PLAYER02_TEXT ("data\\TEXT\\motion_set_player2.txt")      // プレイヤーのテキストファイル
+#define PLAYER01_TEXT ("data\\TEXT\\player_info.txt")            // プレイヤーのテキストファイル
 
 // 無名名前空間を定義
 namespace
@@ -128,6 +128,7 @@ CPlayer::CPlayer()
 	m_pItem = nullptr;
 	m_pBotton = nullptr;
 	m_pGekiatu = nullptr;
+	m_pHeatAct = nullptr;
 	m_nIdxEne = 0;
 	m_nIdxItem = -1;
 	m_nDefeat = 0;
@@ -144,6 +145,7 @@ CPlayer::CPlayer()
 	m_bLift = false;
 	m_bGrap = false;
 	m_bInvi = false;
+	m_bHeatActFlag = false;
 	
 	m_bPushW = false;
 	m_bPushA = false;
@@ -190,6 +192,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos, int nPriority) : CObject(nPriority)
 	m_pItem = nullptr;
 	m_pBotton = nullptr;
 	m_pGekiatu = nullptr;
+	m_pHeatAct = nullptr;
 	m_nIdxEne = 0;
 	m_nIdxItem = -1;
 	m_nDefeat = 0;
@@ -206,6 +209,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos, int nPriority) : CObject(nPriority)
 	m_bLift = false;
 	m_bGrap = false;
 	m_bInvi = false;
+	m_bHeatActFlag = false;
 
 	m_bPushW = false;
 	m_bPushA = false;
@@ -519,6 +523,18 @@ void CPlayer::Update(void)
 		}
 	}
 
+
+
+	if (m_pHeatAct != nullptr)
+	{
+		m_pHeatAct->Updata();
+
+		if (m_bHeatActFlag == false)
+			m_pHeatAct = nullptr;
+	}
+
+
+
 	if (m_Info.pos.x >= 800.0f)
 	{
 		m_Info.pos.x = 800.0f;
@@ -586,17 +602,19 @@ void CPlayer::Control(void)
 		Move();     // 移動
 	}
 
-	int nNum = 0;
-	CEnemy **ppEnemy = nullptr;
-
-	if (CGame::GetEnemyManager() != nullptr)
+	// 敵と敵の数取得
 	{
-		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-		nNum = CGame::GetEnemyManager()->GetNum();
+		int nNum = 0;
+		CEnemy** ppEnemy = nullptr;
+		if (CGame::GetEnemyManager() != nullptr)
+		{
+			ppEnemy = CGame::GetEnemyManager()->GetEnemy();
+			nNum = CGame::GetEnemyManager()->GetNum();
+		}
 	}
-
+	
+	// 敵との当たり判定
 	CEnemy *pEnemy = CEnemy::GetTop();
-
 	while (pEnemy != nullptr)
 	{
 		CEnemy *pEnemyNext = pEnemy->GetNext();
@@ -604,23 +622,37 @@ void CPlayer::Control(void)
 		pEnemy = pEnemyNext;
 	}
 	
+	//マウスを取得
+	CInputMouse* pInputMouse = CManager::Getinstance()->GetInputMouse();
 
-	/*if (m_bInvi == false)
+	//ゲームパッドを取得
+	CInputJoyPad* pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	// 通常攻撃
+	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_B, 0) == true)
 	{
-		for (int nCount = 0; nCount < nNum; nCount++)
+		if (m_Info.state != STATE_GRAP && m_Info.state != STATE_HEAT && m_bGrap == false)
 		{
-			if (ppEnemy[nCount] != nullptr)
-			{
-				m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 20.0f);
-			}
+			// アクション
+			Action();  
 		}
-	}*/
-	
-	Action();   // アクション
-	State();    // 状態
+	}
+
+	// 投げ
+	Grap();
+
+	// 回避
+	Avoid();
+
+	// ヒートアクション
+	Heat();
+
+	// 状態
+	State();   
 
 	CManager::Getinstance()->GetDebugProc()->Print("\nプレイヤーの位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CManager::Getinstance()->GetDebugProc()->Print("プレイヤーの向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	CManager::Getinstance()->GetDebugProc()->Print("掴んでいる敵の番号:%d", m_nIdxEne);
 	CManager::Getinstance()->GetDebugProc()->Print("倒した数：%d\n", m_nDefeat);
 }
 
@@ -838,35 +870,37 @@ void CPlayer::Move(void)
 //================================================================
 void CPlayer::Action(void)
 {
-	//キーボードを取得
-	CInputKeyboard *InputKeyboard = CManager::Getinstance()->GetKeyBoard();
-
-	//マウスを取得
-	CInputMouse *pInputMouse = CManager::Getinstance()->GetInputMouse();
-
-	//ゲームパッドを取得
-	CInputJoyPad *pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
-
-	// 通常攻撃
-	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_B, 0) == true)
+	// 攻撃一段目
+	if (m_Info.state != STATE_ATTACK)
 	{
-		if (m_Info.state != STATE_GRAP && m_Info.state != STATE_HEAT && m_bGrap == false)
-		{
-			m_bAttack = true;
-		}
+		m_Info.state = STATE_ATTACK;
+		m_Info.Atc = TYPE_ATTACK1;
+		m_pMotion->Set(TYPE_ATTACK01);
 	}
 
-	// 投げ
-	Grap();
+	// 攻撃二段目
+	if (m_Info.Atc == TYPE_ATTACK1 
+	&& (m_pMotion->GetCancellFrame() <= m_pMotion->GetNumFrame() 
+	&&  m_pMotion->GetCancellFrameEnd() >= m_pMotion->GetNumFrame()))
+	{// 攻撃が一段目かつ現在のフレームがキャンセル可能フレーム
 
-	// 回避
-	Avoid();
+		m_Info.Atc = TYPE_ATTACK2;
+		m_pMotion->Set(TYPE_ATTACK02);
+	}
 
-	// ヒートアクション
-	Heat();
+	// 攻撃三段目
+	if (m_Info.Atc == TYPE_ATTACK2 
+	&& (m_pMotion->GetCancellFrame() <= m_pMotion->GetNumFrame()
+	&&  m_pMotion->GetCancellFrameEnd() >= m_pMotion->GetNumFrame()))
+	{// 攻撃が二段目かつ現在のフレームがキャンセル可能フレーム
 
-	CManager::Getinstance()->GetDebugProc()->Print("回転量:%f", m_fGrapRot);
-	CManager::Getinstance()->GetDebugProc()->Print("掴んでいる敵の番号:%d", m_nIdxEne);
+		m_Info.Atc = TYPE_ATTACK3;
+		m_pMotion->Set(TYPE_ATTACK03);
+	}
+
+	// 移動量
+	m_Info.move.x -= sinf(m_Info.rot.y);
+	m_Info.move.z -= cosf(m_Info.rot.y);
 }
 
 //================================================================
@@ -1124,7 +1158,7 @@ void CPlayer::Grap(void)
 				{// 現在のフレームが攻撃判定発生フレーム以上かつ攻撃判定終了フレームない
 
 					if (CGame::GetCollision()->Circle(&m_Info.pos, &m_pEnemy->GetPosition(), 40.0f, 40.0f) == true
-						&& m_pEnemy->GetState() == CEnemy::STATE_PAINFULDAMAGE || m_pEnemy->GetState() == CEnemy::STATE_GETUP)
+						/*&& m_pEnemy->GetState() == CEnemy::STATE_PAINFULDAMAGE || m_pEnemy->GetState() == CEnemy::STATE_GETUP*/)
 					{// 範囲内かつ敵がコケている
 
 						m_Grap.pEnemy = m_pEnemy; 
@@ -1204,43 +1238,6 @@ void CPlayer::State(void)
 			m_Info.state = STATE_GRAPWALK;
 			m_pMotion->Set(TYPE_GRAPWALK);
 		}
-	}
-
-	// 攻撃一段目
-	if (m_Info.state != STATE_ATTACK && m_bAttack == true)
-	{
-		m_Info.state = STATE_ATTACK;
-		m_Info.Atc = TYPE_ATTACK1;
-		m_pMotion->Set(TYPE_ATTACK01);
-		m_bAttack = false;
-
-		// 移動量
-		m_Info.move.x -= sinf(m_Info.rot.y);
-		m_Info.move.z -= cosf(m_Info.rot.y);
-	}
-
-	// 攻撃二段目
-	if (m_Info.Atc == TYPE_ATTACK1 && m_bAttack == true && m_pMotion->IsFinish() == true)
-	{
-		m_Info.Atc = TYPE_ATTACK2;
-		m_pMotion->Set(TYPE_ATTACK02);
-		m_bAttack = false;
-
-		// 移動量
-		m_Info.move.x -= sinf(m_Info.rot.y);
-		m_Info.move.z -= cosf(m_Info.rot.y);
-	}
-
-	// 攻撃三段目
-	if (m_Info.Atc == TYPE_ATTACK2 && m_bAttack == true && m_pMotion->IsFinish() == true)
-	{
-		m_Info.Atc = TYPE_ATTACK3;
-		m_pMotion->Set(TYPE_ATTACK03);
-		m_bAttack = false;
-
-		// 移動量
-		m_Info.move.x -= sinf(m_Info.rot.y) * 8.0f;
-		m_Info.move.z -= cosf(m_Info.rot.y) * 8.0f;
 	}
 
 	// 通常攻撃・こぶしorアイテム
@@ -1380,7 +1377,7 @@ void CPlayer::State(void)
 	// 待機モーションにする
 	if (m_pMotion->IsFinish() == true || (m_bDesh == false && m_bLift == true && m_Info.state == STATE_GRAPDASH)
 		|| (m_bDesh == false && m_bGrap == true && m_Info.state == STATE_GRAPWALK)
-		|| (m_bAttack == false && m_bDesh == false && m_bGrap == false && m_bLift == false 
+		|| (m_bDesh == false && m_bGrap == false && m_bLift == false 
 		 && m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_AVOID
 		 && m_Info.state != STATE_LIFT && m_Info.state != STATE_HEAT && m_Info.state != STATE_THROW
 		 && m_Info.state != STATE_AVOID && m_Info.state != STATE_GRAP))
@@ -1388,7 +1385,7 @@ void CPlayer::State(void)
 		//モーションをセット(待機)
 		m_pMotion->Set(TYPE_NEUTRAL);
 		m_Info.state = STATE_NEUTRAL;
-		m_Info.Atc = TYPE_NONE;
+		//m_Info.Atc = TYPE_NONE;
 		m_bLift = false;
 		m_bAttack = false;
 		m_nCntColi = 0;
@@ -1444,19 +1441,6 @@ void CPlayer::Damege(void)
 //================================================================
 void CPlayer::Heat(void)
 {
-	CEnemy **ppEnemy = nullptr;
-	int nNum = 0;
-	float fLength = 0.0f;
-	D3DXVECTOR3 OldDistance = D3DXVECTOR3(10000.0f, 100000.0f, 100000.0f);
-	D3DXVECTOR3 Distance = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-	if (CGame::GetEnemyManager() != nullptr)
-	{// 敵の総数と敵の情報
-
-		nNum = CGame::GetEnemyManager()->GetNum();
-		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-	}
-
 	// アイテムを持っているときまたはアイテムを持って走っているとき
 	if (m_Info.state == STATE_LIFT || m_Info.state == STATE_GRAPDASH)
 	{
@@ -1501,26 +1485,19 @@ void CPlayer::Heat(void)
 					}
 				}
 
-				if (StartHeatAction() == true)
-				{
-					m_pEnemy->SetChase(CEnemy::CHASE_OFF);
-					m_pEnemy->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+				if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
+				{// ヒートアクションする
 
-					m_pMotion->Set(TYPE_THROW);
-
-					// 持っているアイテムの種類に応じた攻撃タイプ
-					if (m_Grap.pItem != nullptr)
+					m_pHeatAct = new CHeatAction;
+					if (m_pHeatAct != nullptr)
 					{
-						if (m_Grap.pItem->GetType() == CItem::TYPE_BIKE)
-						{
-							m_Info.Atc = TYPE_HEATACTBIKE;
-						}
-
-						if (m_Grap.pItem->GetType() == CItem::TYPE_REF)
-						{
-							m_Info.Atc = TYPE_HEATACTREF;
-						}
+						m_pHeatAct->SetAction(m_HeatAct, this, m_pEnemy);
 					}
+
+					m_Info.state = STATE_HEAT;
+
+					// ヒートアクションしている
+					m_bHeatActFlag = true;
 				}
 			}
 			else
@@ -1591,12 +1568,32 @@ void CPlayer::Heat(void)
 				}*/
 			}
 
-			if (StartHeatAction() == true)
-			{// 
+			if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
+			{// ヒートアクションする
+
+				m_pHeatAct = new CHeatAction;
+				if (m_pHeatAct != nullptr)
+				{
+					m_pHeatAct->SetAction(m_HeatAct, this, m_pEnemy);
+				}
 
 				m_pMotion->Set(TYPE_ENEMYGRAP);
-				m_Info.Atc = TYPE_HEATACTMICROWAVE;
+
+				m_Info.state = STATE_HEAT;
+
+				// ヒートアクションしている
+				m_bHeatActFlag = true;
+
+				// 敵を離す
+				m_bGrap = false;
 			}
+
+			//if (StartHeatAction() == true)
+			//{// 
+
+			//	m_pMotion->Set(TYPE_ENEMYGRAP);
+			//	m_Info.Atc = TYPE_HEATACTMICROWAVE;
+			//}
 		}
 		else
 		{
@@ -1611,39 +1608,6 @@ void CPlayer::Heat(void)
 				m_pGekiatu->Uninit();
 				m_pGekiatu = nullptr;
 			}
-		}
-	}
-
-	if (m_Info.state == STATE_HEAT)
-	{// 状態がヒートアクションのとき　
-
-		switch (m_Info.Atc)
-		{
-		case TYPE_HEATACTBIKE:
-
-			// たたきつけ
-			Smash(m_pEnemy);
-			break;
-
-		case TYPE_HEATACTREF:
-
-			// たたきつけ
-			Smash(m_pEnemy);
-			break;
-
-		case TYPE_HEATACTMICROWAVE:
-
-			// 電子レンジ
-			Fire();
-			break;
-
-		case TYPE_HEATACTPOWERFUL:
-
-			PowerfulBlow();
-			break;
-
-		default:
-			break;
 		}
 	}
 }
@@ -1696,44 +1660,44 @@ void CPlayer::Smash(CEnemy *pEnemy)
 //================================================================
 void CPlayer::Fire(void)
 {
-	// 電子レンジの方向に向かせる
-	m_fDest = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pItemMicro->GetPosition(), m_Info.rot.y);
-	m_Info.rot.y += m_fDest;
-	m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
-	m_Info.pos = D3DXVECTOR3(-720.0f, 0.0f, 580.0f);
+	//// 電子レンジの方向に向かせる
+	//m_fDest = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pItemMicro->GetPosition(), m_Info.rot.y);
+	//m_Info.rot.y += m_fDest;
+	//m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+	//m_Info.pos = D3DXVECTOR3(-720.0f, 0.0f, 580.0f);
 
-	if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
-	{
-		// 
-		/*{
-			CGame::GetEnemyManager()->SetTarget(m_nIdxEne);
-		}*/
+	//if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
+	//{
+	//	// 
+	//	/*{
+	//		CGame::GetEnemyManager()->SetTarget(m_nIdxEne);
+	//	}*/
 
-		// プレイヤーとの関係を切る
-		{
-			m_Grap.pEnemy->SetCurrent(nullptr);
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-			//m_Info.state = STATE_NEUTRAL;
-			m_pMotion->Set(TYPE_NEUTRAL);
-			m_bGrap = false;
-		}
-		
-		// 電子レンジとの関係を作る
-		{
-			m_Grap.pEnemy->SetCurrent(m_pItemMicro->GetMtxWorld());
-			m_Grap.pEnemy->SetPosition(D3DXVECTOR3(0.0f, -70.0f, -30.0f));
-			m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
+	//	// プレイヤーとの関係を切る
+	//	{
+	//		m_Grap.pEnemy->SetCurrent(nullptr);
+	//		m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	//		//m_Info.state = STATE_NEUTRAL;
+	//		m_pMotion->Set(TYPE_NEUTRAL);
+	//		m_bGrap = false;
+	//	}
+	//	
+	//	// 電子レンジとの関係を作る
+	//	{
+	//		m_Grap.pEnemy->SetCurrent(m_pItemMicro->GetMtxWorld());
+	//		m_Grap.pEnemy->SetPosition(D3DXVECTOR3(0.0f, -70.0f, -30.0f));
+	//		m_Grap.pEnemy->SetRotition(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
 
-			// 状態とモーションを設定
-			if (m_Grap.pEnemy->GetState() != CEnemy::STATE_BIRIBIRI)
-			{
-				m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
-				m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
-				CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_GRASS);
-				CParticle::Create(m_pItemMicro->GetPosition(), CParticle::TYPE_GLASS);
-			}
-		}
-	}
+	//		// 状態とモーションを設定
+	//		if (m_Grap.pEnemy->GetState() != CEnemy::STATE_HEATACTELECTROWAIT)
+	//		{
+	//			m_Grap.pEnemy->SetState(CEnemy::STATE_BIRIBIRI);
+	//			m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_BIRIBIRI);
+	//			CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_GRASS);
+	//			CParticle::Create(m_pItemMicro->GetPosition(), CParticle::TYPE_GLASS);
+	//		}
+	//	}
+	//}
 
 	if (m_Grap.pEnemy != nullptr)
 	{

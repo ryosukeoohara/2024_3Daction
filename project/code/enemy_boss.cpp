@@ -345,7 +345,7 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 			if (m_Info.state != STATE_HEATDAMEGE)
 			{
 				m_Info.state = STATE_HEATDAMEGE;
-				GetMotion()->Set(TYPE_HEATDAMEGE);
+				GetMotion()->Set(TYPE_HEATACTDAMEGE);
 			}
 		}
 		else
@@ -360,7 +360,7 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 				if (a >= n && CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
 				{
 					m_Info.state = STATE_PAINFULDAMAGE;
-					GetMotion()->Set(TYPE_HEATDAMEGE);
+					GetMotion()->Set(TYPE_HEATACTDAMEGE);
 					m_Chase = CHASE_OFF;
 					m_Info.move.x = 0.0f;
 					m_Info.move.z = 0.0f;

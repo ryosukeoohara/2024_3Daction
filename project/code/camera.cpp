@@ -235,7 +235,7 @@ void CCamera::Mode(void)
 		break;
 
 	case MODE_RETURN:
-		//Heat();
+		
 		Return();
 		break;
 
@@ -246,10 +246,6 @@ void CCamera::Mode(void)
 
 	case MODE_ONSTAGE:
 
-		/*m_OldposR = m_posR;
-		m_OldposV = m_posV;
-		m_Oldrot = m_rot;
-		m_fOldLen = m_fLen;*/
 		OnStage();
 		break;
 
@@ -349,60 +345,7 @@ void CCamera::Return(void)
 //================================================================
 void CCamera::Debug(void)
 {
-	//if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_I) == true)
-	//{
-	//	//カメラの移動量
-	//	/*m_move.x += m_posRDest.x - m_posR.x;
-	//	m_move.z += m_posRDest.z - m_posR.z;*/
-	//	m_posV.x += m_posR.x - sinf(m_rot.y) * -m_fLen;
-	//	m_posV.z += m_posR.z - cosf(m_rot.y) * -m_fLen;
-	//}
-
-	//if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_U) == true)
-	//{
-	//	//カメラの移動量
-	//	/*m_move.x += m_posRDest.x - m_posR.x;
-	//	m_move.z += m_posRDest.z - m_posR.z;*/
-	//	m_posV.x -= m_posR.x - sinf(m_rot.y) * -m_fLen;
-	//	m_posV.z -= m_posR.z - cosf(m_rot.y) * -m_fLen;
-	//}
-
-	//if (CManager::Getinstance()->GetInputJoyPad()->GetRXStick(CInputJoyPad::STICK_RX, 0) > 0)
-	//{
-	//	m_rot.y += 0.05f;
-	//}
-	//else if (CManager::Getinstance()->GetInputJoyPad()->GetRXStick(CInputJoyPad::STICK_RX, 0) < 0)
-	//{
-	//	m_rot.y -= 0.05f;
-	//}
-
-	//if (m_rot.y > D3DX_PI)
-	//{
-	//	m_rot.y -= D3DX_PI * 2.0f;
-	//}
-	//else if (m_rot.y < -D3DX_PI)
-	//{
-	//	m_rot.y += D3DX_PI * 2.0f;
-	//}
-
-	///*m_posV.x = m_posR.x - sinf(m_rot.y) * -CAMERA_DISTNCE;
-	//m_posV.z = m_posR.z - cosf(m_rot.y) * -CAMERA_DISTNCE;*/
-
-	///*m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
-	//m_posR = D3DXVECTOR3(m_posR.x, 50.0f, m_posR.z + 10.0f);
-	//m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);*/
-
-	//////目標の注視点を設定
-	////m_posRDest.x = m_posR.x;
-	////m_posRDest.z = m_posR.z;
-
-	//////位置に移動量を保存
-	////m_posR.x += m_move.x;
-	////m_posR.z += m_move.z;
-
-	//////移動量を更新(減衰させる)--------------------------------------------
-	////m_move.x += (0.0f - m_move.x) * 0.1f;
-	////m_move.z += (0.0f - m_move.z) * 0.1f;
+	
 }
 
 //================================================================
@@ -483,7 +426,7 @@ void CCamera::CameraV(void)
 		m_rot.y -= 0.05f;
 	}
 
-	m_rot.y += MousePos.x * 0.005f;
+	//m_rot.y += MousePos.x * 0.005f;
 
 	if (m_rot.y > D3DX_PI)
 	{
@@ -499,7 +442,7 @@ void CCamera::CameraV(void)
 
 	D3DXVECTOR3 pos = pPlayer->GetPosition();
 
-	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 30.0f + m_posV.z);
+	m_posV = D3DXVECTOR3(0.0f + m_posV.x, 150.0f, 0.0f + m_posV.z);
 	m_posR = D3DXVECTOR3(pos.x, 50.0f, pos.z + 10.0f);
 	m_posU = D3DXVECTOR3(0.0f, 5.0f, 0.0f);
 

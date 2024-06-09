@@ -8,7 +8,6 @@
 #define _MANAGER_H_
 
 #include "main.h"
-//#include "object.h"
 
 //===========================================================
 //前方宣言
@@ -36,6 +35,7 @@ class CResult;
 class CFade;
 class CPause;
 class CUtility;
+class CMyEffekseer;
 
 //シーンクラス
 class CScene /*: public CObject*/
@@ -101,7 +101,6 @@ public:		//誰でもアクセスできる
 	CModel *GetModel(void);
 	CObject3D *GetObject3D(void);
 	CEnemy *GetEnemy(void);
-	//static void *SetEnemy(CEnemy *enemy) { return m_Enemy = enemy; }
 	CCollision *GetCollsion(void);
 	CEdit *GetEdit(void);
 	CMap *GetMap(void);
@@ -109,7 +108,7 @@ public:		//誰でもアクセスできる
 	CFade *GetFade(void);
 	CPause *GetPause(void);
 	CUtility *GetUtility(void);
-	
+	CMyEffekseer* GetMyEffekseer(void);
 
 	void SetMode(CScene::MODE mode);
 	void SetDefeat(int nValue) { m_nDefeat = nValue; }
@@ -141,7 +140,7 @@ private:	//自分だけがアクセスできる
 	CFade *m_Fade;
 	CPause *m_Pause;
 	CUtility *m_pUtility;
-	
+	CMyEffekseer* m_pMyEffekseer;
 
 	int m_ResetCounter;  //リセットした回数
 	int m_nDefeat;  // プレイヤーが敵を倒した数

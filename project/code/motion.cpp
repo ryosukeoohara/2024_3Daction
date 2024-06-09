@@ -222,7 +222,7 @@ int CMotion::GetAttackDamege(void)
 }
 
 //===========================================================
-//更新処理
+// 無敵開始フレーム
 //===========================================================
 int CMotion::GetInvincibleStrat(void)
 {
@@ -230,11 +230,27 @@ int CMotion::GetInvincibleStrat(void)
 }
 
 //===========================================================
-//更新処理
+// 無敵終了フレーム
 //===========================================================
 int CMotion::GetInvincibleEnd(void)
 {
 	return m_aInfo[m_nType].m_nInvincibleEnd;
+}
+
+//===========================================================
+// キャンセル可能フレーム取得
+//===========================================================
+int CMotion::GetCancellFrame(void)
+{
+	return m_aInfo[m_nType].nCancellFrame;
+}
+
+//===========================================================
+// キャンセル可能終了フレーム取得
+//===========================================================
+int CMotion::GetCancellFrameEnd(void)
+{
+	return m_aInfo[m_nType].nCancellFrameEnd;
 }
 
 //===========================================================
@@ -351,6 +367,18 @@ void CMotion::ReadText(const char *TextFilename)
 						{
 							fscanf(pFile, "%s", &aString);
 							fscanf(pFile, "%d", &m_aInfo[nCntMotion].m_nAttackDamege);
+						}
+
+						if (strcmp("STRAT_CANCEL", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].nCancellFrame);
+						}
+
+						if (strcmp("END_CANCEL", aString) == 0)
+						{
+							fscanf(pFile, "%s", &aString);
+							fscanf(pFile, "%d", &m_aInfo[nCntMotion].nCancellFrameEnd);
 						}
 
 						if (strcmp("KNOCKBACK", aString) == 0)
