@@ -317,6 +317,60 @@ void CCharacter::Draw(void)
 
 	//保存していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
+
+	D3DXMATRIX mtxShadow;
+	D3DLIGHT9 light;
+	D3DXVECTOR4 posLight;
+	D3DXVECTOR3 pos, normal;
+	D3DXPLANE plane;
+
+	// ライトの位置を設定
+	pDevice->GetLight(0, &light);
+	posLight = D3DXVECTOR4(-light.Direction.x, -light.Direction.y, -light.Direction.z, 0.0f);
+
+	// 平面情報を設定
+	pos = D3DXVECTOR3(m_mtxWorld._41, 0.5f, m_mtxWorld._43);
+	normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXPlaneFromPointNormal(&plane, &pos, &normal);
+
+	// シャドウマトリックスの初期化
+	D3DXMatrixIdentity(&mtxShadow);
+
+	// シャドウマトリックスの作成
+	D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
+	D3DXMatrixMultiply(&mtxShadow, &m_mtxWorld, &mtxShadow);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
+
+	//現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	//マテリアルデータへのポインタを取得
+	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+	for (int nCntMat = 0; nCntMat < (int)m_dwNumMat; nCntMat++)
+	{
+		m_ShadowMat.Emissive.r = 0.0f;
+		m_ShadowMat.Emissive.g = 0.0f;
+		m_ShadowMat.Emissive.b = 0.0f;
+		m_ShadowMat.Emissive.a = 1.0f;
+		m_ShadowMat.Diffuse.r = 0.0f;
+		m_ShadowMat.Diffuse.g = 0.0f;
+		m_ShadowMat.Diffuse.b = 0.0f;
+		m_ShadowMat.Diffuse.a = 1.0f;
+
+		//マテリアルの設定
+		pDevice->SetMaterial(&m_ShadowMat);
+
+		//テクスチャの設定
+		pDevice->SetTexture(0, nullptr);
+
+		//モデル(パーツ)の描画
+		m_pMesh->DrawSubset(nCntMat);
+	}
+
+	//保存していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
 }
 
 //================================================================

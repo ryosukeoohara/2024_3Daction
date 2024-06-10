@@ -39,6 +39,8 @@ CObjectX::CObjectX()
 	m_Info.col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_Info.Fliename = "a";
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
+
+	m_bDraw = true;
 }
 
 //================================================================
@@ -54,6 +56,8 @@ CObjectX::CObjectX(const char *aModelFliename, int nPriority) : CObject(nPriorit
 
 	m_Info.Fliename = aModelFliename;
 	D3DXMatrixIdentity(&m_Info.mtxWorld);
+
+	m_bDraw = true;
 }
 
 //================================================================
@@ -249,11 +253,11 @@ void CObjectX::Update(void)
 void CObjectX::Draw(void)
 {
 	//デバイスの取得
-	CRenderer *pRenderer = CManager::Getinstance()->GetRenderer();
+	CRenderer* pRenderer = CManager::Getinstance()->GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();
 
-	CTexture *pTexture = CManager::Getinstance()->GetTexture();
-	
+	CTexture* pTexture = CManager::Getinstance()->GetTexture();
+
 	//計算用マトリックス
 	D3DXMATRIX m_mtxRot, m_mtxTrans;
 
@@ -261,61 +265,64 @@ void CObjectX::Draw(void)
 	D3DMATERIAL9 matDef;
 
 	//マテリアルデータへのポインタ
-	D3DXMATERIAL *pMat;
+	D3DXMATERIAL* pMat;
 
-	//ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_Info.mtxWorld);
-
-	if (m_pCurrent != nullptr)
+	if (m_bDraw == true)
 	{
-		//向きを反映
-		D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
+		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&m_Info.mtxWorld);
 
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
+		if (m_pCurrent != nullptr)
+		{
+			//向きを反映
+			D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
 
-		//位置を反映
-		D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
 
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
+			//位置を反映
+			D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
-		// マトリックスと親のマトリックスをかけ合わせる
-		D3DXMatrixMultiply(&m_Info.mtxWorld,
-			&m_Info.mtxWorld, m_pCurrent);
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
+
+			// マトリックスと親のマトリックスをかけ合わせる
+			D3DXMatrixMultiply(&m_Info.mtxWorld,
+				&m_Info.mtxWorld, m_pCurrent);
+		}
+		else
+		{
+			//向きを反映
+			D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
+
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
+
+			//位置を反映
+			D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+
+			D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
+		}
+
+		//現在のマテリアルを取得
+		pDevice->GetMaterial(&matDef);
+
+		//ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_Info.mtxWorld);
+
+		//マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
+
+		for (int nCntMat = 0; nCntMat < (int)m_dwNumMat; nCntMat++)
+		{
+			//マテリアルの設定
+			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+
+			//テクスチャの設定
+			pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture[nCntMat]));
+
+			//モデル(パーツ)の描画
+			m_pMesh->DrawSubset(nCntMat);
+		}
+
+		//保存していたマテリアルを戻す
+		pDevice->SetMaterial(&matDef);
 	}
-	else
-	{
-		//向きを反映
-		D3DXMatrixRotationYawPitchRoll(&m_mtxRot, m_Info.rot.y, m_Info.rot.x, m_Info.rot.z);
-
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxRot);
-
-		//位置を反映
-		D3DXMatrixTranslation(&m_mtxTrans, m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-
-		D3DXMatrixMultiply(&m_Info.mtxWorld, &m_Info.mtxWorld, &m_mtxTrans);
-	}
-	
-	//現在のマテリアルを取得
-	pDevice->GetMaterial(&matDef);
-
-	//ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_Info.mtxWorld);
-
-	//マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)m_pBuffMat->GetBufferPointer();
-
-	for (int nCntMat = 0; nCntMat < (int)m_dwNumMat; nCntMat++)
-	{
-		//マテリアルの設定
-		pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-
-		//テクスチャの設定
-		pDevice->SetTexture(0, pTexture->GetAddress(m_nIdxTexture[nCntMat]));
-
-		//モデル(パーツ)の描画
-		m_pMesh->DrawSubset(nCntMat);
-	}
-	
-	//保存していたマテリアルを戻す
-	pDevice->SetMaterial(&matDef);
 }

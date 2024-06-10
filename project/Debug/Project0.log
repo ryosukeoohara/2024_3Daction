@@ -1,1 +1,9 @@
-﻿  Project0.vcxproj -> C:\Users\student\Desktop\新しいフォルダー (2)\2024_3Daction\project\Project0.exe
+﻿  character.cpp
+  collision.cpp
+  enemy.cpp
+  enemy_boss.cpp
+  enemy_weak.cpp
+  motion.cpp
+  player.cpp
+  コードを生成中...
+  Project0.vcxproj -> C:\Users\student\Desktop\新しいフォルダー (2)\2024_3Daction\project\Project0.exe

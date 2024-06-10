@@ -51,6 +51,7 @@ public:
 
 private:
 	LPDIRECT3DTEXTURE9 *m_pTexture;     //テクスチャへのポインタ
+	D3DMATERIAL9 m_ShadowMat;
 	D3DXVECTOR3 m_pos;
 	D3DXVECTOR3 m_posOrigin;
 	D3DXVECTOR3 m_rot;

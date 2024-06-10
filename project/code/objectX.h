@@ -57,6 +57,7 @@ public:
 	void SetIdxModel(int nIdx) { m_Info.nIdxModel = nIdx; }                     // モデルのインデックス番号
 	void SetCurrent(D3DXMATRIX *Current) { m_pCurrent = Current; }              // 親のマトリックス
 	void SetbEnable(bool bValue = true) { m_bEnable = bValue; }
+	void SetbDraw(bool bValue) { m_bDraw = bValue; }
 
 	//　取得系
 	D3DXVECTOR3 GetPosition(void) { return  m_Info.pos; }        // 位置
@@ -68,8 +69,9 @@ public:
 	D3DXVECTOR3 GetVtxMin(void) { return m_Info.vtxMini; }       // モデルの最小値
 	D3DXVECTOR3 GetVtxMax(void) { return m_Info.vtxMax; }        // モデルの最大値
 	int GetIdxModel(void) { return m_Info.nIdxModel; }           // モデルのインデックス番号
+	const char *GetFileName(void) { return m_Info.Fliename; }    // モデルのファイルネーム
 	bool IsEnable(void) { return m_bEnable; }
-	
+
 private:
 	
 	D3DXVECTOR3 m_posOrigin;
@@ -82,6 +84,7 @@ private:
 
 	int *m_nIdxTexture;
 	bool m_bEnable;
+	bool m_bDraw;
 };
 
 #endif

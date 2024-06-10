@@ -1,6 +1,6 @@
 //===========================================================
 //
-// ポリゴンを出すやつ[audience.h]
+// 周りで見ている人[audience.h]
 // Author 大原怜将
 //
 //===========================================================
@@ -8,57 +8,46 @@
 #define _AUDIENCE_H_      //2重インクルード防止のマクロ定義をする
 
 #include "main.h"
-
-class CObjectX;
+#include "objectX.h"
 
 // マクロ定義
 #define MAX_MODEL (64)   // モデルの最大数
 #define MAX_NAME  (128)  // テクスチャの最大文字数
 
 //アイテムクラス
-class CAudience
+class CAudience : public CObjectX
 {
 public:
 
-	enum TYPE
-	{
-		TYPE_NONE = 0,
-		TYPE_01,
-		TYPE_02,
-		TYPE_03,
-		TYPE_MAX
-	};
-
 	CAudience();  //コンストラクタ
+	CAudience(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* filename);
 	~CAudience();  //デストラクタ
 
-	HRESULT Init(void);   //ポリゴンの初期化処理    
-	void Uninit(void);    //ポリゴンの終了処理
-	void Update(void);    //ポリゴンの更新処理
+	HRESULT Init(void);   // 初期化処理    
+	void Uninit(void);    // 終了処理
+	void Update(void);    // 更新処理
+	void Draw(void);      // 描画処理
 
 	static CAudience *Create(void);
+	static CAudience* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* filename);
 
 	// 設定系
 
 	// 取得系
-	CObjectX **GetObjectX(void) { return m_appObjectX; }
-	int GetNum(void) { return m_nNumModel; }
+	static CAudience* GetTop(void) { return m_pTop; }
+	CAudience* GetNext(void) { return m_pNext; }
 
 private:
 
-	struct TEX
-	{
-		char aName[MAX_NAME];
-	};
+	static CAudience* m_pTop;  //先頭のオブジェクトへのポインタ
+	static CAudience* m_pCur;  //最後尾のオブジェクトへのポインタ
+	CAudience* m_pNext;        //次のオブジェクトへのポインタ
+	CAudience* m_pPrev;        //前のオブジェクトへのポインタ
 
-
-	void TextLoad(void);
-	CObjectX **m_appObjectX;
-
-	int m_nNumModel;
-	int m_nNumItem;
-
-	TEX m_aTex[MAX_MODEL];
+	D3DXVECTOR3 m_pos;  // 位置
+	D3DXVECTOR3 m_move; // 移動量
+	int m_nJumpWaitTime;    // 再びジャンプ可能になるまでの時間
+	bool m_bJump;  // ジャンプしているかどうか
 };
 
 #endif

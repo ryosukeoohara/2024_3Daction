@@ -28,6 +28,8 @@
 #include "map.h"
 #include "audience.h"
 #include "motion.h"
+#include "edit.h"
+#include "audiencemanager.h"
 
 //================================================================
 //　静的メンバ変数
@@ -52,6 +54,7 @@ CGame::CGame()
 	m_bPause = false;
 	m_bOnStage = false;
 	m_nOnStageCounter = 0;
+	m_pEdit = nullptr;
 }
 
 //===========================================================
@@ -63,6 +66,7 @@ CGame::CGame(CScene::MODE mode)
 	m_bPause = false;
 	m_bOnStage = false;
 	m_nOnStageCounter = 0;
+	m_pEdit = nullptr;
 }
 
 //===========================================================
@@ -207,6 +211,8 @@ HRESULT CGame::Init(void)
 		m_pPause = CPause::Create();
 	}
 
+	CAudienceManager* pAudienceManager = CAudienceManager::Create();
+
 	CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_BGM_GAME);
 
 	return S_OK;
@@ -287,6 +293,25 @@ void CGame::Update(void)
 		{
 			m_pPause->SetDraw(m_bPause);
 		}
+	}
+
+	if (InputKeyboard->GetTrigger(DIK_F7) == true)
+	{//ENTERキーを押したかつシーンがタイトルのとき
+
+		m_bUse = m_bUse ? false : true;
+	}
+
+	if (m_bUse == true)
+	{
+		if (m_pEdit == nullptr)
+		{
+			m_pEdit = new CEdit;
+			m_pEdit->Init();
+		}
+
+		m_pEdit->Update();
+
+		return;
 	}
 
 	if (m_bPause == true)

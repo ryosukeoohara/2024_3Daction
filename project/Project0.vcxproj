@@ -163,11 +163,13 @@
     <ClCompile Include="code\animation.cpp" />
     <ClCompile Include="code\appearanceUI.cpp" />
     <ClCompile Include="code\audience.cpp" />
+    <ClCompile Include="code\audiencemanager.cpp" />
     <ClCompile Include="code\billboard.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
+    <ClCompile Include="code\edit.cpp" />
     <ClCompile Include="code\effect.cpp" />
     <ClCompile Include="code\effect2D.cpp" />
     <ClCompile Include="code\effect3D.cpp" />
@@ -221,11 +223,13 @@
     <ClInclude Include="code\animation.h" />
     <ClInclude Include="code\appearanceUI.h" />
     <ClInclude Include="code\audience.h" />
+    <ClInclude Include="code\audiencemanager.h" />
     <ClInclude Include="code\billboard.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\debugproc.h" />
+    <ClInclude Include="code\edit.h" />
     <ClInclude Include="code\effect.h" />
     <ClInclude Include="code\effect2D.h" />
     <ClInclude Include="code\effect3D.h" />

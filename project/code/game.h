@@ -14,6 +14,7 @@ class CPause;
 class CEnemyManager;
 class CItemManager;
 class CMap;
+class CEdit;
 
 //ゲームクラス
 class CGame : public CScene
@@ -66,6 +67,7 @@ private:
 	static CCollision *m_Collision;
 	static CItemManager *m_pItemManager;
 	static CMap *m_pMap;
+	CEdit* m_pEdit;
 	int m_nOnStageCounter;
 	static bool m_bPause;
 	bool m_bUse;  //エディットモード中かどうか

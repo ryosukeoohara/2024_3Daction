@@ -50,7 +50,7 @@ void CLight::Init(void)
 			m_light[nCntLight].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 			//ライトの方向を設定
-			m_vecDir[nCntLight] = D3DXVECTOR3(-0.04f, -0.24f, 0.97f);
+			m_vecDir[nCntLight] = D3DXVECTOR3(-0.05f, -0.87f, 0.05f);
 			break;
 
 		case 1:
@@ -58,7 +58,7 @@ void CLight::Init(void)
 			m_light[nCntLight].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 			//ライトの方向を設定
-			m_vecDir[nCntLight] = D3DXVECTOR3(-0.34f, -0.85f, 0.41f);
+			m_vecDir[nCntLight] = D3DXVECTOR3(0.46f, 0.88f, -0.44f);
 			break;
 
 		case 2:
@@ -66,7 +66,7 @@ void CLight::Init(void)
 			m_light[nCntLight].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 			//ライトの方向を設定
-			m_vecDir[nCntLight] = D3DXVECTOR3(0.44f, -0.60f, -0.66f);
+			m_vecDir[nCntLight] = D3DXVECTOR3(-0.60f, -0.82f, 0.42f);
 			break;
 		}
 

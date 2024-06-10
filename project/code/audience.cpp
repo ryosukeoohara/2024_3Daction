@@ -1,6 +1,6 @@
 //===========================================================
 //
-// マップのモデル[map.cpp]
+// 周りで見てる人[audience.cpp]
 // Author 大原怜将
 //
 //===========================================================
@@ -11,24 +11,28 @@
 #include "debugproc.h"
 #include "object.h"
 
-//const char *CAudience::m_apTexName[MAX_ITEM] =
-//{
-//	"data\\MODEL\\refrigerator.x",
-//	"data\\MODEL\\bike.x",     // 自転車
-//};
-
 // マクロ定義
 #define TEXT_NAME  ("data\\TEXT\\audience.txt")  // マップ
 
+//================================================================
+// 静的メンバ変数
+//================================================================
+CAudience* CAudience::m_pTop = nullptr;
+CAudience* CAudience::m_pCur = nullptr;
+
 namespace
 {
+	const int JUMPWAITTIME = 60;  // 再びジャンプできるようになるまでの時間
+	const float JUMP = 8.0f;      // ジャンプの高さ
+	const float GRAVITY = -1.0f;  // 重力
+
 	const char *MODELNAME[CAudience::TYPE_MAX] =
 	{
-		"data\\MODEL\\",
+		"data\\MODEL\\crowd_02.x",
 		"data\\MODEL\\crowd_02.x",
 		"data\\MODEL\\crowd_03.x",
 		"data\\MODEL\\crowd_04.x",
-	};
+	};  // モデルのファイルネーム
 }
 
 //================================================================
@@ -36,18 +40,53 @@ namespace
 //================================================================
 CAudience::CAudience()
 {
-	m_appObjectX = nullptr;
-	m_nNumModel = 0;
-	m_nNumItem = 0;
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_nJumpWaitTime = 0;
+	m_bJump = false;
+
+	if (m_pTop != nullptr)
+	{// 先頭が存在している場合
+
+		m_pCur->m_pNext = this;
+		m_pPrev = m_pCur;
+		m_pCur = this;
+	}
+	else
+	{// 存在しない場合
+
+		m_pTop = this;
+		m_pCur = this;
+	}
 }
 
 //================================================================
 // コンストラクタ(オーバーロード)
 //================================================================
-//CAudience::CAudience(D3DXVECTOR3 pos, TYPE m_Type, const char *aModelFliename)
-//{
-//
-//}
+CAudience::CAudience(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* filename) : CObjectX(filename)
+{
+	SetPosition(pos);
+	SetRotition(rot);
+
+	m_pos = pos;
+	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_nJumpWaitTime = 0;
+	m_bJump = false;
+
+	if (m_pTop != nullptr)
+	{// 先頭が存在している場合
+
+		m_pCur->m_pNext = this;
+		m_pPrev = m_pCur;
+		m_pCur = this;
+	}
+	else
+	{// 存在しない場合
+
+		m_pTop = this;
+		m_pCur = this;
+	}
+}
 
 //================================================================
 // デストラクタ
@@ -63,117 +102,38 @@ CAudience::~CAudience()
 CAudience *CAudience::Create(void)
 {
 	//オブジェクト2Dのポインタ
-	CAudience *pMap = nullptr;
+	CAudience *pAudience = nullptr;
 
-	if (CObject::GetNumAll() < MAX_OBJECT)
+	if (pAudience == nullptr)
 	{
-		if (pMap == nullptr)
-		{
-			//オブジェクト2Dの生成
-			pMap = new CAudience();
+		//オブジェクト2Dの生成
+		pAudience = new CAudience();
 
-			//初期化処理
-			pMap->Init();
-		}
+		//初期化処理
+		pAudience->Init();
 	}
-
-	return pMap;
+	
+	return pAudience;
 }
 
 //================================================================
 // 生成処理
 //================================================================
-void CAudience::TextLoad(void)
+CAudience* CAudience::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* filename)
 {
-	//char aString[128] = {};    // 文字読み取り用
-	//char aComment[128] = {};   // テキストファイル内のコメント読み取り用
-	//char aFileName[128] = {};  // ファイルの名前読み取り用
-	//int nCntItem = 0;
-	//int nCntFileName = 0;
-	//int nType = -1;
-	//D3DXVECTOR3 pos, rot;      // 読み取り用
+	//オブジェクト2Dのポインタ
+	CAudience* pAudience = nullptr;
 
-	//FILE *pFile;   //ファイルポインタを宣言
+	if (pAudience == nullptr)
+	{
+		// 生成
+		pAudience = new CAudience(pos, rot, filename);
 
-	//pFile = fopen(TEXT_NAME, "r");
-
-	//if (pFile != NULL)
-	//{//ファイルを開けた場合
-
-	//	fscanf(pFile, "%s", &aString[0]);
-
-	//	if (strcmp("SCRIPT", aString) == 0)
-	//	{
-	//		while (strcmp("END_SCRIPT", aString) != 0)
-	//		{
-	//			fscanf(pFile, "%s", &aString[0]);
-
-	//			if (strcmp("NUM_ITEM", aString) == 0)
-	//			{
-	//				fscanf(pFile, "%s", &aString);      //=
-	//				fscanf(pFile, "%d", &m_nNumItem);  //モデルの総数
-
-	//			}  // NUM_ITEMのかっこ
-
-	//			if (strcmp("MODEL_FILENAME", aString) == 0)
-	//			{
-	//				fscanf(pFile, "%s", &aString);       //=
-	//				fscanf(pFile, "%s", &aFileName[0]);  //モデルの名前
-
-	//				strcpy(m_aTex[nCntFileName].aName, aFileName);
-	//				nCntFileName++;
-
-	//				m_appObjectX = new CObjectX*[MAX_MODEL];
-
-	//			}  // MODEL_LILENAMEのかっこ
-
-	//			if (strcmp("MODELSET", aString) == 0)
-	//			{
-	//				while (strcmp("END_MODELSET", aString) != 0)
-	//				{
-	//					fscanf(pFile, "%s", &aString[0]);
-
-	//					if (strcmp("TYPE", aString) == 0)
-	//					{
-	//						fscanf(pFile, "%s", &aString);      //=
-	//						fscanf(pFile, "%d", &nType);  //モデルの総数
-	//					}
-
-	//					if (strcmp("POS", aString) == 0)
-	//					{
-	//						fscanf(pFile, "%s", &aString);      //=
-	//						fscanf(pFile, "%f", &pos.x);  //モデルの総数
-	//						fscanf(pFile, "%f", &pos.y);  //モデルの総数
-	//						fscanf(pFile, "%f", &pos.z);  //モデルの総数
-	//					}
-
-	//					if (strcmp("ROT", aString) == 0)
-	//					{
-	//						fscanf(pFile, "%s", &aString);      //=
-	//						fscanf(pFile, "%f", &rot.x);  //モデルの総数
-	//						fscanf(pFile, "%f", &rot.y);  //モデルの総数
-	//						fscanf(pFile, "%f", &rot.z);  //モデルの総数
-	//					}
-	//				}
-
-	//				m_appObjectX[nCntItem] = CObjectX::Create(m_aTex[nType].aName);
-	//				m_appObjectX[nCntItem]->SetPosition(pos);
-	//				m_appObjectX[nCntItem]->SetRotition(rot);
-
-	//				nCntItem++;
-
-	//				m_nNumModel++;
-	//			}
-	//		}
-	//	}
-
-	//	//ファイルを閉じる
-	//	fclose(pFile);
-	//}
-	//else
-	//{
-	//	return;
-	//}
+		// 初期化処理
+		pAudience->Init();
+	}
+	
+	return pAudience;
 }
 
 //================================================================
@@ -181,29 +141,7 @@ void CAudience::TextLoad(void)
 //================================================================
 HRESULT CAudience::Init(void)
 {
-	TextLoad();
-
-	m_appObjectX = new CObjectX*[10];
-
-	int a = 0;
-
-	//乱数の種を設定
-	srand((unsigned int)time(0));
-
-	for (int n = 0; n < 10; n++)
-	{
-		a = rand() % TYPE_MAX;  //攻撃の種類抽選
-
-		if (a == 0)
-		{
-			a += 1;
-		}
-
-		m_appObjectX[n] = nullptr;
-		m_appObjectX[n] = CObjectX::Create(MODELNAME[a]);
-		m_appObjectX[n]->SetPosition(D3DXVECTOR3(0.0f + n * 50.0f, 0.0f, -800.0f));
-		m_appObjectX[n]->SetRotition(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
-	}
+	CObjectX::Init();
 
 	return S_OK;
 }
@@ -213,18 +151,17 @@ HRESULT CAudience::Init(void)
 //================================================================
 void CAudience::Uninit(void)
 {
-	/*if (m_appObjectX != nullptr)
-	{
-		for (int nCount = 0; nCount < m_nNumModel; nCount++)
-		{
-			m_appObjectX[nCount]->Uninit();
-			delete m_appObjectX[nCount];
-			m_appObjectX[nCount] = nullptr;
-		}
+	CAudience* pObject = m_pTop;
 
-		delete m_appObjectX;
-		m_appObjectX = nullptr;
-	}*/
+	while (pObject != nullptr)
+	{
+		CAudience* pObjectNext = pObject->m_pNext;
+
+		CObjectX::Uninit();
+		pObject = nullptr;
+
+		pObject = pObjectNext;
+	}
 }
 
 //================================================================
@@ -232,5 +169,53 @@ void CAudience::Uninit(void)
 //================================================================
 void CAudience::Update(void)
 {
+	CObjectX::Update();
 
+	// 重力を与える
+	m_move.y += GRAVITY;
+
+	if (m_bJump == false)
+	{// ジャンプしていないとき
+
+		int i = rand() % 3;
+
+		if (i == 1)
+		{
+			// ジャンプさせて再びジャンプできるまでの時間を設定
+			m_bJump = true;
+			m_move.y = JUMP;
+			m_nJumpWaitTime = JUMPWAITTIME;
+		}
+	}
+
+	m_pos += m_move;
+	
+	// 地面にめり込まないように
+	if (m_pos.y <= 0.0f)
+	{
+		m_pos.y = 0.0f;
+	}
+
+	// 再びジャンプできるようになるまでカウント
+	if (m_bJump == true)
+	{
+		m_nJumpWaitTime--;
+	}
+
+	// 0になったら再びジャンプできるようにする
+	if (m_nJumpWaitTime <= 0)
+	{
+		m_bJump = false;
+	}
+
+	// 位置設定
+	SetPosition(m_pos);
+}
+
+//================================================================
+// 描画処理
+//================================================================
+void CAudience::Draw(void)
+{
+	CObjectX::Draw();
 }
