@@ -101,8 +101,6 @@ public:
 
 private:
 
-	
-
 	enum DAMEGESTATE
 	{
 		DAMEGE_NONE = 0,
@@ -196,6 +194,7 @@ private:
 	void Control(void);                   // 制御
 	void Move(void);                      // 移動
 	void Action(void);                    // 攻撃
+	void SetAttackType(void);
 	void GrapRotition(void);              // ジャイアントスイング
 	void Grap(void);                      // 掴み
 	void Avoid(void);                     // 回避

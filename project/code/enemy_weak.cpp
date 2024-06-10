@@ -35,20 +35,15 @@
 //*=============================================================================
 // マクロ定義
 //*=============================================================================
-#define ENETEXT ("data\\TEXT\\yanki00.txt")
+#define ENETEXT ("data\\TEXT\\00_enemy.txt")
 
 // 無名名前空間を定義
 namespace
 {
-	const int DAMEGECOUNT = 10;  // ダメージ状態
-
-	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] =
-	{
-		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
-		D3DXVECTOR3(0.0f, D3DX_PI * 0.15f, D3DX_PI * -0.38f),
-
-	};  // ヒートアクション時のカメラ位置
+	const int DAMEGE = 10;           // ダメージ状態
+	const int ATTACKAGAINCOUNT = 60;      // 再攻撃できるまでの時間
+	const float SPEED = 2.0f;             // 走る速さ
+	const float ATTACKABLERANGE = 60.0f;  // 攻撃可能範囲
 }
 
 //==============================================================================
@@ -111,11 +106,14 @@ HRESULT CEnemyWeak::Init(void)
 
 	ReadText(ENETEXT);
 
-	m_pLife3D = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, (float)((m_Info.nLife * 0.01f) * 20), CGage3D::TYPE_LIFE);
-	m_pLife3D->SetPos(&m_Info.pos);
-	m_pLife3D->SetUpHeight(80.0f);
-	m_pLife3D->GetBill()->SetEdgeCenter((float)((m_Info.nLife * 0.01f) * 20), 5.0f);
-
+	if (m_pLife3D == nullptr)
+	{
+		m_pLife3D = CGage3D::Create(D3DXVECTOR3(m_Info.pos.x, m_Info.pos.y, m_Info.pos.z), 5.0f, (float)((m_Info.nLife * 0.01f) * 20), CGage3D::TYPE_LIFE);
+		m_pLife3D->SetPos(&m_Info.pos);
+		m_pLife3D->SetUpHeight(80.0f);
+		m_pLife3D->GetBill()->SetEdgeCenter((float)((m_Info.nLife * 0.01f) * 20), 5.0f);
+	}
+	
 	return S_OK;
 }
 
@@ -159,84 +157,13 @@ void CEnemyWeak::Draw(void)
 //==============================================================================
 // 制御処理
 //==============================================================================
-//void CEnemyWeak::Controll(void)
-//{
-//	int nNum = 0;
-//	CEnemy **ppEnemy = nullptr;
-//
-//	if (CGame::GetEnemyManager() != nullptr)
-//	{
-//		ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-//		nNum = CGame::GetEnemyManager()->GetNum();
-//	}
-//
-//	for (int nCount = 0; nCount < nNum; nCount++)
-//	{
-//		if (ppEnemy[nCount] != nullptr && ppEnemy[nCount]->GetIdxID() != m_Info.nIdxID)
-//		{
-//			//m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &ppEnemy[nCount]->GetPosition(), 40.0f);
-//		}
-//	}
-//
-//	if (m_Info.state == STATE_DAMEGE)
-//	{
-//		m_nDamegeCounter--;
-//
-//		if (m_nDamegeCounter <= 0)
-//		{
-//			m_Info.state = STATE_NONE;
-//			m_nDamegeCounter = DAMEGECOUNT;
-//		}
-//	}
-//	else
-//	{
-//		if (m_Info.state != STATE_GRAP)
-//		{
-//			Move();
-//		}
-//	}
-//
-//	if (m_Info.nLife <= 0)
-//	{
-//		m_Info.state = STATE_DETH;
-//		GetMotion()->Set(TYPE_DETH);
-//
-//		return;
-//	}
-//
-//	if (m_Info.state != STATE_GRAP)
-//	{
-//		m_Info.move.y -= 0.9f;
-//
-//		// 移動量
-//		m_Info.pos.x += m_Info.move.x;
-//		m_Info.pos.y += m_Info.move.y;
-//		m_Info.pos.z += m_Info.move.z;
-//
-//		if (m_Info.pos.y <= 0.0f)
-//		{
-//			m_Info.pos.y = 0.0f;
-//		}
-//	}
-//	 
-//	//デバッグプロックの情報を取得
-//	CDebugProc *pDebugProc = CManager::Getinstance()->GetDebugProc();
-//	pDebugProc->Print("\n敵の位置：%f,%f,%f\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-//	pDebugProc->Print("敵の向き：%f,%f,%f\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-//	pDebugProc->Print("敵の向き：%d\n", m_Info.nLife);
-//	pDebugProc->Print("敵の向き：%d\n", m_Info.nIdxID);
-//}
-
-//==============================================================================
-// 制御処理
-//==============================================================================
 void CEnemyWeak::Attack(void)
 {
 	if (m_Info.state != STATE_ATTACK)
 	{
 		m_nAtcCounter++;
 
-		if (m_nAtcCounter >= 60)
+		if (m_nAtcCounter >= ATTACKAGAINCOUNT)
 		{
 			m_nAtcCounter = 0;
 
@@ -253,7 +180,7 @@ void CEnemyWeak::Attack(void)
 
 			if (CGame::GetCollision()->Circle(&m_Info.pos, &CGame::GetPlayer()->GetPosition(), 50.0f, 100.0f) == true)
 			{
-				CGame::GetPlayer()->Damage(10, 5.0f);
+				CGame::GetPlayer()->Damage(GetMotion()->GetAttackDamege(), GetMotion()->GetKnockBack());
 			}
 		}
 	}
@@ -292,14 +219,14 @@ void CEnemyWeak::Move(void)
 				m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
 				//移動量を更新(減衰させる)
-				m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * 2.0f;
-				m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * 2.0f;
+				m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * SPEED;
+				m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * SPEED;
 			}
 
 			// プレイヤーとの距離
 			D3DXVECTOR3 Dest = CManager::Getinstance()->GetUtility()->Distance(m_Info.pos, PlayerPos);
 
-			if (Dest.x <= 60.0f && Dest.x >= -60.0f && Dest.z <= 60.0f && Dest.z >= -60.0f)
+			if (Dest.x <= ATTACKABLERANGE && Dest.x >= -ATTACKABLERANGE && Dest.z <= ATTACKABLERANGE && Dest.z >= -ATTACKABLERANGE)
 			{
 				if (m_Info.state != STATE_NEUTRAL && m_Info.state != STATE_ATTACK && m_Info.state != STATE_DAMEGE && m_Info.state != STATE_PAINFULDAMAGE)
 				{
@@ -365,9 +292,6 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		{
 			if (m_Info.state != STATE_DAMEGE)
 			{
-				// 乱数の種を設定
-				srand((unsigned int)time(0));
-
 				int a = rand() % 60;
 				if (m_Info.nLife <= a && CPlayer::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
 				{
@@ -387,44 +311,3 @@ void CEnemyWeak::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_PUNCH);
 	}
 }
-
-//==============================================================================
-// ヒートアクション・電子レンジ処理
-//==============================================================================
-//void CEnemyWeak::MicroWave(void)
-//{
-//	m_nBiriBiriCount++;
-//
-//	if (m_nBiriBiriCount > 60 && m_Info.state == STATE_BIRIBIRI)
-//	{
-//		if (m_Info.state != STATE_BIRI)
-//		{
-//			m_Info.state = STATE_BIRI;
-//			GetMotion()->Set(TYPE_BIRI);
-//
-//			CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[2].x, CAMERAROT[2].y, CAMERAROT[2].z));
-//			CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
-//		}
-//
-//		m_nBiriBiriCount = 0;
-//	}
-//
-//	if (m_nBiriBiriCount > 120 && m_Info.state == STATE_BIRI)
-//	{
-//		if (m_Info.state != STATE_FAINTING)
-//		{
-//			m_Info.state = STATE_FAINTING;
-//			GetMotion()->Set(TYPE_FAINTING);
-//		}
-//
-//		m_nBiriBiriCount = 0;
-//	}
-//
-//	if (m_Info.state == STATE_BIRI)
-//	{
-//		if (m_nBiriBiriCount % 20 == 0)
-//		{
-//			CParticle::Create(CGame::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
-//		}
-//	}
-//}

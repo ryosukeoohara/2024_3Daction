@@ -45,14 +45,7 @@ int CEnemy::m_nIdx = 0;
 namespace
 {
 	const int DAMEGECOUNT = 15;  // ダメージ状態
-
-	const D3DXVECTOR3 CAMERAROT[CPlayer::HEAT_MAX] =
-	{
-		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
-		D3DXVECTOR3(0.0f, D3DX_PI * 0.15f, D3DX_PI * -0.38f),
-
-	};  // ヒートアクション時のカメラ位置
+	const float RADIUS = 20.0f;  // 横幅
 }
 
 //*=============================================================================
@@ -232,12 +225,7 @@ void CEnemy::Uninit(void)
 		}
 	}
 
-	//サウンドの情報を取得
-	CSound *pSound = CManager::Getinstance()->GetSound();
-
-	//サウンドストップ
-	//pSound->Stop();
-
+	// モーションの破棄
 	if (m_pMotion != nullptr)
 	{
 		//終了処理
@@ -246,6 +234,7 @@ void CEnemy::Uninit(void)
 		m_pMotion = nullptr;
 	}
 
+	// パーツの破棄
 	if (m_apModel != nullptr)
 	{
 		for (int nCount = 0; nCount < m_nNumModel; nCount++)
@@ -276,7 +265,6 @@ void CEnemy::Update(void)
 			Controll();
 		}
 		
-		
 		if (m_pMotion != nullptr)
 		{
 			// 更新処理
@@ -292,6 +280,18 @@ void CEnemy::Update(void)
 					m_apModel[nCount]->Update();
 				}
 			}
+		}
+
+		// 敵同士の当たり判定
+		CEnemy* pEnemy = CEnemy::GetTop();
+		while (pEnemy != nullptr)
+		{
+			CEnemy* pEnemyNext = pEnemy->GetNext();
+
+			if(pEnemy != this)
+			m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &pEnemy->GetPosition(), RADIUS);
+
+			pEnemy = pEnemyNext;
 		}
 	}
 

@@ -602,17 +602,6 @@ void CPlayer::Control(void)
 		Move();     // ˆÚ“®
 	}
 
-	// “G‚Æ“G‚Ì”Žæ“¾
-	{
-		int nNum = 0;
-		CEnemy** ppEnemy = nullptr;
-		if (CGame::GetEnemyManager() != nullptr)
-		{
-			ppEnemy = CGame::GetEnemyManager()->GetEnemy();
-			nNum = CGame::GetEnemyManager()->GetNum();
-		}
-	}
-	
 	// “G‚Æ‚Ì“–‚½‚è”»’è
 	CEnemy *pEnemy = CEnemy::GetTop();
 	while (pEnemy != nullptr)
@@ -627,6 +616,12 @@ void CPlayer::Control(void)
 
 	//ƒQ[ƒ€ƒpƒbƒh‚ðŽæ“¾
 	CInputJoyPad* pInputJoyPad = CManager::Getinstance()->GetInputJoyPad();
+
+	if (pInputMouse == nullptr)
+		return;
+
+	if (pInputJoyPad == nullptr)
+		return;
 
 	// ’ÊíUŒ‚
 	if (pInputMouse->GetLButton() == true || pInputJoyPad->GetTrigger(CInputJoyPad::BUTTON_B, 0) == true)
@@ -851,6 +846,7 @@ void CPlayer::Move(void)
 	m_Info.move.x += (0.0f - m_Info.move.x) * 0.1f;
 	m_Info.move.z += (0.0f - m_Info.move.z) * 0.1f;
 
+	if(CCollision::GetColl() != nullptr)
 	CCollision::GetColl()->Map(&m_Info.pos, &m_Info.posOld, 40.0f);
 
 	/*if (m_bDesh == true && m_nCntSound == 0)
@@ -898,9 +894,26 @@ void CPlayer::Action(void)
 		m_pMotion->Set(TYPE_ATTACK03);
 	}
 
-	// ˆÚ“®—Ê
-	m_Info.move.x -= sinf(m_Info.rot.y);
-	m_Info.move.z -= cosf(m_Info.rot.y);
+	EnemyDistance();
+
+	float fDiffmove = 0.0f;
+
+	// ’Ç”ö
+	fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pEnemy->GetPosition(), m_Info.rot.y);
+
+	// Šp“x•â³
+	//fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
+	m_fDest = fDiffmove;
+	m_Info.rot.y += fDiffmove;
+
+	//m_Info.rot.y = m_fDest;
+
+	// Šp“x•â³
+	m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
+
+	//ˆÚ“®—Ê‚ðXV(Œ¸Š‚³‚¹‚é)
+	m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * SPEED;
+	m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * SPEED;
 }
 
 //================================================================
@@ -1340,8 +1353,6 @@ void CPlayer::State(void)
 
 				ppItem = CGame::GetItemManager()->GetItem();
 			}
-
-			
 		}
 	}
 	
@@ -1469,20 +1480,6 @@ void CPlayer::Heat(void)
 					{
 						//CEffect2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.7f, 0.0f), D3DXVECTOR3(0.0f, -1.0f, 0.0f), D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 30.0f, 30, CEffect2D::TYPE_SMOOK);
 					}
-
-					/*if (m_pGekiatu == nullptr)
-					{
-						m_pGekiatu = CObject2D::Create();
-						m_pGekiatu->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.7f, 0.0f));
-						m_pGekiatu->SetSize(30.0f, 30.0f);
-						m_pGekiatu->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\gekiatu.png"));
-						m_pGekiatu->SetDraw(true);
-					}*/
-
-					if (m_pGekiatu != nullptr)
-					{
-						
-					}
 				}
 
 				if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
@@ -1587,13 +1584,6 @@ void CPlayer::Heat(void)
 				// “G‚ð—£‚·
 				m_bGrap = false;
 			}
-
-			//if (StartHeatAction() == true)
-			//{// 
-
-			//	m_pMotion->Set(TYPE_ENEMYGRAP);
-			//	m_Info.Atc = TYPE_HEATACTMICROWAVE;
-			//}
 		}
 		else
 		{

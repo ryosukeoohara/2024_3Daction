@@ -352,9 +352,6 @@ void CEnemyBoss::Damege(int damege, float blowaway, CPlayer::ATTACKTYPE act)
 		{
 			if (m_Info.state != STATE_DAMEGE)
 			{
-				// —”‚ÌŽí‚ðÝ’è
-				srand((unsigned int)time(0));
-
 				int a = rand() % 50;
 				int n = m_Info.nLife / 3;
 				if (a >= n && CGame::GetPlayer()->GetActType() == CPlayer::TYPE_ATTACK3)
