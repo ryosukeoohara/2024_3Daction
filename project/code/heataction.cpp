@@ -35,6 +35,14 @@ namespace
 
 	};  // ヒートアクション時のカメラ位置
 
+	const D3DXVECTOR3 TUTORIALCAMERAROT[CPlayer::HEAT_MAX] =
+	{
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		D3DXVECTOR3(0.0f, 2.35f, D3DX_PI * -0.38f),
+		D3DXVECTOR3(0.0f, 1.0f, 0.0f),
+
+	};  // ヒートアクション時のカメラ位置
+
 	const float CAMERADISTNCE[CPlayer::HEAT_MAX] =
 	{
 		300.0f,
@@ -154,8 +162,17 @@ void CHeatAction::MicroWave(CPlayer* pPlayer, CEnemy* pEnemy, CItem* pItem)
 
 		// 電子レンジの方向に向かせる
 		PlayerRot.y += CManager::Getinstance()->GetUtility()->MoveToPosition(pPlayer->GetPosition(), pEnemy->GetPosition(), pPlayer->GetRotition().y);
-		PlayerRot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(PlayerRot.y);
-		pPlayer->SetPosition(D3DXVECTOR3(-720.0f, 0.0f, 580.0f));
+		PlayerRot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(PlayerRot.y); // -160 210
+		
+		if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+		{
+			pPlayer->SetPosition(D3DXVECTOR3(-160.0f, 0.0f, 210.0f));
+		}
+
+		if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+		{
+			pPlayer->SetPosition(D3DXVECTOR3(-720.0f, 0.0f, 580.0f));
+		}
 
 		// プレイヤーとの関係を切る
 		{
@@ -175,7 +192,7 @@ void CHeatAction::MicroWave(CPlayer* pPlayer, CEnemy* pEnemy, CItem* pItem)
 			// アイテム：電子レンジがなかった場合処理抜ける
 			if (pPlayer->GetItem() == nullptr)
 				return;
-
+			
 			pEnemy->SetCurrent(pPlayer->GetItem()->GetMtxWorld());
 			pEnemy->SetPosition(D3DXVECTOR3(0.0f, -70.0f, -30.0f));
 			pEnemy->SetRotition(D3DXVECTOR3(0.0f, D3DX_PI, 0.0f));
@@ -216,7 +233,17 @@ void CHeatAction::MicroWave(CPlayer* pPlayer, CEnemy* pEnemy, CItem* pItem)
 				pEnemy->SetState(CEnemy::STATE_HEATACTELECTRO);
 				pEnemy->GetMotion()->Set(CEnemy::TYPE_HEATACTELECTRO);
 				CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_FIRE);
-				CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[0].x, CAMERAROT[0].y, CAMERAROT[0].z));
+
+				if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+				{
+					CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, -1.3f, 0.0f));
+				}
+
+				if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+				{
+					CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[0].x, CAMERAROT[0].y, CAMERAROT[0].z));
+				}
+				
 			}
 
 			m_nHeatActTime = 0;
@@ -249,48 +276,6 @@ void CHeatAction::MicroWave(CPlayer* pPlayer, CEnemy* pEnemy, CItem* pItem)
 			CParticle::Create(CPlayer::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
 		}
 	}
-	//m_nBiriBiriCount++;
-
-	//if (m_nBiriBiriCount > 60 && m_Info.state == STATE_BIRIBIRI)
-	//{
-	//	if (m_Info.state != STATE_BIRI)
-	//	{
-	//		m_Info.state = STATE_BIRI;
-	//		GetMotion()->Set(TYPE_BIRI);
-	//		CManager::Getinstance()->GetSound()->Play(CSound::SOUND_LABEL_SE_FIRE);
-	//		CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[2].x, CAMERAROT[2].y, CAMERAROT[2].z));
-	//		//CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[m_HeatAct]);
-	//	}
-
-	//	m_nBiriBiriCount = 0;
-	//}
-
-	//if (m_nBiriBiriCount > 120 && m_Info.state == STATE_BIRI)
-	//{
-	//	if (m_Info.state != STATE_FAINTING)
-	//	{
-	//		m_Info.state = STATE_FAINTING;
-	//		GetMotion()->Set(TYPE_FAINTING);
-	//		m_Info.nLife -= 100;
-	//		CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_RETURN);
-	//		CPlayer::GetPlayer()->SetState(CPlayer::STATE_NEUTRAL);
-	//		CPlayer::GetPlayer()->SetUseMicroCount(3600);
-	//		CGame::GetEnemyManager()->SetTrue(CPlayer::GetPlayer()->GetGrapEnemy()->GetIdxID());
-	//		CPlayer::GetPlayer()->SetGrapEnemy(nullptr);
-	//		m_Info.pos = D3DXVECTOR3(D3DXVECTOR3(CPlayer::GetPlayer()->GetItem()->GetPosition().x, 0.0f, CPlayer::GetPlayer()->GetItem()->GetPosition().z));
-	//		m_pCurrent = nullptr;
-	//	}
-
-	//	m_nBiriBiriCount = 0;
-	//}
-
-	//if (m_Info.state == STATE_BIRI)
-	//{
-	//	if (m_nBiriBiriCount % 20 == 0)
-	//	{
-	//		CParticle::Create(CPlayer::GetPlayer()->GetItem()->GetPosition(), CParticle::TYPE_SMOOK);
-	//	}
-	//}
 }
 
 //===========================================================
@@ -308,8 +293,18 @@ void CHeatAction::SetAction(CPlayer::HEAT heatact, CPlayer* pPlayer, CEnemy* pEn
 
 	// ヒートアクションのカメラモードにする
 	CManager::Getinstance()->GetCamera()->SetMode(CCamera::MODE_HEAT);
-	CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[heatact].x, CAMERAROT[heatact].y, CAMERAROT[heatact].z));
+	
 	CManager::Getinstance()->GetCamera()->SetDistnce(CAMERADISTNCE[heatact]);
+
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+	{
+		CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(TUTORIALCAMERAROT[heatact].x, TUTORIALCAMERAROT[heatact].y, TUTORIALCAMERAROT[heatact].z));
+	}
+
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+	{
+		CManager::Getinstance()->GetCamera()->SetRotation(D3DXVECTOR3(CAMERAROT[heatact].x, CAMERAROT[heatact].y, CAMERAROT[heatact].z));
+	}
 
 	switch (heatact)
 	{

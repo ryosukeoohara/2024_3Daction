@@ -187,6 +187,7 @@ public:
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 	int GetDefeat(void) { return m_nDefeat; }
 	HEAT GetHeatAct(void) { return m_HeatAct; }
+	bool GetHeatActFlag(void) { return m_bHeatActFlag; }
 
 private:
 

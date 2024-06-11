@@ -30,7 +30,7 @@ public:
 	void Uninit(void);             //終了処理
 	void Update(void);             //更新処理
 
-	static CItemManager *Create(void);   // 生成処理
+	static CItemManager *Create(const char* filename);   // 生成処理
 	void Release(int idx);
 	void ReadText(const char *text);           //テキストファイル読み込み
 

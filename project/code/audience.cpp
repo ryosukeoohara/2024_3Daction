@@ -178,12 +178,14 @@ void CAudience::Update(void)
 	{// ジャンプしていないとき
 
 		int i = rand() % 3;
+		
 
 		if (i == 1)
 		{
+			float fjump = (rand() % 31 - 10) * 0.1f;
 			// ジャンプさせて再びジャンプできるまでの時間を設定
 			m_bJump = true;
-			m_move.y = JUMP;
+			m_move.y = JUMP + fjump;
 			m_nJumpWaitTime = JUMPWAITTIME;
 		}
 	}

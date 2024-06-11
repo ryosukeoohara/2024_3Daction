@@ -168,7 +168,7 @@ HRESULT CGame::Init(void)
 	m_bPause = false;
 	CField *pField = new CField;
 	pField->Init();
-	pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
+	pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\FIELD\\concreat.png"));
 	pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 	pField->SetSize(5000.0f, 5000.0f);
 	pField->SetDraw(true);
@@ -190,7 +190,7 @@ HRESULT CGame::Init(void)
 	// アイテムマネージャの生成
 	if (m_pItemManager == nullptr)
 	{
-		m_pItemManager = CItemManager::Create();
+		m_pItemManager = CItemManager::Create("data\\TEXT\\itemset_game.txt");
 	}
 
 	// 敵マネージャの生成

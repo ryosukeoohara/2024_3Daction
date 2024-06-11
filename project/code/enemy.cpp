@@ -424,7 +424,7 @@ void CEnemy::Controll(void)
 		return;
 	}
 
-	if (m_Info.state != STATE_GRAP)
+	if (m_Info.state != STATE_GRAP && CPlayer::GetPlayer()->GetHeatActFlag() == false)
 	{
 		m_Info.move.y -= 0.9f;
 

@@ -31,7 +31,7 @@ public:
 	void Update(void);   // XVˆ—
 	void Draw(void);     // •`‰æˆ—
 	 
-	static CBillBoard *Create(void);  //¶¬
+	//static CBillBoard *Create(void);  //¶¬
 	static CBillBoard *Create(int nPriority = 3);  //¶¬
 
 	// İ’èŒn

@@ -29,6 +29,7 @@
 #include "animation.h"
 #include "tutorial.h"
 #include "sound.h"
+#include "MyEffekseer.h"
 
 //=============================================================================
 // Ã“Iƒƒ“ƒo•Ï”
@@ -136,6 +137,8 @@ void CCollision::AttackCircle(D3DXVECTOR3 * pMyPos, float fMyRadius, float fTarg
 		if (c <= fMyRadius + fTargetRadius && (pMyPos->y >= pEnemy->GetPosition().y && pMyPos->y <= pEnemy->GetPosition().y + fHeight) && pEnemy->GetState() != CEnemy::STATE_DAMEGE)
 		{
 			pEnemy->Damege(CPlayer::GetPlayer()->GetMotion()->GetAttackDamege(), CPlayer::GetPlayer()->GetMotion()->GetKnockBack(), CPlayer::GetPlayer()->GetActType());
+			CManager::Getinstance()->GetMyEffekseer()->Set(CMyEffekseer::m_apEfkName[CMyEffekseer::TYPE_HIT], ::Effekseer::Vector3D(pMyPos->x, pMyPos->y, pMyPos->z),
+				::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(25.0f, 25.0f, 25.0f));
 		}
 
 		pEnemy = pEnemyNext;

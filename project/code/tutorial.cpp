@@ -74,7 +74,7 @@ HRESULT CTutorial::Init(void)
 	if (m_pField == nullptr)
 	{
 		m_pField = CField::Create();
-		m_pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
+		m_pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\FIELD\\concreat.png"));
 		m_pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		m_pField->SetSize(5000.0f, 5000.0f);
 		m_pField->SetDraw(true);
@@ -115,7 +115,7 @@ HRESULT CTutorial::Init(void)
 
 	if (m_pItemManager == nullptr)
 	{
-		m_pItemManager = CItemManager::Create();
+		m_pItemManager = CItemManager::Create("data\\TEXT\\itemset_tutorial.txt");
 	}
 
 	if (m_pUI == nullptr)

@@ -61,22 +61,22 @@ CBillBoard::~CBillBoard()
 //================================================================
 //生成処理
 //================================================================
-CBillBoard *CBillBoard::Create(void)
-{
-	//オブジェクト2Dのポインタ
-	CBillBoard *pBillBoard = NULL;
-
-	if (pBillBoard == NULL)
-	{
-		//オブジェクト2Dの生成
-		pBillBoard = new CBillBoard();
-
-		//初期化処理
-		pBillBoard->Init();
-	}
-
-	return pBillBoard;
-}
+//CBillBoard *CBillBoard::Create(void)
+//{
+//	//オブジェクト2Dのポインタ
+//	CBillBoard *pBillBoard = NULL;
+//
+//	if (pBillBoard == NULL)
+//	{
+//		//オブジェクト2Dの生成
+//		pBillBoard = new CBillBoard();
+//
+//		//初期化処理
+//		pBillBoard->Init();
+//	}
+//
+//	return pBillBoard;
+//}
 
 //================================================================
 //生成処理

@@ -48,7 +48,10 @@ public:
 
 	// Žæ“¾Œn
 	static bool GetbPause(void) { return m_bPause; }
-	static CPlayer *GetPlayer(void) { return m_pPlayer; }
+	static CPlayer *GetPlayer(void) 
+	{ 
+		return m_pPlayer; 
+	}
 	static CEnemy *GetEnemy(void) { return m_pEnemy; }
 	static CEnemyManager *GetEnemyManager(void) { return m_pEnemyManager; }
 	static CCollision *GetCollision(void) { return m_Collision; }

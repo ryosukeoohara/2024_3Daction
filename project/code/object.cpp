@@ -9,6 +9,7 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "camera.h"
+#include "MyEffekseer.h"
 
 CObject *CObject::m_apObjct[MAX_OBJECT] = {};
 int CObject::m_nNumAll = 0;
@@ -239,6 +240,11 @@ void CObject::DrawAll(void)
 
 			pObject->Draw();
 			pObject = pObjectNext;
+		}
+
+		if (i == 3)
+		{
+			CManager::Getinstance()->GetMyEffekseer()->Draw();
 		}
 	}
 }

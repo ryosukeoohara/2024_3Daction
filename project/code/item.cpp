@@ -112,6 +112,63 @@ CItem *CItem::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE type, int nIdx, cons
 }
 
 //================================================================
+// デーブルとの当たり判定
+//================================================================
+void CItem::Collision(D3DXVECTOR3* pos, D3DXVECTOR3* posOld, float fRadius)
+{
+	if (m_Type == TYPE_TABLE)
+	{
+		D3DXVECTOR3 vtxMax = GetVtxMax();
+		D3DXVECTOR3 vtxMin = GetVtxMin();
+
+		D3DXVECTOR3 Itempos = GetPosition();
+
+		if (pos->z + fRadius > Itempos.z + vtxMin.z
+			&& pos->z + -fRadius < Itempos.z + vtxMax.z)
+		{
+			//ブロックの右側面==================================
+			if (pos->x + -fRadius <= Itempos.x + vtxMax.x
+				&& posOld->x + -fRadius >= Itempos.x + vtxMax.x)
+			{
+				pos->x = (Itempos.x + vtxMax.x) - -fRadius;
+
+				//return true;
+			}
+			//ブロックの左側面==================================
+			if (pos->x + fRadius >= Itempos.x + vtxMin.x
+				&& posOld->x + fRadius <= Itempos.x + vtxMin.x)
+			{
+				pos->x = (Itempos.x + vtxMin.x) - fRadius;
+
+				//return true;
+			}
+		}
+
+		if (pos->x + fRadius > Itempos.x + vtxMin.x
+			&& pos->x + -fRadius < Itempos.x + vtxMax.x)
+		{
+			//ブロックの上======================================
+			if (pos->z - fRadius <= Itempos.z + vtxMax.z
+				&& posOld->z - fRadius >= Itempos.z + vtxMax.z)
+			{
+				pos->z = (Itempos.z + vtxMax.z) + fRadius + fRadius;
+
+				//return true;
+			}
+
+			//ブロックの下======================================
+			if (pos->z + fRadius >= Itempos.z + vtxMin.z
+				&& posOld->z + fRadius <= Itempos.z + vtxMin.z)
+			{
+				pos->z = (Itempos.z + vtxMin.z) - fRadius;
+
+				//return true;
+			}
+		}
+	}
+}
+
+//================================================================
 // 初期化処理
 //================================================================
 HRESULT CItem::Init(void)
@@ -177,31 +234,35 @@ void CItem::Update(void)
 {
 	CObjectX::Update();
 
-	//if (CGame::GetCollision()->Circle(&GetPosition(), &CPlayer::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
-	//{// 範囲内
+	if (CPlayer::GetPlayer() == nullptr)
+		return;
 
-	//	if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE /*&& CPlayer::GetPlayer()->GetGrapItem()->GetID() != m_nID*/)
-	//	{// 種類が電子レンジかつテーブル以外
+	if (CGame::GetCollision()->Circle(&GetPosition(), &CPlayer::GetPlayer()->GetPosition(), 40.0f, 40.0f) == true)
+	{// 範囲内
 
-	//		if (m_pBill == nullptr)
-	//		{
-	//			// 生成して位置、サイズ、描画するかどうか、使用するテクスチャ設定
-	//			m_pBill = CBillBoard::Create();
-	//			m_pBill->SetPosition(D3DXVECTOR3(GetPosition().x, GetPosition().y + 40.0f, GetPosition().z));
-	//			m_pBill->SetSize(TEXSIZE.x, TEXSIZE.y);
-	//			m_pBill->SetDraw();
-	//			m_pBill->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEX_GRAP));
-	//		}
-	//	}
-	//}
-	//else
-	//{// 範囲外
+		if (m_Type != TYPE_MICROWAVE && m_Type != TYPE_TABLE && m_Type != TYPE_POSTER && CPlayer::GetPlayer()->GetGrapItem() == nullptr)
+		{// 種類が電子レンジかつテーブル以外
 
-	//	if (m_pBill != nullptr)
-	//	{
-	//		// 終了
-	//		m_pBill->Uninit();
-	//		m_pBill = nullptr;
-	//	}
-	//}
+			if (m_pBill == nullptr)
+			{
+				// 生成して位置、サイズ、描画するかどうか、使用するテクスチャ設定
+				m_pBill = CBillBoard::Create();
+				m_pBill->SetPosition(D3DXVECTOR3(GetPosition().x, GetPosition().y + 40.0f, GetPosition().z));
+				m_pBill->SetSize(TEXSIZE.x, TEXSIZE.y);
+				m_pBill->SetDraw();
+				m_pBill->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist(TEX_GRAP));
+			}
+		}
+	}
+	
+	if(CGame::GetCollision()->Circle(&GetPosition(), &CPlayer::GetPlayer()->GetPosition(), 40.0f, 40.0f) != true || CPlayer::GetPlayer()->GetGrapItem() != nullptr)
+	{// 範囲外
+
+		if (m_pBill != nullptr)
+		{
+			// 終了
+			m_pBill->Uninit();
+			m_pBill = nullptr;
+		}
+	}
 }

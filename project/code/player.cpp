@@ -89,6 +89,11 @@ namespace
 		D3DXVECTOR3(-10.0f, -10.0f, 60.0f),
 		D3DXVECTOR3(-15.0f, -10.0f, 80.0f),
 	};
+
+	const D3DXVECTOR3 MAPLIMITMAX = D3DXVECTOR3(800.0f, 0.0f, 1000.0f);
+	const D3DXVECTOR3 MAPLIMITMIN = D3DXVECTOR3(-850.0f, 0.0f, -670.0f);
+
+	const D3DXVECTOR3 STICKENEMY = D3DXVECTOR3(100.0f, 0.0f, 100.0f);
 }
 
 //================================================================
@@ -523,8 +528,6 @@ void CPlayer::Update(void)
 		}
 	}
 
-
-
 	if (m_pHeatAct != nullptr)
 	{
 		m_pHeatAct->Updata();
@@ -533,23 +536,22 @@ void CPlayer::Update(void)
 			m_pHeatAct = nullptr;
 	}
 
-
-
-	if (m_Info.pos.x >= 800.0f)
+	// マップの制限
+	if (m_Info.pos.x >= MAPLIMITMAX.x)
 	{
-		m_Info.pos.x = 800.0f;
+		m_Info.pos.x = MAPLIMITMAX.x;
 	}
-	if (m_Info.pos.x <= -850.0f)
+	if (m_Info.pos.x <= MAPLIMITMIN.x)
 	{
-		m_Info.pos.x = -850.0f;
+		m_Info.pos.x = MAPLIMITMIN.x;
 	}
-	if (m_Info.pos.z >= 1000.0f)
+	if (m_Info.pos.z >= MAPLIMITMAX.z)
 	{
-		m_Info.pos.z = 1000.0f;
+		m_Info.pos.z = MAPLIMITMAX.z;
 	}
-	if (m_Info.pos.z <= -670.0f)
+	if (m_Info.pos.z <= MAPLIMITMIN.z)
 	{
-		m_Info.pos.z = -670.0f;
+		m_Info.pos.z = MAPLIMITMIN.z;
 	}
 }
 
@@ -609,6 +611,17 @@ void CPlayer::Control(void)
 		CEnemy *pEnemyNext = pEnemy->GetNext();
 		m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &pEnemy->GetPosition(), 20.0f);
 		pEnemy = pEnemyNext;
+	}
+
+	CItem* pItem = CItem::GetTop();
+
+	while (pItem != nullptr)
+	{
+		CItem* pItemNext = pItem->GetNext();
+
+		pItem->Collision(&m_Info.pos, &m_Info.posOld, 20.0f);
+
+		pItem = pItemNext;
 	}
 	
 	//マウスを取得
@@ -894,26 +907,26 @@ void CPlayer::Action(void)
 		m_pMotion->Set(TYPE_ATTACK03);
 	}
 
-	EnemyDistance();
+	D3DXVECTOR3 fLenght = EnemyDistance();
 
-	float fDiffmove = 0.0f;
+	if (fLenght.x <= STICKENEMY.x && fLenght.z <= STICKENEMY.z)
+	{
+		float fDiffmove = 0.0f;
 
-	// 追尾
-	fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pEnemy->GetPosition(), m_Info.rot.y);
+		// 追尾
+		fDiffmove = CManager::Getinstance()->GetUtility()->MoveToPosition(m_Info.pos, m_pEnemy->GetPosition(), m_Info.rot.y);
 
-	// 角度補正
-	//fDiffmove = CManager::Getinstance()->GetUtility()->CorrectAngle(fDiffmove);
-	m_fDest = fDiffmove;
-	m_Info.rot.y += fDiffmove;
+		// 角度補正
+		m_fDest = fDiffmove;
+		m_Info.rot.y += fDiffmove;
 
-	//m_Info.rot.y = m_fDest;
+		// 角度補正
+		m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 
-	// 角度補正
-	m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
-
-	//移動量を更新(減衰させる)
-	m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * SPEED;
-	m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * SPEED;
+		//移動量を更新(減衰させる)
+		m_Info.move.x = sinf(m_Info.rot.y + D3DX_PI) * SPEED;
+		m_Info.move.z = cosf(m_Info.rot.y + D3DX_PI) * SPEED;
+	}
 }
 
 //================================================================
@@ -1495,6 +1508,12 @@ void CPlayer::Heat(void)
 
 					// ヒートアクションしている
 					m_bHeatActFlag = true;
+
+					if (m_pBotton != nullptr)
+					{
+						m_pBotton->Uninit();
+						m_pBotton = nullptr;
+					}
 				}
 			}
 			else
@@ -1513,8 +1532,6 @@ void CPlayer::Heat(void)
 			}
 		}
 	}
-
-	m_nUseCounter;
 
 	// 電子レンジ
 	if (m_bGrap == true && m_nUseCounter == 0)
@@ -1549,20 +1566,6 @@ void CPlayer::Heat(void)
 					m_pBotton->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\Xbutton.png"));
 					m_pBotton->SetDraw(true);
 				}
-
-				if (m_pBotton != nullptr)
-				{
-					
-				}
-
-				/*if (m_pGekiatu == nullptr)
-				{
-					m_pGekiatu = CObject2D::Create();
-					m_pGekiatu->SetPosition(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT  * 0.7f, 0.0f));
-					m_pGekiatu->SetSize(30.0f, 30.0f);
-					m_pGekiatu->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\gekiatu.png"));
-					m_pGekiatu->SetDraw(true);
-				}*/
 			}
 
 			if (CManager::Getinstance()->GetKeyBoard()->GetTrigger(DIK_E) == true || CManager::Getinstance()->GetInputJoyPad()->GetTrigger(CInputJoyPad::BUTTON_X, 0) == true)
@@ -1583,6 +1586,12 @@ void CPlayer::Heat(void)
 
 				// 敵を離す
 				m_bGrap = false;
+
+				if (m_pBotton != nullptr)
+				{
+					m_pBotton->Uninit();
+					m_pBotton = nullptr;
+				}
 			}
 		}
 		else

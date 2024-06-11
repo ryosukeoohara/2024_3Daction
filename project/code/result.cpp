@@ -70,7 +70,7 @@ HRESULT CResult::Init(void)
 	if (pField != nullptr)
 	{
 		pField->Init();
-		pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\field001.jpg"));
+		pField->SetIdxTex(CManager::Getinstance()->GetTexture()->Regist("data\\TEXTURE\\FIELD\\concreat.png"));
 		pField->SetPosition(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		pField->SetSize(5000.0f, 5000.0f);
 		pField->SetDraw(true);

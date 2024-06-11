@@ -39,6 +39,7 @@ public:
 	void Update(void);    //ƒ|ƒŠƒSƒ“‚ÌXVˆ—
 
 	static CItem *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, TYPE Type, int nIdx, const char *aModelFliename);
+	void Collision(D3DXVECTOR3* pos, D3DXVECTOR3* posOld, float fRadius);
 
 	// İ’èŒn
 	void SetType(TYPE type) { m_Type = type; }

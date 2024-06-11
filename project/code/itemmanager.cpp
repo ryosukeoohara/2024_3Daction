@@ -89,7 +89,7 @@ void CItemManager::Update(void)
 //=============================================================================
 // ¶¬ˆ—
 //=============================================================================
-CItemManager * CItemManager::Create(void)
+CItemManager * CItemManager::Create(const char* filename)
 {
 	CItemManager *pItemManager = nullptr;
 
@@ -99,7 +99,7 @@ CItemManager * CItemManager::Create(void)
 
 		pItemManager->Init();
 
-		pItemManager->ReadText(ITEM_TEXT);
+		pItemManager->ReadText(filename);
 	}
 
 	return pItemManager;

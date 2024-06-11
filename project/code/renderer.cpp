@@ -12,6 +12,7 @@
 #include "input.h"
 #include "fade.h"
 #include "pause.h"
+#include "MyEffekseer.h"
 
 //================================================================
 //コンストラクタ
@@ -161,6 +162,8 @@ void CRenderer::Update(void)
 	{
 		pFade->Update();
 	}
+
+	
 }
 
 //================================================================
@@ -189,6 +192,12 @@ void CRenderer::Draw(void)
 		if (pFade != NULL)
 		{
 			pFade->Draw();
+		}
+
+		if (CManager::Getinstance()->GetMyEffekseer() != nullptr)
+		{
+			CManager::Getinstance()->GetMyEffekseer()->Update();
+			//CManager::Getinstance()->GetMyEffekseer()->Draw();
 		}
 
 		//描画終了
