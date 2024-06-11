@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "game.h"
 
+// 前方宣言
 class CField;
 class CObject2D;
 class CMap;
@@ -20,7 +21,8 @@ class CItemManager;
 class CCollision;
 class CTutorialUI;
 
-class CTutorial : public CGame
+// クラス定義
+class CTutorial : public CScene
 {
 public:
 
@@ -35,6 +37,8 @@ public:
 	static CTutorial *Create(void);
 	static CPlayer *GetPlayer(void) { return m_pPlayer; }
 	static CMap *GetMap(void) { return m_pMap; }
+	static CEnemyManager* GetEnemyManager(void) { return m_pEnemyManager; }
+	static CItemManager* GetItemManager(void) { return m_pItemManager; }
 
 private:
 	CField *m_pField;
@@ -42,7 +46,7 @@ private:
 	CObject2D *m_pStart;
 	static CMap *m_pMap;
 	CEnemy *m_pEnemy;
-	CItemManager *m_pItemManager;
+	static CItemManager *m_pItemManager;
 	CCollision *m_Collision;
 	static CTutorialUI *m_pUI;
 	static CEnemyManager *m_pEnemyManager;

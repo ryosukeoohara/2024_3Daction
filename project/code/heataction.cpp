@@ -19,6 +19,7 @@
 #include "sound.h"
 #include "particle.h"
 #include "item.h"
+#include "tutorial.h"
 
 // 無名名前空間を定義
 namespace
@@ -123,13 +124,28 @@ void CHeatAction::BikeCrash(CPlayer* pPlayer, CEnemy* pEnemy)
 			if (CGame::GetCollision()->ItemEnemy(pPlayer->GetGrapItem(), pEnemy, 50.0f, 50.0f, 100.0f) == true)
 			{// 範囲内
 
-				// 持っていたアイテムを消す
-				if (!CGame::GetItemManager())
-				    CGame::GetItemManager()->Release(pPlayer->GetGrapItem()->GetID());
+				if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
+				{
+					// 持っていたアイテムを消す
+					if (CTutorial::GetItemManager())
+						CTutorial::GetItemManager()->Release(pPlayer->GetGrapItem()->GetID());
 
-				// ターゲット以外の敵の描画を再開
-				if (!CGame::GetEnemyManager())
-					CGame::GetEnemyManager()->SetTrue(pEnemy->GetIdxID());
+					// ターゲット以外の敵の描画を再開
+					if (CTutorial::GetEnemyManager())
+						CTutorial::GetEnemyManager()->SetTrue(pEnemy->GetIdxID());
+				}
+
+				if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
+				{
+					// 持っていたアイテムを消す
+					if (CGame::GetItemManager())
+						CGame::GetItemManager()->Release(pPlayer->GetGrapItem()->GetID());
+
+					// ターゲット以外の敵の描画を再開
+					if (CGame::GetEnemyManager() )
+						CGame::GetEnemyManager()->SetTrue(pEnemy->GetIdxID());
+				}
+				
 
 				if (pEnemy->GetMotion())
 					pEnemy->GetMotion()->Set(CEnemy::TYPE_HEATACTDAMEGE);
@@ -264,6 +280,7 @@ void CHeatAction::MicroWave(CPlayer* pPlayer, CEnemy* pEnemy, CItem* pItem)
 			CPlayer::GetPlayer()->SetGrapEnemy(nullptr);
 			pEnemy->SetPosition(D3DXVECTOR3(CPlayer::GetPlayer()->GetItem()->GetPosition().x, 0.0f, CPlayer::GetPlayer()->GetItem()->GetPosition().z));
 			pEnemy->SetCurrent(nullptr);
+			pPlayer->SetbHeatActFlag(false);
 		}
 
 		m_nHeatActTime = 0;
@@ -289,6 +306,7 @@ void CHeatAction::SetAction(CPlayer::HEAT heatact, CPlayer* pPlayer, CEnemy* pEn
 	pPlayer->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	pEnemy->SetChase(CEnemy::CHASE_OFF);
+	//pEnemy->SetDraw()
 	pEnemy->SetMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	// ヒートアクションのカメラモードにする

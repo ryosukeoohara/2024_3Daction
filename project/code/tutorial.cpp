@@ -26,6 +26,7 @@
 //===========================================================
 CPlayer *CTutorial::m_pPlayer = nullptr;
 CEnemyManager *CTutorial::m_pEnemyManager = nullptr;
+CItemManager* CTutorial::m_pItemManager = nullptr;
 CMap *CTutorial::m_pMap = nullptr;
 CTutorialUI *CTutorial::m_pUI = nullptr;
 

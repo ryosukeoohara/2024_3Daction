@@ -148,7 +148,7 @@ void CItem::Collision(D3DXVECTOR3* pos, D3DXVECTOR3* posOld, float fRadius)
 			&& pos->x + -fRadius < Itempos.x + vtxMax.x)
 		{
 			//ƒuƒƒbƒN‚Ìã======================================
-			if (pos->z - fRadius <= Itempos.z + vtxMax.z
+			if (pos->z - fRadius - fRadius <= Itempos.z + vtxMax.z
 				&& posOld->z - fRadius >= Itempos.z + vtxMax.z)
 			{
 				pos->z = (Itempos.z + vtxMax.z) + fRadius + fRadius;

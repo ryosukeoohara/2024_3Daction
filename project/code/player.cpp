@@ -134,7 +134,7 @@ CPlayer::CPlayer()
 	m_pBotton = nullptr;
 	m_pGekiatu = nullptr;
 	m_pHeatAct = nullptr;
-	m_nIdxEne = 0;
+	m_nIdxEne = -1;
 	m_nIdxItem = -1;
 	m_nDefeat = 0;
 	m_nDamageCounter = 0;
@@ -198,7 +198,7 @@ CPlayer::CPlayer(D3DXVECTOR3 pos, int nPriority) : CObject(nPriority)
 	m_pBotton = nullptr;
 	m_pGekiatu = nullptr;
 	m_pHeatAct = nullptr;
-	m_nIdxEne = 0;
+	m_nIdxEne = -1;
 	m_nIdxItem = -1;
 	m_nDefeat = 0;
 	m_nDamageCounter = 0;
@@ -536,22 +536,46 @@ void CPlayer::Update(void)
 			m_pHeatAct = nullptr;
 	}
 
-	// マップの制限
-	if (m_Info.pos.x >= MAPLIMITMAX.x)
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
 	{
-		m_Info.pos.x = MAPLIMITMAX.x;
+		// マップの制限
+		if (m_Info.pos.x >= MAPLIMITMAX.x)
+		{
+			m_Info.pos.x = MAPLIMITMAX.x;
+		}
+		if (m_Info.pos.x <= MAPLIMITMIN.x)
+		{
+			m_Info.pos.x = MAPLIMITMIN.x;
+		}
+		if (m_Info.pos.z >= MAPLIMITMAX.z)
+		{
+			m_Info.pos.z = MAPLIMITMAX.z;
+		}
+		if (m_Info.pos.z <= 30.0f)
+		{
+			m_Info.pos.z = 30.0f;
+		}
 	}
-	if (m_Info.pos.x <= MAPLIMITMIN.x)
+
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_GAME)
 	{
-		m_Info.pos.x = MAPLIMITMIN.x;
-	}
-	if (m_Info.pos.z >= MAPLIMITMAX.z)
-	{
-		m_Info.pos.z = MAPLIMITMAX.z;
-	}
-	if (m_Info.pos.z <= MAPLIMITMIN.z)
-	{
-		m_Info.pos.z = MAPLIMITMIN.z;
+		// マップの制限
+		if (m_Info.pos.x >= MAPLIMITMAX.x)
+		{
+			m_Info.pos.x = MAPLIMITMAX.x;
+		}
+		if (m_Info.pos.x <= MAPLIMITMIN.x)
+		{
+			m_Info.pos.x = MAPLIMITMIN.x;
+		}
+		if (m_Info.pos.z >= MAPLIMITMAX.z)
+		{
+			m_Info.pos.z = MAPLIMITMAX.z;
+		}
+		if (m_Info.pos.z <= MAPLIMITMIN.z)
+		{
+			m_Info.pos.z = MAPLIMITMIN.z;
+		}
 	}
 }
 
@@ -609,19 +633,25 @@ void CPlayer::Control(void)
 	while (pEnemy != nullptr)
 	{
 		CEnemy *pEnemyNext = pEnemy->GetNext();
-		m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &pEnemy->GetPosition(), 20.0f);
+		if (m_nIdxEne != pEnemy->GetIdxID())
+		{
+			m_Info.pos = *CGame::GetCollision()->CheckEnemy(&m_Info.pos, &m_Info.posOld, &pEnemy->GetPosition(), 20.0f);
+		}
 		pEnemy = pEnemyNext;
 	}
 
-	CItem* pItem = CItem::GetTop();
-
-	while (pItem != nullptr)
+	if (CManager::Getinstance()->GetScene()->GetMode() == CScene::MODE_TUTORIAL)
 	{
-		CItem* pItemNext = pItem->GetNext();
+		CItem* pItem = CItem::GetTop();
 
-		pItem->Collision(&m_Info.pos, &m_Info.posOld, 20.0f);
+		while (pItem != nullptr)
+		{
+			CItem* pItemNext = pItem->GetNext();
 
-		pItem = pItemNext;
+			pItem->Collision(&m_Info.pos, &m_Info.posOld, 20.0f);
+
+			pItem = pItemNext;
+		}
 	}
 	
 	//マウスを取得
@@ -1103,6 +1133,7 @@ void CPlayer::Grap(void)
 					m_Grap.pEnemy->SetChase(CEnemy::CHASE_ON);
 					m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
 					m_Grap.pEnemy = nullptr;
+					m_nIdxEne = -1;
 					m_Info.state = STATE_NEUTRAL;
 					m_pMotion->Set(TYPE_NEUTRAL);
 					m_bGrap = false;
@@ -1146,6 +1177,7 @@ void CPlayer::Grap(void)
 			m_Grap.pEnemy->SetChase(CEnemy::CHASE_ON);
 			m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_NEUTRAL);
 			m_Grap.pEnemy = nullptr;
+			m_nIdxEne = -1;
 			m_Info.state = STATE_NEUTRAL;
 			m_pMotion->Set(TYPE_NEUTRAL);
 			m_bGrap = false;
@@ -1172,6 +1204,7 @@ void CPlayer::Grap(void)
 						m_Grap.pItem->SetPosition(D3DXVECTOR3(50.0f, 5.0f, -15.0f));
 						m_Grap.pItem->SetRotition(D3DXVECTOR3(0.0f, -D3DX_PI, -D3DX_PI * 0.5f));
 						m_Grap.pEnemy = nullptr;
+						m_nIdxEne = -1;
 						m_bLift = true;
 
 						// 抽象度をそろえる
@@ -1196,6 +1229,7 @@ void CPlayer::Grap(void)
 						m_Grap.pEnemy->SetState(CEnemy::STATE_GRAP);
 						m_Grap.pEnemy->SetChase(CEnemy::CHASE_OFF);
 						m_Grap.pEnemy->GetMotion()->Set(CEnemy::TYPE_GRAP);
+						m_nIdxEne = m_Grap.pEnemy->GetIdxID();
 						m_Grap.pItem = nullptr;
 						m_bGrap = true;
 					}
@@ -1248,7 +1282,7 @@ void CPlayer::Avoid(void)
 void CPlayer::State(void)
 {
 	// 敵を掴む
-	if (m_bLift == true && m_bDesh == true)
+	if (m_bLift == true && m_bDesh == true && m_Info.state != STATE_HEAT)
 	{
 		if (m_Info.state != STATE_GRAPDASH && m_Info.state != STATE_THROW)
 		{
@@ -1257,7 +1291,7 @@ void CPlayer::State(void)
 		}
 	}
 
-	if (m_bGrap == true && m_bDesh == true)
+	if (m_bGrap == true && m_bDesh == true && m_Info.state != STATE_HEAT)
 	{
 		if (m_Info.state != STATE_GRAPWALK)
 		{
@@ -1504,6 +1538,9 @@ void CPlayer::Heat(void)
 						m_pHeatAct->SetAction(m_HeatAct, this, m_pEnemy);
 					}
 
+					if(CGame::GetEnemyManager() != nullptr)
+					CGame::GetEnemyManager()->SetTarget(m_pEnemy->GetIdxID());
+
 					m_Info.state = STATE_HEAT;
 
 					// ヒートアクションしている
@@ -1522,12 +1559,6 @@ void CPlayer::Heat(void)
 				{
 					m_pBotton->Uninit();
 					m_pBotton = nullptr;
-				}
-
-				if (m_pGekiatu != nullptr)
-				{
-					m_pGekiatu->Uninit();
-					m_pGekiatu = nullptr;
 				}
 			}
 		}
@@ -1551,7 +1582,7 @@ void CPlayer::Heat(void)
 			pItem = pItemNext;
 		}
 
-		if (CGame::GetCollision()->Circle(&m_Info.pos, &m_pItemMicro->GetPosition(), 30.0f, 30.0f))
+		if (CGame::GetCollision()->Circle(&m_Info.pos, &m_pItemMicro->GetPosition(), 30.0f, 40.0f))
 		{// 範囲内
 
 			m_HeatAct = HEAT_FIRE;
@@ -1577,6 +1608,9 @@ void CPlayer::Heat(void)
 					m_pHeatAct->SetAction(m_HeatAct, this, m_pEnemy);
 				}
 
+				if (CGame::GetEnemyManager() != nullptr)
+					CGame::GetEnemyManager()->SetTarget(m_pEnemy->GetIdxID());
+
 				m_pMotion->Set(TYPE_ENEMYGRAP);
 
 				m_Info.state = STATE_HEAT;
@@ -1600,12 +1634,6 @@ void CPlayer::Heat(void)
 			{
 				m_pBotton->Uninit();
 				m_pBotton = nullptr;
-			}
-
-			if (m_pGekiatu != nullptr)
-			{
-				m_pGekiatu->Uninit();
-				m_pGekiatu = nullptr;
 			}
 		}
 	}
@@ -1665,12 +1693,12 @@ void CPlayer::Fire(void)
 	//m_Info.rot.y = CManager::Getinstance()->GetUtility()->CorrectAngle(m_Info.rot.y);
 	//m_Info.pos = D3DXVECTOR3(-720.0f, 0.0f, 580.0f);
 
-	//if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
-	//{
-	//	// 
-	//	/*{
-	//		CGame::GetEnemyManager()->SetTarget(m_nIdxEne);
-	//	}*/
+	if (m_Grap.pEnemy != nullptr && m_pMotion->IsFinish() == true && m_pMotion->GetType() == TYPE_ENEMYGRAP && m_Info.state == STATE_HEAT)
+	{
+		// 
+		{
+			CGame::GetEnemyManager()->SetTarget(m_nIdxEne);
+		}
 
 	//	// プレイヤーとの関係を切る
 	//	{
@@ -1696,7 +1724,7 @@ void CPlayer::Fire(void)
 	//			CParticle::Create(m_pItemMicro->GetPosition(), CParticle::TYPE_GLASS);
 	//		}
 	//	}
-	//}
+	}
 
 	if (m_Grap.pEnemy != nullptr)
 	{

@@ -40,19 +40,19 @@ END_ITEMSET
 
 ITEMSET # 電子レンジ
     TYPE = 2
-    POS = -200.0 50.0 80.0
+    POS = -200.0 50.0 50.0
     ROT = 0.0 3.14 0.0
 END_ITEMSET
 
 ITEMSET # テーブル
     TYPE = 3
-    POS = -200.0 0.0 80.0
+    POS = -200.0 0.0 50.0
     ROT = 0.0 3.14 0.0
 END_ITEMSET
 
 ITEMSET # 看板
     TYPE = 4
-    POS = -250.0 0.0 120.0
+    POS = -250.0 0.0 90.0
     ROT = 0.0 3.14 0.0
 END_ITEMSET
 
